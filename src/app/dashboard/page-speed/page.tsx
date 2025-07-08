@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, Save } from "lucide-react";
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
+import PerformanceDisclaimer from "@/components/PerformanceDisclaimer";
+import DataSourceIndicator from "@/components/DataSourceIndicator";
 
 export default function PageSpeedAuditorPage() {
   const [url, setUrl] = useState("");
@@ -31,7 +33,11 @@ export default function PageSpeedAuditorPage() {
       setResults(analysis);
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
+        if (err.message.includes('API key')) {
+          setError('Google PageSpeed API key is required for real data analysis. Please check your server configuration.');
+        } else {
+          setError(err.message);
+        }
       } else {
         setError('An unexpected error occurred while analyzing the website.');
       }
@@ -96,6 +102,9 @@ export default function PageSpeedAuditorPage() {
           </div>
         </div>
       </div>
+
+      {/* Performance Score Disclaimer */}
+      <PerformanceDisclaimer />
 
       {/* Input Form */}
       <div className="mb-8">
@@ -207,6 +216,12 @@ export default function PageSpeedAuditorPage() {
       {/* Results Section */}
       {results && results.performance && (
         <div className="space-y-6">
+          {/* Data Source Indicator */}
+          <DataSourceIndicator
+            isRealData={results.isRealData}
+            apiSource={results.dataSource}
+          />
+
           {/* Overall Scores */}
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-foreground mb-6">Analysis Scores</h2>

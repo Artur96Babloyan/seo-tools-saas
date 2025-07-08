@@ -55,6 +55,8 @@ export interface SeoAnalysis {
     analysisDate: string;
   };
   timestamp: string;
+  dataSource?: string;
+  isRealData?: boolean;
 }
 
 export interface Report {
@@ -178,6 +180,8 @@ export const seoService = {
           analysisDate: string;
         };
         timestamp: string;
+        dataSource?: string;
+        isRealData?: boolean;
       };
     }
 
@@ -238,6 +242,8 @@ export const seoService = {
         analysisDate: new Date().toISOString(),
       },
       timestamp: analysis.timestamp,
+      dataSource: analysis.dataSource,
+      isRealData: analysis.isRealData,
     };
   },
 
