@@ -5,7 +5,6 @@ import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, Save, X, Tim
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 import PerformanceDisclaimer from "@/components/PerformanceDisclaimer";
-import DataSourceIndicator from "@/components/DataSourceIndicator";
 
 // Enhanced Loading Component
 const PageSpeedLoadingModal = ({
@@ -482,10 +481,7 @@ export default function PageSpeedAuditorPage() {
       {results && results.performance && (
         <div className="space-y-6">
           {/* Data Source Indicator */}
-          <DataSourceIndicator
-            isRealData={results.isRealData ?? false}
-            apiSource={results.dataSource || ''}
-          />
+          {/* Removed DataSourceIndicator */}
 
           {/* Overall Scores */}
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
