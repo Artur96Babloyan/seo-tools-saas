@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { AlertCircle, Info, Globe, Monitor, Smartphone, Clock } from 'lucide-react';
 
-const PerformanceDisclaimer = () => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const PerformanceDisclaimer: React.FC = () => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
 
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
@@ -13,7 +13,7 @@ const PerformanceDisclaimer = () => {
             Why Performance Scores May Differ
           </h3>
           <p className="text-blue-800 text-sm mb-3">
-            Performance scores from our tool may differ from your browser's DevTools. This is normal and expected.
+            Performance scores from our tool may differ from your browser&apos;s DevTools. This is normal and expected.
           </p>
 
           <button
@@ -33,7 +33,7 @@ const PerformanceDisclaimer = () => {
                   </div>
                   <ul className="text-sm text-gray-600 space-y-1">
                     <li>• Uses Google PageSpeed Insights API</li>
-                    <li>• Tests from Google's servers</li>
+                    <li>• Tests from Google&apos;s servers</li>
                     <li>• Standardized testing environment</li>
                     <li>• Simulated mobile/desktop conditions</li>
                   </ul>
@@ -69,7 +69,7 @@ const PerformanceDisclaimer = () => {
                       </div>
                       <div className="flex items-center gap-2">
                         <Globe className="h-3 w-3" />
-                        <span><strong>Location:</strong> API tests from Google's servers globally</span>
+                        <span><strong>Location:</strong> API tests from Google&apos;s servers globally</span>
                       </div>
                     </div>
                   </div>

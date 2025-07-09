@@ -1,7 +1,12 @@
 import React from 'react';
-import { CheckCircle, AlertTriangle, Zap } from 'lucide-react';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 
-const DataSourceIndicator = ({ isRealData, apiSource }) => {
+interface DataSourceIndicatorProps {
+  isRealData: boolean;
+  apiSource?: string;
+}
+
+const DataSourceIndicator: React.FC<DataSourceIndicatorProps> = ({ isRealData }) => {
   if (isRealData) {
     return (
       <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">

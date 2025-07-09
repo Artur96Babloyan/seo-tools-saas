@@ -1,94 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, Search, AlertTriangle, XCircle } from "lucide-react";
-import { metaTagService } from "@/lib/services";
+import { CheckCircle, Search, AlertTriangle, XCircle, Copy, Check } from "lucide-react";
+import { metaTagService, type MetaTagValidationResult } from "@/lib/services";
 
 export default function MetaTagValidatorPage() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
+  const [results, setResults] = useState<MetaTagValidationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
-  const mapBackendToUIResults = (backendResult: { tags: Record<string, boolean> }) => {
-    const { tags } = backendResult;
+  const copyToClipboard = async (text: string, key: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates(prev => ({ ...prev, [key]: true }));
 
-    // Calculate counts
-    const passedCount = Object.values(tags).filter(Boolean).length;
-    const totalCount = Object.keys(tags).length;
-    const warningCount = 0; // We don't have warnings in our simple validation
-    const errorCount = totalCount - passedCount;
+      // Reset the copied state after 2 seconds
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [key]: false }));
+      }, 2000);
+    } catch (err) {
+      console.error('Failed to copy text: ', err);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
 
-    return {
-      overview: {
-        passed: passedCount,
-        warnings: warningCount,
-        errors: errorCount,
-        total: totalCount
-      },
-      title: {
-        content: tags.title ? "Title tag found" : "No title tag found",
-        length: tags.title ? 50 : 0, // Estimate, we don't get actual content from backend
-        status: tags.title ? "good" : "error",
-        recommendation: tags.title
-          ? "Title tag is present and properly configured"
-          : "Add a title tag to improve SEO. Should be 50-60 characters."
-      },
-      description: {
-        content: tags.metaDescription ? "Meta description found" : "No meta description found",
-        length: tags.metaDescription ? 150 : 0,
-        status: tags.metaDescription ? "good" : "error",
-        recommendation: tags.metaDescription
-          ? "Meta description is present and properly configured"
-          : "Add a meta description tag. Should be 150-160 characters."
-      },
-      robots: {
-        content: tags.metaRobots ? "Meta robots tag found" : "No meta robots tag found",
-        status: tags.metaRobots ? "good" : "warning",
-        recommendation: tags.metaRobots
-          ? "Meta robots tag is properly configured"
-          : "Consider adding meta robots tag to control search engine crawling."
-      },
-      canonical: {
-        url: tags.canonical ? url : "No canonical URL found",
-        status: tags.canonical ? "good" : "warning",
-        recommendation: tags.canonical
-          ? "Canonical URL is properly configured"
-          : "Consider adding a canonical URL to prevent duplicate content issues."
-      },
-      openGraph: {
-        title: tags.ogTitle ? "Open Graph title found" : "No Open Graph title",
-        description: tags.ogDescription ? "Open Graph description found" : "No Open Graph description",
-        image: tags.ogImage ? "Open Graph image found" : "No Open Graph image",
-        url: url,
-        status: (tags.ogTitle && tags.ogDescription && tags.ogImage) ? "good" : "warning"
-      },
-      // Add other properties needed by the UI
-      keywords: {
-        content: "Meta keywords tag is deprecated",
-        status: "warning",
-        recommendation: "Meta keywords tag is deprecated by search engines and should not be used."
-      },
-      twitter: {
-        card: "Not validated by current API",
-        title: "Not validated by current API",
-        description: "Not validated by current API",
-        image: "Not validated by current API",
-        status: "warning"
-      },
-      favicon: {
-        status: "good", // Assume present for now
-        url: `${url}/favicon.ico`
-      },
-      viewport: {
-        content: "width=device-width, initial-scale=1",
-        status: "good" // Assume present for now
-      },
-      charset: {
-        content: "UTF-8",
-        status: "good" // Assume present for now
-      }
-    };
+      setCopiedStates(prev => ({ ...prev, [key]: true }));
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [key]: false }));
+      }, 2000);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -100,8 +46,16 @@ export default function MetaTagValidatorPage() {
 
     try {
       const result = await metaTagService.validateMetaTags(url);
-      const uiResults = mapBackendToUIResults(result);
-      setResults(uiResults);
+
+      // Log the actual backend response
+      console.log('=== ENHANCED BACKEND API RESPONSE ===');
+      console.log('URL:', result.url);
+      console.log('Summary:', result.summary);
+      console.log('Tags:', result.tags);
+      console.log('ValidatedAt:', result.validatedAt);
+      console.log('=== END ENHANCED RESPONSE ===');
+
+      setResults(result);
     } catch (err) {
       console.error('Meta tag validation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to validate meta tags. Please check the URL and try again.');
@@ -110,30 +64,16 @@ export default function MetaTagValidatorPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "good":
-        return <CheckCircle className="h-5 w-5 text-success" />;
-      case "warning":
-        return <AlertTriangle className="h-5 w-5 text-warning" />;
-      case "error":
-        return <XCircle className="h-5 w-5 text-destructive" />;
-      default:
-        return <CheckCircle className="h-5 w-5 text-muted-foreground" />;
-    }
+  const getStatusIcon = (exists: boolean, issues: string[] = []) => {
+    if (!exists) return <XCircle className="h-5 w-5 text-destructive" />;
+    if (issues.length > 0) return <AlertTriangle className="h-5 w-5 text-warning" />;
+    return <CheckCircle className="h-5 w-5 text-success" />;
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "good":
-        return "border-success/20 bg-success/5";
-      case "warning":
-        return "border-warning/20 bg-warning/5";
-      case "error":
-        return "border-destructive/20 bg-destructive/5";
-      default:
-        return "border-border bg-card";
-    }
+  const getStatusColor = (exists: boolean, issues: string[] = []) => {
+    if (!exists) return "border-destructive/20 bg-destructive/5";
+    if (issues.length > 0) return "border-warning/20 bg-warning/5";
+    return "border-success/20 bg-success/5";
   };
 
   return (
@@ -147,7 +87,7 @@ export default function MetaTagValidatorPage() {
           <div>
             <h1 className="text-3xl font-bold text-foreground">Meta Tag Validator</h1>
             <p className="text-muted-foreground">
-              Analyze and validate your meta tags for optimal SEO performance
+              Professional meta tag analysis with real content validation and actionable recommendations
             </p>
           </div>
         </div>
@@ -182,147 +122,598 @@ export default function MetaTagValidatorPage() {
               className="flex items-center justify-center space-x-2 rounded-lg bg-primary px-6 py-3 text-white font-medium transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                <>
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>Analyzing...</span>
-                </>
+                <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
               ) : (
-                <>
-                  <Search className="h-4 w-4" />
-                  <span>Validate Meta Tags</span>
-                </>
+                <Search className="h-5 w-5" />
               )}
+              <span>{isLoading ? 'Analyzing...' : 'Analyze Meta Tags'}</span>
             </button>
           </form>
         </div>
       </div>
 
-      {/* Results Section */}
-      {results && !error && (
+      {/* Results Display */}
+      {results && (
         <div className="space-y-6">
-          {/* Overview */}
+          {/* Summary Overview */}
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <h2 className="text-xl font-semibold text-foreground mb-4">Validation Overview</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <h2 className="text-2xl font-semibold text-foreground mb-4">Analysis Summary</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
               <div className="text-center p-4 rounded-lg bg-success/5">
-                <div className="text-2xl font-bold text-success">{results.overview.passed}</div>
-                <div className="text-sm text-muted-foreground">Passed</div>
-              </div>
-              <div className="text-center p-4 rounded-lg bg-warning/5">
-                <div className="text-2xl font-bold text-warning">{results.overview.warnings}</div>
-                <div className="text-sm text-muted-foreground">Warnings</div>
+                <div className="text-2xl font-bold text-success">{results.summary.foundTags}</div>
+                <div className="text-sm text-muted-foreground">Found Tags</div>
               </div>
               <div className="text-center p-4 rounded-lg bg-destructive/5">
-                <div className="text-2xl font-bold text-destructive">{results.overview.errors}</div>
-                <div className="text-sm text-muted-foreground">Errors</div>
+                <div className="text-2xl font-bold text-destructive">{results.summary.criticalIssues}</div>
+                <div className="text-sm text-muted-foreground">Critical Issues</div>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-warning/5">
+                <div className="text-2xl font-bold text-warning">{results.summary.warnings}</div>
+                <div className="text-sm text-muted-foreground">Warnings</div>
+              </div>
+              <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-950/20">
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{results.summary.recommendations}</div>
+                <div className="text-sm text-muted-foreground">Recommendations</div>
               </div>
             </div>
           </div>
 
+          {/* Critical Issues */}
+          {results.summary.criticalIssues > 0 && (
+            <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-destructive mb-4 flex items-center gap-2">
+                <XCircle className="h-5 w-5" />
+                Critical Issues Found ({results.summary.criticalIssues})
+              </h2>
+              <div className="space-y-3">
+                {!results.tags.title.exists && (
+                  <div className="flex items-start gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-destructive/20">
+                    <XCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-destructive">Missing Title Tag</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {results.tags.title.issues?.[0] || 'Critical for SEO rankings and search results'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!results.tags.metaDescription.exists && (
+                  <div className="flex items-start gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-destructive/20">
+                    <XCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-destructive">Missing Meta Description</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {results.tags.metaDescription.issues?.[0] || 'Impacts click-through rates in search results'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {!results.tags.canonical.exists && (
+                  <div className="flex items-start gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-destructive/20">
+                    <XCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                    <div>
+                      <div className="font-medium text-destructive">Missing Canonical URL</div>
+                      <div className="text-sm text-muted-foreground mt-1">
+                        {results.tags.canonical.issues?.[0] || 'Important for preventing duplicate content issues'}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Quick Fixes Section */}
+          {results.summary.criticalIssues > 0 && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100 flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5" />
+                  🚀 Quick Fixes - Copy & Paste HTML Code
+                </h2>
+                <button
+                  onClick={() => {
+                    const allMissingTags = [];
+
+                    if (!results.tags.title.exists) {
+                      allMissingTags.push('<title>Your Page Title Here (50-60 characters)</title>');
+                    }
+                    if (!results.tags.metaDescription.exists) {
+                      allMissingTags.push('<meta name="description" content="Write a compelling 150-160 character description of your page content here">');
+                    }
+                    if (!results.tags.canonical.exists) {
+                      allMissingTags.push(`<link rel="canonical" href="${url}">`);
+                    }
+                    if (!results.tags.metaRobots.exists) {
+                      allMissingTags.push('<meta name="robots" content="index, follow">');
+                    }
+                    if (!results.tags.ogTitle.exists) {
+                      allMissingTags.push('<meta property="og:title" content="Your Page Title">');
+                    }
+                    if (!results.tags.ogDescription.exists) {
+                      allMissingTags.push('<meta property="og:description" content="Your page description">');
+                    }
+                    if (!results.tags.ogImage.exists) {
+                      allMissingTags.push('<meta property="og:image" content="https://yoursite.com/image.jpg">');
+                    }
+                    allMissingTags.push(`<meta property="og:url" content="${url}">`);
+
+                    const allTagsCode = allMissingTags.join('\n');
+                    copyToClipboard(allTagsCode, 'all-tags');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
+                  title="Copy all missing tags at once"
+                >
+                  {copiedStates['all-tags'] ? (
+                    <>
+                      <Check className="h-4 w-4" />
+                      <span>Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="h-4 w-4" />
+                      <span>Copy All Tags</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  💡 <strong>How to use:</strong> Copy each code snippet below and paste it inside the <code>&lt;head&gt;</code> section of your HTML document. Each fix addresses a specific SEO issue found on your page.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                {!results.tags.title.exists && (
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                        <span className="text-red-600 dark:text-red-400 font-semibold text-sm">1</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-red-700 dark:text-red-300 mb-1">🚨 CRITICAL: Missing Title Tag</h3>
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                          {results.tags.title.recommendations?.[0] || 'Add a unique, descriptive title tag for SEO'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded border relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
+                        <button
+                          onClick={() => copyToClipboard('<title>Your Page Title Here (50-60 characters)</title>', 'title-code')}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['title-code']
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
+                            }`}
+                          title="Copy code"
+                        >
+                          {copiedStates['title-code'] ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
+                        {'<title>Your Page Title Here (50-60 characters)</title>'}
+                      </code>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                      ✅ <strong>Where to paste:</strong> Between <code>&lt;head&gt;</code> and <code>&lt;/head&gt;</code> tags
+                    </div>
+                  </div>
+                )}
+
+                {!results.tags.metaDescription.exists && (
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                        <span className="text-red-600 dark:text-red-400 font-semibold text-sm">2</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-red-700 dark:text-red-300 mb-1">🚨 CRITICAL: Missing Meta Description</h3>
+                        <p className="text-sm text-red-600 dark:text-red-400 mb-2">
+                          {results.tags.metaDescription.recommendations?.[0] || 'Add a compelling meta description to improve click-through rates'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded border relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
+                        <button
+                          onClick={() => copyToClipboard('<meta name="description" content="Write a compelling 150-160 character description of your page content here">', 'meta-description-code')}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['meta-description-code']
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
+                            }`}
+                          title="Copy code"
+                        >
+                          {copiedStates['meta-description-code'] ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
+                        {'<meta name="description" content="Write a compelling 150-160 character description of your page content here">'}
+                      </code>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                      ✅ <strong>Where to paste:</strong> Inside <code>&lt;head&gt;</code> section, after the title tag
+                    </div>
+                  </div>
+                )}
+
+                {!results.tags.canonical.exists && (
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-orange-100 dark:bg-orange-900/30 rounded-full flex items-center justify-center">
+                        <span className="text-orange-600 dark:text-orange-400 font-semibold text-sm">3</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-orange-700 dark:text-orange-300 mb-1">⚠️ IMPORTANT: Missing Canonical URL</h3>
+                        <p className="text-sm text-orange-600 dark:text-orange-400 mb-2">
+                          {results.tags.canonical.recommendations?.[0] || 'Add canonical URL to prevent duplicate content issues'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded border relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
+                        <button
+                          onClick={() => copyToClipboard(`<link rel="canonical" href="${url}">`, 'canonical-code')}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['canonical-code']
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
+                            }`}
+                          title="Copy code"
+                        >
+                          {copiedStates['canonical-code'] ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
+                        {`<link rel="canonical" href="${url}">`}
+                      </code>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                      ✅ <strong>Where to paste:</strong> Inside <code>&lt;head&gt;</code> section, preferably near other link tags
+                    </div>
+                  </div>
+                )}
+
+                {!results.tags.metaRobots.exists && (
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center">
+                        <span className="text-yellow-600 dark:text-yellow-400 font-semibold text-sm">4</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-yellow-700 dark:text-yellow-300 mb-1">🤖 SEO: Missing Robots Meta Tag</h3>
+                        <p className="text-sm text-yellow-600 dark:text-yellow-400 mb-2">
+                          {results.tags.metaRobots.recommendations?.[0] || 'Add robots meta tag to control search engine crawling'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded border relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
+                        <button
+                          onClick={() => copyToClipboard('<meta name="robots" content="index, follow">', 'meta-robots-code')}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['meta-robots-code']
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
+                            }`}
+                          title="Copy code"
+                        >
+                          {copiedStates['meta-robots-code'] ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
+                        {'<meta name="robots" content="index, follow">'}
+                      </code>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                      ✅ <strong>Where to paste:</strong> Inside <code>&lt;head&gt;</code> section, with other meta tags
+                    </div>
+                  </div>
+                )}
+
+                {(!results.tags.ogTitle.exists || !results.tags.ogDescription.exists || !results.tags.ogImage.exists) && (
+                  <div className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
+                        <span className="text-purple-600 dark:text-purple-400 font-semibold text-sm">5</span>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-purple-700 dark:text-purple-300 mb-1">📱 SOCIAL: Missing Open Graph Tags</h3>
+                        <p className="text-sm text-purple-600 dark:text-purple-400 mb-2">
+                          Add these tags to improve how your page appears when shared on social media (Facebook, LinkedIn, etc.)
+                        </p>
+                      </div>
+                    </div>
+                    <div className="bg-slate-50 dark:bg-slate-700 p-3 rounded border relative">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE (Add what&apos;s missing):</div>
+                        <button
+                          onClick={() => copyToClipboard(`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Your page description">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/image.jpg">\n' : ''}<meta property="og:url" content="${url}">`, 'og-tags-code')}
+                          className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['og-tags-code']
+                            ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                            : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
+                            }`}
+                          title="Copy code"
+                        >
+                          {copiedStates['og-tags-code'] ? (
+                            <>
+                              <Check className="h-3 w-3" />
+                              <span>Copied!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-3 w-3" />
+                              <span>Copy</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                      <code className="block text-sm font-mono text-slate-800 dark:text-slate-200 whitespace-pre-line">
+                        {`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Your page description">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/image.jpg">\n' : ''}<meta property="og:url" content="${url}">`}
+                      </code>
+                    </div>
+                    <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
+                      ✅ <strong>Where to paste:</strong> Inside <code>&lt;head&gt;</code> section, grouped with other meta tags
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <h4 className="font-semibold text-green-800 dark:text-green-200 mb-2">🎯 Next Steps:</h4>
+                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                  <li>• Copy each code snippet above</li>
+                  <li>• Paste them inside your HTML <code>&lt;head&gt;</code> section</li>
+                  <li>• Customize the content (titles, descriptions) for your specific page</li>
+                  <li>• Test your changes by re-running this validator</li>
+                  <li>• Check how your page appears in search results and social media</li>
+                </ul>
+              </div>
+            </div>
+          )}
+
           {/* Basic Meta Tags */}
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Basic Meta Tags</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">🎯 Core SEO Tags</h3>
             <div className="space-y-4">
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.title.status)}`}>
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.title.exists, results.tags.title.issues)}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    {getStatusIcon(results.title.status)}
+                    {getStatusIcon(results.tags.title.exists, results.tags.title.issues)}
                     <div>
                       <h4 className="font-medium text-foreground">Title Tag</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{results.title.content}</p>
-                      <p className="text-xs text-muted-foreground mt-2">Length: {results.title.length} characters</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.title.exists ? results.tags.title.content : 'Missing - Critical for SEO'}
+                      </p>
+                      {results.tags.title.length !== undefined && (
+                        <p className="text-xs text-muted-foreground mt-1">Length: {results.tags.title.length} characters</p>
+                      )}
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">{results.title.recommendation}</p>
+                {results.tags.title.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.title.recommendations[0]}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.description.status)}`}>
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.metaDescription.exists, results.tags.metaDescription.issues)}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    {getStatusIcon(results.description.status)}
+                    {getStatusIcon(results.tags.metaDescription.exists, results.tags.metaDescription.issues)}
                     <div>
                       <h4 className="font-medium text-foreground">Meta Description</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{results.description.content}</p>
-                      <p className="text-xs text-muted-foreground mt-2">Length: {results.description.length} characters</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.metaDescription.exists ? results.tags.metaDescription.content : 'Missing - Impacts CTR'}
+                      </p>
+                      {results.tags.metaDescription.length !== undefined && (
+                        <p className="text-xs text-muted-foreground mt-1">Length: {results.tags.metaDescription.length} characters</p>
+                      )}
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">{results.description.recommendation}</p>
+                {results.tags.metaDescription.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.metaDescription.recommendations[0]}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.robots.status)}`}>
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.metaRobots.exists, results.tags.metaRobots.issues)}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    {getStatusIcon(results.robots.status)}
+                    {getStatusIcon(results.tags.metaRobots.exists, results.tags.metaRobots.issues)}
                     <div>
                       <h4 className="font-medium text-foreground">Meta Robots</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{results.robots.content}</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.metaRobots.exists ? results.tags.metaRobots.content : 'Missing - Crawl control'}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">{results.robots.recommendation}</p>
+                {results.tags.metaRobots.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.metaRobots.recommendations[0]}
+                    </p>
+                  </div>
+                )}
               </div>
+            </div>
+          </div>
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.keywords.status)}`}>
+          {/* Open Graph Tags */}
+          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-foreground mb-4">📱 Social Media Tags (Open Graph)</h3>
+            <div className="space-y-4">
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.ogTitle.exists, results.tags.ogTitle.issues)}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center space-x-3">
-                    {getStatusIcon(results.keywords.status)}
+                    {getStatusIcon(results.tags.ogTitle.exists, results.tags.ogTitle.issues)}
                     <div>
-                      <h4 className="font-medium text-foreground">Meta Keywords</h4>
-                      <p className="text-sm text-muted-foreground mt-1">{results.keywords.content}</p>
+                      <h4 className="font-medium text-foreground">OG Title</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.ogTitle.exists ? results.tags.ogTitle.content : 'Missing - Social sharing'}
+                      </p>
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">{results.keywords.recommendation}</p>
+                {results.tags.ogTitle.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.ogTitle.recommendations[0]}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.ogDescription.exists, results.tags.ogDescription.issues)}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(results.tags.ogDescription.exists, results.tags.ogDescription.issues)}
+                    <div>
+                      <h4 className="font-medium text-foreground">OG Description</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.ogDescription.exists ? results.tags.ogDescription.content : 'Missing - Social preview'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {results.tags.ogDescription.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.ogDescription.recommendations[0]}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.ogImage.exists, results.tags.ogImage.issues)}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(results.tags.ogImage.exists, results.tags.ogImage.issues)}
+                    <div>
+                      <h4 className="font-medium text-foreground">OG Image</h4>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {results.tags.ogImage.exists ? results.tags.ogImage.url : 'Missing - Social preview image'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {results.tags.ogImage.recommendations && (
+                  <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                      💡 {results.tags.ogImage.recommendations[0]}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
           {/* Technical Tags */}
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Technical Tags</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">🔧 Technical Tags</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.canonical.status)}`}>
+              <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.canonical.exists, results.tags.canonical.issues)}`}>
                 <div className="flex items-center space-x-3">
-                  {getStatusIcon(results.canonical.status)}
+                  {getStatusIcon(results.tags.canonical.exists, results.tags.canonical.issues)}
                   <div>
                     <h4 className="font-medium text-foreground">Canonical URL</h4>
-                    <p className="text-sm text-muted-foreground">{results.canonical.url}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {results.tags.canonical.exists ? results.tags.canonical.url : 'Missing - Duplicate content risk'}
+                    </p>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-3">{results.canonical.recommendation}</p>
+                {results.tags.canonical.recommendations && (
+                  <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-950/20 rounded text-xs text-blue-800 dark:text-blue-200">
+                    {results.tags.canonical.recommendations[0]}
+                  </div>
+                )}
               </div>
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.favicon.status)}`}>
-                <div className="flex items-center space-x-3">
-                  {getStatusIcon(results.favicon.status)}
-                  <div>
-                    <h4 className="font-medium text-foreground">Favicon</h4>
-                    <p className="text-sm text-muted-foreground">{results.favicon.url}</p>
+              {results.tags.viewport && (
+                <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.viewport.exists, results.tags.viewport.issues)}`}>
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(results.tags.viewport.exists, results.tags.viewport.issues)}
+                    <div>
+                      <h4 className="font-medium text-foreground">Viewport</h4>
+                      <p className="text-sm text-muted-foreground">{results.tags.viewport.content}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.viewport.status)}`}>
-                <div className="flex items-center space-x-3">
-                  {getStatusIcon(results.viewport.status)}
-                  <div>
-                    <h4 className="font-medium text-foreground">Viewport</h4>
-                    <p className="text-sm text-muted-foreground">{results.viewport.content}</p>
+              {results.tags.charset && (
+                <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.charset.exists, results.tags.charset.issues)}`}>
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(results.tags.charset.exists, results.tags.charset.issues)}
+                    <div>
+                      <h4 className="font-medium text-foreground">Character Set</h4>
+                      <p className="text-sm text-muted-foreground">{results.tags.charset.content}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
-              <div className={`rounded-lg border p-4 ${getStatusColor(results.charset.status)}`}>
-                <div className="flex items-center space-x-3">
-                  {getStatusIcon(results.charset.status)}
-                  <div>
-                    <h4 className="font-medium text-foreground">Character Set</h4>
-                    <p className="text-sm text-muted-foreground">{results.charset.content}</p>
+              {results.tags.favicon && (
+                <div className={`rounded-lg border p-4 ${getStatusColor(results.tags.favicon.exists, results.tags.favicon.issues)}`}>
+                  <div className="flex items-center space-x-3">
+                    {getStatusIcon(results.tags.favicon.exists, results.tags.favicon.issues)}
+                    <div>
+                      <h4 className="font-medium text-foreground">Favicon</h4>
+                      <p className="text-sm text-muted-foreground">{results.tags.favicon.url}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -335,20 +726,9 @@ export default function MetaTagValidatorPage() {
             <XCircle className="h-5 w-5 text-destructive" />
             <h3 className="text-lg font-semibold text-destructive">Validation Error</h3>
           </div>
-          <p className="text-sm text-destructive mt-2">{error}</p>
-        </div>
-      )}
-
-      {/* No Results Message */}
-      {!results && !isLoading && !error && (
-        <div className="text-center py-12">
-          <CheckCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium text-foreground mb-2">Ready to Validate</h3>
-          <p className="text-muted-foreground">
-            Enter your website URL above to analyze and validate all meta tags
-          </p>
+          <p className="text-sm text-muted-foreground mt-2">{error}</p>
         </div>
       )}
     </div>
   );
-} 
+}  

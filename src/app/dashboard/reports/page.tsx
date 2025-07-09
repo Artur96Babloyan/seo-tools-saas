@@ -20,14 +20,32 @@ export default function ReportsPage() {
     try {
       if (query) {
         const searchResults = await reportService.searchReports(query);
+        console.log('Search results:', searchResults);
         setReports(searchResults);
         setTotalPages(1);
       } else {
         const response = await reportService.getReports(page, 10);
+        console.log('Reports response:', response);
+        console.log('Individual reports:', response.reports);
+
+        // Log each report's analysis_result structure
+        response.reports.forEach((report, index) => {
+          console.log(`Report ${index + 1} (${report.website_url}):`, {
+            id: report.id,
+            website_url: report.website_url,
+            created_at: report.created_at,
+            analysis_result: report.analysis_result,
+            analysis_result_keys: report.analysis_result ? Object.keys(report.analysis_result) : 'analysis_result is null/undefined',
+            performance: report.analysis_result?.performance,
+            opportunities: report.analysis_result?.opportunities
+          });
+        });
+
         setReports(response.reports);
         setTotalPages(response.totalPages);
       }
     } catch (err) {
+      console.error('Error fetching reports:', err);
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -71,6 +89,11 @@ export default function ReportsPage() {
   };
 
   const getScoreColor = (score: number) => {
+    // Handle invalid or undefined scores
+    if (typeof score !== 'number' || isNaN(score)) {
+      return "text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30";
+    }
+
     if (score >= 90) return "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30";
     if (score >= 50) return "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30";
     return "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30";
@@ -151,25 +174,37 @@ export default function ReportsPage() {
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-3">
                     <h3 className="font-semibold text-card-foreground">{report.website_url}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(report.analysis_result.performance.score)}`}>
-                      Score: {report.analysis_result.performance.score}
-                    </span>
+                    {report.analysis_result?.performance?.score !== undefined ? (
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(report.analysis_result.performance.score)}`}>
+                        Score: {report.analysis_result.performance.score}
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30">
+                        No Score Available
+                      </span>
+                    )}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="h-4 w-4" />
-                      <span>Load Time: {report.analysis_result.performance.loadTime}s</span>
+                  {report.analysis_result ? (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center space-x-2">
+                        <Clock className="h-4 w-4" />
+                        <span>Load Time: {report.analysis_result.performance?.loadTime || '--'}s</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-4 w-4" />
+                        <span>Analyzed: {formatDate(report.created_at)}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <FileText className="h-4 w-4" />
+                        <span>{report.analysis_result.opportunities?.length || 0} Opportunities</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4" />
-                      <span>Analyzed: {formatDate(report.created_at)}</span>
+                  ) : (
+                    <div className="text-sm text-muted-foreground">
+                      <p>Analysis data is incomplete or missing</p>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <FileText className="h-4 w-4" />
-                      <span>{report.analysis_result.opportunities.length} Opportunities</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="flex items-center space-x-2 ml-4">

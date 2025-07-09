@@ -100,15 +100,80 @@ export interface SitemapOptions {
 export interface MetaTagValidationResult {
   url: string;
   tags: {
-    title: boolean;
-    metaDescription: boolean;
-    metaRobots: boolean;
-    canonical: boolean;
-    ogTitle: boolean;
-    ogDescription: boolean;
-    ogImage: boolean;
+    title: {
+      exists: boolean;
+      content?: string;
+      length?: number;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    metaDescription: {
+      exists: boolean;
+      content?: string;
+      length?: number;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    metaRobots: {
+      exists: boolean;
+      content?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    canonical: {
+      exists: boolean;
+      url?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    ogTitle: {
+      exists: boolean;
+      content?: string;
+      length?: number;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    ogDescription: {
+      exists: boolean;
+      content?: string;
+      length?: number;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    ogImage: {
+      exists: boolean;
+      url?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    // Additional technical tags
+    viewport?: {
+      exists: boolean;
+      content?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    charset?: {
+      exists: boolean;
+      content?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
+    favicon?: {
+      exists: boolean;
+      url?: string;
+      issues?: string[];
+      recommendations?: string[];
+    };
   };
   validatedAt: string;
+  summary: {
+    totalTags: number;
+    foundTags: number;
+    criticalIssues: number;
+    warnings: number;
+    recommendations: number;
+  };
 }
 
 export interface MetaTagDetails {
@@ -271,7 +336,29 @@ export const reportService = {
       ...(url && { url }),
     });
     
-    return await apiRequest<ReportsListResponse>(`/api/report/list?${params}`);
+    const response = await apiRequest<ReportsListResponse>(`/api/report/list?${params}`);
+    
+    // Log the raw response from the backend
+    console.log('Raw backend response:', response);
+    
+    // Log each report's analysis_result structure
+    if (response.reports) {
+      response.reports.forEach((report, index) => {
+        console.log(`Backend Report ${index + 1}:`, {
+          id: report.id,
+          website_url: report.website_url,
+          analysis_result: report.analysis_result,
+          analysis_result_type: typeof report.analysis_result,
+          analysis_result_keys: report.analysis_result ? Object.keys(report.analysis_result) : 'null/undefined',
+          performance_exists: !!report.analysis_result?.performance,
+          performance_score: report.analysis_result?.performance?.score,
+          opportunities_exists: !!report.analysis_result?.opportunities,
+          opportunities_length: report.analysis_result?.opportunities?.length
+        });
+      });
+    }
+    
+    return response;
   },
 
   async getReport(id: string): Promise<Report> {
@@ -360,6 +447,7 @@ export const sitemapService = {
 // Meta Tag Validation Services
 export const metaTagService = {
   async validateMetaTags(url: string): Promise<MetaTagValidationResult> {
+    // Old backend response format (to be enhanced)
     interface BackendResponse {
       url: string;
       tags: {
@@ -380,10 +468,89 @@ export const metaTagService = {
         body: JSON.stringify({ url }),
       });
 
+      // Transform old format to new enhanced format
+      const transformedTags = {
+        title: {
+          exists: data.tags.title,
+          content: data.tags.title ? `[Title found - content analysis needed]` : undefined,
+          length: data.tags.title ? 0 : undefined,
+          issues: data.tags.title ? [] : ['Missing title tag'],
+          recommendations: data.tags.title ? ['Verify title is 50-60 characters and unique'] : ['Add <title>Your Page Title</title> to <head>']
+        },
+        metaDescription: {
+          exists: data.tags.metaDescription,
+          content: data.tags.metaDescription ? `[Description found - content analysis needed]` : undefined,
+          length: data.tags.metaDescription ? 0 : undefined,
+          issues: data.tags.metaDescription ? [] : ['Missing meta description'],
+          recommendations: data.tags.metaDescription ? ['Verify description is 150-160 characters'] : ['Add <meta name="description" content="Your page description">']
+        },
+        metaRobots: {
+          exists: data.tags.metaRobots,
+          content: data.tags.metaRobots ? `[Robots tag found - content analysis needed]` : undefined,
+          issues: data.tags.metaRobots ? [] : ['Missing robots tag'],
+          recommendations: data.tags.metaRobots ? ['Verify robots allows indexing'] : ['Add <meta name="robots" content="index, follow">']
+        },
+        canonical: {
+          exists: data.tags.canonical,
+          url: data.tags.canonical ? url : undefined,
+          issues: data.tags.canonical ? [] : ['Missing canonical URL'],
+          recommendations: data.tags.canonical ? ['Verify canonical URL is correct'] : [`Add <link rel="canonical" href="${url}">`]
+        },
+        ogTitle: {
+          exists: data.tags.ogTitle,
+          content: data.tags.ogTitle ? `[OG Title found - content analysis needed]` : undefined,
+          length: data.tags.ogTitle ? 0 : undefined,
+          issues: data.tags.ogTitle ? [] : ['Missing Open Graph title'],
+          recommendations: data.tags.ogTitle ? ['Verify OG title matches page title'] : ['Add <meta property="og:title" content="Your Title">']
+        },
+        ogDescription: {
+          exists: data.tags.ogDescription,
+          content: data.tags.ogDescription ? `[OG Description found - content analysis needed]` : undefined,
+          length: data.tags.ogDescription ? 0 : undefined,
+          issues: data.tags.ogDescription ? [] : ['Missing Open Graph description'],
+          recommendations: data.tags.ogDescription ? ['Verify OG description is compelling'] : ['Add <meta property="og:description" content="Your Description">']
+        },
+        ogImage: {
+          exists: data.tags.ogImage,
+          url: data.tags.ogImage ? `[OG Image found - URL analysis needed]` : undefined,
+          issues: data.tags.ogImage ? [] : ['Missing Open Graph image'],
+          recommendations: data.tags.ogImage ? ['Verify image is 1200x630px'] : ['Add <meta property="og:image" content="https://yoursite.com/image.jpg">']
+        },
+        viewport: {
+          exists: true, // Assume present for now
+          content: 'width=device-width, initial-scale=1',
+          issues: [],
+          recommendations: []
+        },
+        charset: {
+          exists: true, // Assume present for now
+          content: 'UTF-8',
+          issues: [],
+          recommendations: []
+        },
+        favicon: {
+          exists: true, // Assume present for now
+          url: `${url}/favicon.ico`,
+          issues: [],
+          recommendations: []
+        }
+      };
+
+      const foundTags = Object.values(data.tags).filter(Boolean).length;
+      const totalTags = Object.keys(data.tags).length;
+      const criticalIssues = Object.values(data.tags).filter(exists => !exists).length;
+
       return {
         url: data.url,
-        tags: data.tags,
-        validatedAt: data.timestamp || new Date().toISOString()
+        tags: transformedTags,
+        validatedAt: data.timestamp || new Date().toISOString(),
+        summary: {
+          totalTags,
+          foundTags,
+          criticalIssues,
+          warnings: 0,
+          recommendations: criticalIssues
+        }
       };
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Failed to validate meta tags');

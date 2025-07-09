@@ -85,7 +85,7 @@ export default function PageSpeedAuditorPage() {
         return "bg-muted text-muted-foreground";
     }
   };
-
+  console.log('results', results)
   return (
     <div className="p-6">
       {/* Header */}
@@ -219,7 +219,7 @@ export default function PageSpeedAuditorPage() {
           {/* Data Source Indicator */}
           <DataSourceIndicator
             isRealData={results.isRealData}
-            apiSource={results.dataSource}
+            apiSource={results.dataSource || ''}
           />
 
           {/* Overall Scores */}

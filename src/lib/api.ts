@@ -2,7 +2,7 @@ import { authService } from './auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
-interface ApiResponse<T = any> {
+interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;
@@ -16,7 +16,7 @@ class ApiError extends Error {
   }
 }
 
-async function apiRequest<T = any>(
+async function apiRequest<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
@@ -56,8 +56,23 @@ async function apiRequest<T = any>(
 
     const data: ApiResponse<T> = await response.json();
     
+    // Log API responses for debugging
+    if (endpoint.includes('/api/report/list')) {
+      console.log('API Response for reports:', {
+        url,
+        success: data.success,
+        data: data.data,
+        dataType: typeof data.data,
+        dataKeys: data.data ? Object.keys(data.data) : 'null/undefined'
+      });
+    }
+    
     if (!data.success) {
       throw new ApiError(400, data.error || data.message || 'API request failed');
+    }
+
+    if (data.data === undefined) {
+      throw new ApiError(500, 'No data returned from API');
     }
 
     return data.data;
