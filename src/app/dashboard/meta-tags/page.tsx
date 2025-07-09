@@ -158,6 +158,46 @@ export default function MetaTagValidatorPage() {
             </div>
           </div>
 
+          {/* All Recommendations Section */}
+          {results.summary.recommendations > 0 && (
+            <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-4 flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                💡 All Recommendations ({results.summary.recommendations})
+              </h2>
+              <div className="mb-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  <strong>SEO Optimization Tips:</strong> These recommendations will help improve your search rankings and user experience.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(results.tags).map(([tagName, tagData]) =>
+                  tagData.recommendations && tagData.recommendations.length > 0 && (
+                    <div key={tagName} className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                      <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2 capitalize">
+                        {tagName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                      </h4>
+                      <div className="space-y-2">
+                        {tagData.recommendations.map((rec, index) => (
+                          <div key={index} className="flex items-start gap-2">
+                            <div className="flex-shrink-0 w-5 h-5 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mt-0.5">
+                              <span className="text-blue-600 dark:text-blue-400 text-xs font-medium">
+                                {index + 1}
+                              </span>
+                            </div>
+                            <p className="text-sm text-blue-800 dark:text-blue-200 leading-relaxed">
+                              {rec}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Critical Issues */}
           {results.summary.criticalIssues > 0 && (
             <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
@@ -216,10 +256,10 @@ export default function MetaTagValidatorPage() {
                     const allMissingTags = [];
 
                     if (!results.tags.title.exists) {
-                      allMissingTags.push('<title>Your Page Title Here (50-60 characters)</title>');
+                      allMissingTags.push('<title>Your Page Title - Include Main Keywords (50-60 chars)</title>');
                     }
                     if (!results.tags.metaDescription.exists) {
-                      allMissingTags.push('<meta name="description" content="Write a compelling 150-160 character description of your page content here">');
+                      allMissingTags.push('<meta name="description" content="Compelling description that includes main keywords and encourages clicks (150-160 characters)">');
                     }
                     if (!results.tags.canonical.exists) {
                       allMissingTags.push(`<link rel="canonical" href="${url}">`);
@@ -228,13 +268,13 @@ export default function MetaTagValidatorPage() {
                       allMissingTags.push('<meta name="robots" content="index, follow">');
                     }
                     if (!results.tags.ogTitle.exists) {
-                      allMissingTags.push('<meta property="og:title" content="Your Page Title">');
+                      allMissingTags.push('<meta property="og:title" content="Your Page Title - Same as title tag">');
                     }
                     if (!results.tags.ogDescription.exists) {
-                      allMissingTags.push('<meta property="og:description" content="Your page description">');
+                      allMissingTags.push('<meta property="og:description" content="Engaging description for social media sharing">');
                     }
                     if (!results.tags.ogImage.exists) {
-                      allMissingTags.push('<meta property="og:image" content="https://yoursite.com/image.jpg">');
+                      allMissingTags.push('<meta property="og:image" content="https://yoursite.com/social-image.jpg">');
                     }
                     allMissingTags.push(`<meta property="og:url" content="${url}">`);
 
@@ -282,7 +322,7 @@ export default function MetaTagValidatorPage() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
                         <button
-                          onClick={() => copyToClipboard('<title>Your Page Title Here (50-60 characters)</title>', 'title-code')}
+                          onClick={() => copyToClipboard('<title>Your Page Title - Include Main Keywords (50-60 chars)</title>', 'title-code')}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['title-code']
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
@@ -303,7 +343,7 @@ export default function MetaTagValidatorPage() {
                         </button>
                       </div>
                       <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
-                        {'<title>Your Page Title Here (50-60 characters)</title>'}
+                        {'<title>Your Page Title - Include Main Keywords (50-60 chars)</title>'}
                       </code>
                     </div>
                     <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
@@ -329,7 +369,7 @@ export default function MetaTagValidatorPage() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE:</div>
                         <button
-                          onClick={() => copyToClipboard('<meta name="description" content="Write a compelling 150-160 character description of your page content here">', 'meta-description-code')}
+                          onClick={() => copyToClipboard('<meta name="description" content="Compelling description that includes main keywords and encourages clicks (150-160 characters)">', 'meta-description-code')}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['meta-description-code']
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
@@ -350,7 +390,7 @@ export default function MetaTagValidatorPage() {
                         </button>
                       </div>
                       <code className="block text-sm font-mono text-slate-800 dark:text-slate-200">
-                        {'<meta name="description" content="Write a compelling 150-160 character description of your page content here">'}
+                        {'<meta name="description" content="Compelling description that includes main keywords and encourages clicks (150-160 characters)">'}
                       </code>
                     </div>
                     <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
@@ -470,7 +510,7 @@ export default function MetaTagValidatorPage() {
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-xs text-slate-600 dark:text-slate-400 font-medium">📋 COPY THIS CODE (Add what&apos;s missing):</div>
                         <button
-                          onClick={() => copyToClipboard(`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Your page description">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/image.jpg">\n' : ''}<meta property="og:url" content="${url}">`, 'og-tags-code')}
+                          onClick={() => copyToClipboard(`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title - Same as title tag">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Engaging description for social media sharing">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/social-image.jpg">\n' : ''}<meta property="og:url" content="${url}">`, 'og-tags-code')}
                           className={`flex items-center gap-1 px-2 py-1 text-xs rounded transition-all cursor-pointer ${copiedStates['og-tags-code']
                             ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
                             : 'bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-800/30'
@@ -491,7 +531,7 @@ export default function MetaTagValidatorPage() {
                         </button>
                       </div>
                       <code className="block text-sm font-mono text-slate-800 dark:text-slate-200 whitespace-pre-line">
-                        {`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Your page description">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/image.jpg">\n' : ''}<meta property="og:url" content="${url}">`}
+                        {`${!results.tags.ogTitle.exists ? '<meta property="og:title" content="Your Page Title - Same as title tag">\n' : ''}${!results.tags.ogDescription.exists ? '<meta property="og:description" content="Engaging description for social media sharing">\n' : ''}${!results.tags.ogImage.exists ? '<meta property="og:image" content="https://yoursite.com/social-image.jpg">\n' : ''}<meta property="og:url" content="${url}">`}
                       </code>
                     </div>
                     <div className="mt-2 text-xs text-slate-600 dark:text-slate-400">
@@ -525,7 +565,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">Title Tag</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.title.exists ? results.tags.title.content : 'Missing - Critical for SEO'}
+                        {results.tags.title.exists ? (results.tags.title.content || 'Title found but content could not be extracted') : 'Missing - Critical for SEO'}
                       </p>
                       {results.tags.title.length !== undefined && (
                         <p className="text-xs text-muted-foreground mt-1">Length: {results.tags.title.length} characters</p>
@@ -549,7 +589,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">Meta Description</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.metaDescription.exists ? results.tags.metaDescription.content : 'Missing - Impacts CTR'}
+                        {results.tags.metaDescription.exists ? (results.tags.metaDescription.content || 'Description found but content could not be extracted') : 'Missing - Impacts CTR'}
                       </p>
                       {results.tags.metaDescription.length !== undefined && (
                         <p className="text-xs text-muted-foreground mt-1">Length: {results.tags.metaDescription.length} characters</p>
@@ -573,7 +613,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">Meta Robots</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.metaRobots.exists ? results.tags.metaRobots.content : 'Missing - Crawl control'}
+                        {results.tags.metaRobots.exists ? (results.tags.metaRobots.content || 'Robots tag found but content could not be extracted') : 'Missing - Crawl control'}
                       </p>
                     </div>
                   </div>
@@ -600,7 +640,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">OG Title</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.ogTitle.exists ? results.tags.ogTitle.content : 'Missing - Social sharing'}
+                        {results.tags.ogTitle.exists ? (results.tags.ogTitle.content || 'OG Title found but content could not be extracted') : 'Missing - Social sharing'}
                       </p>
                     </div>
                   </div>
@@ -621,7 +661,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">OG Description</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.ogDescription.exists ? results.tags.ogDescription.content : 'Missing - Social preview'}
+                        {results.tags.ogDescription.exists ? (results.tags.ogDescription.content || 'OG Description found but content could not be extracted') : 'Missing - Social preview'}
                       </p>
                     </div>
                   </div>
@@ -642,7 +682,7 @@ export default function MetaTagValidatorPage() {
                     <div>
                       <h4 className="font-medium text-foreground">OG Image</h4>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {results.tags.ogImage.exists ? results.tags.ogImage.url : 'Missing - Social preview image'}
+                        {results.tags.ogImage.exists ? (results.tags.ogImage.url || 'OG Image found but URL could not be extracted') : 'Missing - Social preview image'}
                       </p>
                     </div>
                   </div>

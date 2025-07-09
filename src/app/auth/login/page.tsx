@@ -19,10 +19,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const router = useRouter();
 
-  // Add demo credentials to console for debugging
-  console.log('Demo credentials available:');
-  console.log('Email: test@example.com');
-  console.log('Password: TestPass123!');
+  // Login page loaded
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,32 +47,7 @@ export default function LoginPage() {
     if (error) setError(''); // Clear error when user starts typing
   };
 
-  // Add quick login function for debugging
-  const quickLogin = async () => {
-    console.log('Quick login with demo credentials');
-    setCredentials({
-      email: 'test@example.com',
-      password: 'TestPass123!'
-    });
-
-    try {
-      await login({
-        email: 'test@example.com',
-        password: 'TestPass123!'
-      });
-      console.log('Quick login successful');
-      router.push('/dashboard');
-    } catch (err) {
-      console.error('Quick login failed:', err);
-      setError(err instanceof Error ? err.message : 'Quick login failed');
-    }
-  };
-
-  // Expose quick login to window for console access
-  if (typeof window !== 'undefined') {
-    (window as Window & { quickLogin?: () => void }).quickLogin = quickLogin;
-    console.log('Quick login function available as window.quickLogin()');
-  }
+  // Handle form submission
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 sm:px-6 lg:px-8">
@@ -192,18 +164,12 @@ export default function LoginPage() {
         </div>
 
         {/* Demo Credentials */}
-        <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2">Demo Account</h3>
-          <div className="text-xs text-amber-700 dark:text-amber-300 space-y-1">
-            <p><strong>Email:</strong> test@example.com</p>
-            <p><strong>Password:</strong> TestPass123!</p>
+        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+          <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">Need Help?</h3>
+          <div className="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+            <p>Contact support if you&apos;re having trouble accessing your account.</p>
+            <p>Forgot your password? Use the reset link above.</p>
           </div>
-          <button
-            onClick={quickLogin}
-            className="mt-3 w-full py-2 px-3 bg-amber-200 dark:bg-amber-800 hover:bg-amber-300 dark:hover:bg-amber-700 text-amber-800 dark:text-amber-200 text-sm font-medium rounded-lg transition-colors duration-200"
-          >
-            Quick Login with Demo Account
-          </button>
         </div>
       </div>
     </div>
