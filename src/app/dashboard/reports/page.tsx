@@ -80,10 +80,20 @@ export default function ReportsPage() {
 
   const handleDownload = async (id: string) => {
     try {
+      console.log('🔄 Starting download for report:', id);
       await reportService.downloadReport(id);
+      console.log('✅ Download completed successfully');
     } catch (err) {
-      console.error('Failed to download report:', err);
-      alert('Failed to download report');
+      console.error('❌ Failed to download report:', err);
+
+      // Show more specific error messages
+      let errorMessage = 'Failed to download report';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
+      // Show error to user
+      alert(`Download failed: ${errorMessage}`);
     }
   };
 

@@ -390,44 +390,79 @@ export const reportService = {
   },
 
   async downloadReport(reportId: string): Promise<void> {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const response = await fetch(`${API_BASE_URL}/api/report/${reportId}/download`, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to download report');
-    }
-
-    // Get the filename from the Content-Disposition header
-    const contentDisposition = response.headers.get('Content-Disposition');
-    let filename = 'report.txt';
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="(.+)"/);
-      if (match) {
-        filename = match[1];
+    try {
+      // Use the same auth service as the rest of the app
+      const authService = (await import('./auth')).default;
+      const token = authService.getToken();
+      
+      if (!token) {
+        throw new Error('No authentication token found. Please log in again.');
       }
-    }
 
-    // Create a blob from the response
-    const blob = await response.blob();
-    
-    // Create a download link
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
+      console.log('🔄 Downloading report:', reportId);
+      console.log('🔑 Using token:', token ? 'Token found' : 'No token');
+      console.log('🌐 API URL:', `${API_BASE_URL}/api/report/${reportId}/download`);
+
+      const response = await fetch(`${API_BASE_URL}/api/report/${reportId}/download`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Download failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: errorText
+        });
+        
+        // Handle 401 errors (token expired/invalid)
+        if (response.status === 401) {
+          authService.logout();
+          throw new Error('Authentication expired. Please log in again.');
+        }
+        
+        throw new Error(`Failed to download report: ${response.status} ${response.statusText}`);
+      }
+
+      // Get the filename from the Content-Disposition header
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'report.txt';
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) {
+          filename = match[1];
+        }
+      }
+
+      console.log('📁 Filename:', filename);
+
+      // Create a blob from the response
+      const blob = await response.blob();
+      console.log('📦 Blob size:', blob.size);
+      console.log('📦 Blob type:', blob.type);
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+
+      console.log('✅ Download completed successfully');
+    } catch (error) {
+      console.error('❌ Download error:', error);
+      throw error;
+    }
   },
 };
 
