@@ -28,16 +28,16 @@ export default function ReportsPage() {
         console.log('Reports response:', response);
         console.log('Individual reports:', response.reports);
 
-        // Log each report's analysis_result structure
+        // Log each report's analysisResult structure
         response.reports.forEach((report, index) => {
-          console.log(`Report ${index + 1} (${report.website_url}):`, {
+          console.log(`Report ${index + 1} (${report.websiteUrl}):`, {
             id: report.id,
-            website_url: report.website_url,
-            created_at: report.created_at,
-            analysis_result: report.analysis_result,
-            analysis_result_keys: report.analysis_result ? Object.keys(report.analysis_result) : 'analysis_result is null/undefined',
-            performance: report.analysis_result?.performance,
-            opportunities: report.analysis_result?.opportunities
+            websiteUrl: report.websiteUrl,
+            createdAt: report.createdAt,
+            analysisResult: report.analysisResult,
+            analysisResult_keys: report.analysisResult ? Object.keys(report.analysisResult) : 'analysisResult is null/undefined',
+            performance: report.analysisResult?.performance,
+            opportunities: report.analysisResult?.opportunities
           });
         });
 
@@ -75,6 +75,15 @@ export default function ReportsPage() {
     } catch (err) {
       console.error('Failed to delete report:', err);
       alert('Failed to delete report');
+    }
+  };
+
+  const handleDownload = async (id: string) => {
+    try {
+      await reportService.downloadReport(id);
+    } catch (err) {
+      console.error('Failed to download report:', err);
+      alert('Failed to download report');
     }
   };
 
@@ -172,32 +181,61 @@ export default function ReportsPage() {
             <div key={report.id} className="rounded-lg border border-border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <h3 className="font-semibold text-card-foreground">{report.website_url}</h3>
-                    {report.analysis_result?.performance?.score !== undefined ? (
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getScoreColor(report.analysis_result.performance.score)}`}>
-                        Score: {report.analysis_result.performance.score}
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 rounded-full text-xs font-medium text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30">
-                        No Score Available
-                      </span>
-                    )}
+                  <div className="flex items-center space-x-3 mb-4">
+                    <h3 className="font-semibold text-card-foreground">{report.websiteUrl}</h3>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">{formatDate(report.createdAt)}</span>
+                    </div>
                   </div>
 
-                  {report.analysis_result ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center space-x-2">
-                        <Clock className="h-4 w-4" />
-                        <span>Load Time: {report.analysis_result.performance?.loadTime || '--'}s</span>
+                  {report.analysisResult ? (
+                    <div className="space-y-4">
+                      {/* All Scores Display */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {/* Performance Score */}
+                        <div className="text-center">
+                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.performance?.score || 0)}`}>
+                            Performance: {report.analysisResult.performance?.score || 0}
+                          </div>
+                        </div>
+
+                        {/* SEO Score */}
+                        <div className="text-center">
+                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.seo?.score || 0)}`}>
+                            SEO: {report.analysisResult.seo?.score || 0}
+                          </div>
+                        </div>
+
+                        {/* Accessibility Score */}
+                        <div className="text-center">
+                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.accessibility?.score || 0)}`}>
+                            A11y: {report.analysisResult.accessibility?.score || 0}
+                          </div>
+                        </div>
+
+                        {/* Best Practices Score */}
+                        <div className="text-center">
+                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.bestPractices?.score || 0)}`}>
+                            Best: {report.analysisResult.bestPractices?.score || 0}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-4 w-4" />
-                        <span>Analyzed: {formatDate(report.created_at)}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <FileText className="h-4 w-4" />
-                        <span>{report.analysis_result.opportunities?.length || 0} Opportunities</span>
+
+                      {/* Additional Details */}
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground pt-3 border-t border-border">
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4" />
+                          <span>Load Time: {report.analysisResult.performance?.loadTime || '--'}s</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <FileText className="h-4 w-4" />
+                          <span>{report.analysisResult.opportunities?.length || 0} Opportunities</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Search className="h-4 w-4" />
+                          <span>Avg: {report.analysisResult.summary?.averageScore || Math.round(((report.analysisResult.performance?.score || 0) + (report.analysisResult.seo?.score || 0) + (report.analysisResult.accessibility?.score || 0) + (report.analysisResult.bestPractices?.score || 0)) / 4)}</span>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -209,11 +247,18 @@ export default function ReportsPage() {
 
                 <div className="flex items-center space-x-2 ml-4">
                   <button
-                    onClick={() => window.open(report.website_url, '_blank')}
+                    onClick={() => window.open(report.websiteUrl, '_blank')}
                     className="p-2 rounded-lg border border-border hover:bg-muted transition-colors"
                     title="Visit website"
                   >
                     <ExternalLink className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDownload(report.id)}
+                    className="p-2 rounded-lg border border-border hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors"
+                    title="Download report"
+                  >
+                    <FileText className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(report.id)}

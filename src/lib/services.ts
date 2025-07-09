@@ -1,5 +1,7 @@
 import { apiRequest } from './api';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+
 // Types for API responses
 export interface SeoAnalysis {
   url: string;
@@ -61,9 +63,9 @@ export interface SeoAnalysis {
 
 export interface Report {
   id: string;
-  website_url: string;
-  analysis_result: SeoAnalysis;
-  created_at: string;
+  websiteUrl: string;
+  analysisResult: SeoAnalysis;
+  createdAt: string;
 }
 
 export interface ReportsListResponse {
@@ -341,19 +343,19 @@ export const reportService = {
     // Log the raw response from the backend
     console.log('Raw backend response:', response);
     
-    // Log each report's analysis_result structure
+    // Log each report's analysisResult structure
     if (response.reports) {
       response.reports.forEach((report, index) => {
         console.log(`Backend Report ${index + 1}:`, {
           id: report.id,
-          website_url: report.website_url,
-          analysis_result: report.analysis_result,
-          analysis_result_type: typeof report.analysis_result,
-          analysis_result_keys: report.analysis_result ? Object.keys(report.analysis_result) : 'null/undefined',
-          performance_exists: !!report.analysis_result?.performance,
-          performance_score: report.analysis_result?.performance?.score,
-          opportunities_exists: !!report.analysis_result?.opportunities,
-          opportunities_length: report.analysis_result?.opportunities?.length
+          websiteUrl: report.websiteUrl,
+          analysisResult: report.analysisResult,
+          analysisResult_type: typeof report.analysisResult,
+          analysisResult_keys: report.analysisResult ? Object.keys(report.analysisResult) : 'null/undefined',
+          performance_exists: !!report.analysisResult?.performance,
+          performance_score: report.analysisResult?.performance?.score,
+          opportunities_exists: !!report.analysisResult?.opportunities,
+          opportunities_length: report.analysisResult?.opportunities?.length
         });
       });
     }
@@ -385,6 +387,47 @@ export const reportService = {
     await apiRequest(`/api/report/${id}`, {
       method: 'DELETE',
     });
+  },
+
+  async downloadReport(reportId: string): Promise<void> {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const response = await fetch(`${API_BASE_URL}/api/report/${reportId}/download`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to download report');
+    }
+
+    // Get the filename from the Content-Disposition header
+    const contentDisposition = response.headers.get('Content-Disposition');
+    let filename = 'report.txt';
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="(.+)"/);
+      if (match) {
+        filename = match[1];
+      }
+    }
+
+    // Create a blob from the response
+    const blob = await response.blob();
+    
+    // Create a download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
   },
 };
 
@@ -452,7 +495,7 @@ export const metaTagService = {
       
       // The backend returns data directly, not wrapped in formatResponse.success()
       const data = await apiRequest<{
-        url: string;
+      url: string;
         tags: Record<string, {
           exists: boolean;
           content?: string | null;
@@ -461,7 +504,7 @@ export const metaTagService = {
           issues?: string[];
           recommendations?: string[];
         }>;
-        timestamp?: string;
+      timestamp?: string;
         validatedAt?: string;
         summary?: {
           totalTags: number;
