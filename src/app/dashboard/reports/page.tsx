@@ -58,7 +58,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     fetchReports(currentPage, searchQuery);
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();

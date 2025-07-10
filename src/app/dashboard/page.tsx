@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BarChart3, CheckCircle, Globe, Zap } from "lucide-react";
+import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { reportService, type ReportStatistics } from "@/lib/services";
 
@@ -26,6 +26,13 @@ const tools = [
     icon: Zap,
     href: "/dashboard/page-speed",
     color: "bg-yellow-500",
+  },
+  {
+    name: "Keyword Tracker",
+    description: "Track your website's keyword rankings in Google search results",
+    icon: TrendingUp,
+    href: "/dashboard/keyword-tracker",
+    color: "bg-purple-500",
   },
 ];
 

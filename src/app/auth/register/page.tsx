@@ -266,7 +266,7 @@ export default function RegisterPage() {
                   ) : (
                     <>
                       <AlertCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-red-600 dark:text-red-400">Passwords don't match</span>
+                      <span className="text-sm text-red-600 dark:text-red-400">Passwords don&apos;t match</span>
                     </>
                   )}
                 </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, Save, X, Timer, Globe, Loader2 } from "lucide-react";
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
@@ -25,29 +25,30 @@ const PageSpeedLoadingModal = ({
   const [estimatedTimeRemaining, setEstimatedTimeRemaining] = useState(45);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const phases = [
+  const phases = useMemo(() => [
     { name: "Connecting to Google PageSpeed API", duration: 5 },
     { name: "Loading website content", duration: 10 },
     { name: "Analyzing performance metrics", duration: 15 },
     { name: "Evaluating SEO elements", duration: 8 },
     { name: "Checking accessibility features", duration: 7 },
     { name: "Generating recommendations", duration: 5 }
-  ];
-
-  const getEstimatedTime = () => {
-    const categoryCount = categories.length;
-    const baseTime = 20; // Base time in seconds
-    const categoryMultiplier = 8; // Additional seconds per category
-    const strategyMultiplier = strategy === 'mobile' ? 1.2 : 1.0;
-
-    return Math.ceil((baseTime + (categoryCount * categoryMultiplier)) * strategyMultiplier);
-  };
+  ], []);
 
   useEffect(() => {
     if (isOpen) {
+      const getEstimatedTime = () => {
+        const categoryCount = categories.length;
+        const baseTime = 20; // Base time in seconds
+        const categoryMultiplier = 8; // Additional seconds per category
+        const strategyMultiplier = strategy === 'mobile' ? 1.2 : 1.0;
+
+        return Math.ceil((baseTime + (categoryCount * categoryMultiplier)) * strategyMultiplier);
+      };
+
       setTimeElapsed(0);
       setCurrentPhase(0);
-      setEstimatedTimeRemaining(getEstimatedTime());
+      const initialEstimate = getEstimatedTime();
+      setEstimatedTimeRemaining(initialEstimate);
 
       intervalRef.current = setInterval(() => {
         setTimeElapsed(prev => {
@@ -59,7 +60,6 @@ const PageSpeedLoadingModal = ({
           setCurrentPhase(Math.min(Math.floor(phaseProgress), phases.length - 1));
 
           // Update estimated time remaining
-          const initialEstimate = getEstimatedTime();
           const remaining = Math.max(0, initialEstimate - newElapsed);
           setEstimatedTimeRemaining(remaining);
 
@@ -73,7 +73,7 @@ const PageSpeedLoadingModal = ({
         clearInterval(intervalRef.current);
       }
     };
-  }, [isOpen, categories.length, strategy]);
+  }, [isOpen, categories.length, strategy, phases]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -660,6 +660,7 @@ export default function PageSpeedAuditorPage() {
               </div>
               <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50">
                 <div className="flex items-center space-x-2">
+                  {/* eslint-disable-next-line jsx-a11y/alt-text */}
                   <Image className="h-4 w-4 text-muted-foreground" />
                   <span className="text-sm font-medium">Largest Contentful Paint</span>
                 </div>

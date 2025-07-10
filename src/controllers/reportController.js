@@ -1,5 +1,5 @@
-const reportService = require('../services/reportService');
-const { formatResponse, asyncHandler } = require('../utils/helpers');
+import reportService from '../services/reportService';
+import { formatResponse, asyncHandler } from '../utils/helpers';
 
 class ReportController {
   /**

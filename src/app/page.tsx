@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BarChart3, CheckCircle, Globe, Zap } from "lucide-react";
+import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function LandingPage() {
@@ -72,7 +72,7 @@ export default function LandingPage() {
               Our comprehensive tools help you analyze, optimize, and monitor your website&apos;s SEO performance.
             </p>
           </div>
-          <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             {/* Sitemap Generator */}
             <div className="group relative rounded-2xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -121,6 +121,23 @@ export default function LandingPage() {
               <div className="mt-6 flex items-center space-x-2 text-sm text-primary">
                 <CheckCircle className="h-4 w-4" />
                 <span>Performance insights</span>
+              </div>
+            </div>
+
+            {/* Keyword Tracker */}
+            <div className="group relative rounded-2xl border border-border bg-card p-8 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <TrendingUp className="h-6 w-6" />
+              </div>
+              <h3 className="mt-6 text-xl font-semibold text-card-foreground">
+                Keyword Tracker
+              </h3>
+              <p className="mt-4 text-muted-foreground">
+                Track your website&apos;s keyword rankings in Google search results and monitor your SEO progress over time.
+              </p>
+              <div className="mt-6 flex items-center space-x-2 text-sm text-primary">
+                <CheckCircle className="h-4 w-4" />
+                <span>Rank monitoring</span>
               </div>
             </div>
           </div>

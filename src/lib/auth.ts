@@ -152,7 +152,7 @@ class AuthService {
       });
 
       return user;
-    } catch (error) {
+    } catch {
       // Token is invalid, clear auth data
       this.clearAuthData();
       return null;

@@ -1,4 +1,17 @@
 import { apiRequest } from './api';
+import { 
+  KeywordTrackingRequest, 
+  KeywordTrackingResponse, 
+  RankingHistoryResponse, 
+  KeywordStatsResponse, 
+  DomainsResponse,
+  TrackedDomain,
+  KeywordRankingResult,
+  HistoryFilters, 
+  CleanupRequest 
+} from '@/types/keyword-tracker';
+import { isValidGoogleDomain } from './googleDomains';
+import { ApiError } from './api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
@@ -680,5 +693,234 @@ export const metaTagService = {
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
     return await apiRequest('/api/meta/health');
+  },
+};
+
+// Keyword Tracking Services
+export const keywordTrackingService = {
+  async trackKeywords(domain: string, keywords: string[], location = 'google.com'): Promise<KeywordTrackingResponse> {
+    try {
+      // Input validation
+      if (!domain) {
+        throw new Error('Domain is required');
+      }
+      if (!Array.isArray(keywords) || keywords.length === 0) {
+        throw new Error('At least one keyword is required');
+      }
+      if (keywords.length > 10) {
+        throw new Error('Maximum 10 keywords allowed per request');
+      }
+
+      // Format domain
+      const formattedDomain = domain.toLowerCase()
+        .replace(/^(https?:\/\/)?(www\.)?/, '')
+        .replace(/\/$/, '');
+
+      // Format location
+      const formattedLocation = location.toLowerCase()
+        .replace(/^(https?:\/\/)?(www\.)?/, '')
+        .trim();
+
+      // Clean and validate keywords
+      const cleanedKeywords = keywords.map(keyword => {
+        if (typeof keyword !== 'string') {
+          throw new Error('All keywords must be strings');
+        }
+
+        const cleaned = keyword.trim().normalize();
+        
+        // Validate keyword length
+        if (cleaned.length < 1) {
+          throw new Error('Keywords cannot be empty');
+        }
+        if (cleaned.length > 100) {
+          throw new Error('Keywords must be less than 100 characters');
+        }
+
+        // Validate keyword characters
+        if (!/^[\p{L}\p{N}\s\-_.,!?'"()]+$/u.test(cleaned)) {
+          throw new Error(`Invalid characters in keyword: ${keyword}`);
+        }
+
+        return cleaned;
+      });
+
+      // Validate domain format
+      const domainRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+      if (!domainRegex.test(formattedDomain)) {
+        throw new Error(`Invalid domain format: ${domain}. Please use format like 'example.com'`);
+      }
+
+      // Validate the Google domain
+      if (!isValidGoogleDomain(formattedLocation)) {
+        throw new Error(`Invalid Google search domain: ${formattedLocation}. Please use format like 'google.com' or 'google.co.uk'`);
+      }
+
+      // Extract country code from Google domain
+      let countryCode = 'US'; // Default to US for google.com
+      if (formattedLocation !== 'google.com') {
+        // Handle different domain patterns
+        if (formattedLocation.startsWith('google.co.')) {
+          countryCode = formattedLocation.split('.').pop()?.toUpperCase() || 'US';
+        } else if (formattedLocation.startsWith('google.com.')) {
+          countryCode = formattedLocation.split('.').pop()?.toUpperCase() || 'US';
+        } else {
+          countryCode = formattedLocation.replace('google.', '').toUpperCase();
+        }
+      }
+
+      // Validate country code format
+      if (!/^[A-Z]{2}$/.test(countryCode)) {
+        throw new Error(`Invalid country code format: ${countryCode}`);
+      }
+
+      // Create the request payload
+      const request: KeywordTrackingRequest = {
+        domain: formattedDomain,
+        keywords: cleanedKeywords,
+        location: countryCode
+      };
+
+      // Log the request for debugging
+      console.log('Tracking keywords request:', {
+        domain: request.domain,
+        keywordCount: request.keywords.length,
+        keywords: request.keywords,
+        location: request.location
+      });
+
+      // Make the API request
+      const response = await apiRequest<KeywordTrackingResponse | { results: KeywordRankingResult[] }>('/api/keyword-tracker/track', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Accept': 'application/json',
+          'Accept-Language': '*'
+        },
+        body: JSON.stringify(request)
+      });
+
+      // Handle direct results array format
+      if ('results' in response && Array.isArray(response.results)) {
+        return {
+          success: true,
+          data: {
+            domain: formattedDomain,
+            location: countryCode,
+            results: response.results
+          },
+          message: 'Keywords tracked successfully'
+        };
+      }
+
+      // Handle standard response format
+      if ('success' in response && 'data' in response) {
+        return response as KeywordTrackingResponse;
+      }
+
+      throw new Error('Invalid response format from tracking API');
+
+    } catch (error) {
+      // Enhanced error logging
+      console.error('Error tracking keywords:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        inputs: {
+          domain,
+          keywordCount: keywords?.length,
+          location
+        }
+      });
+
+      // Rethrow ApiError as is, but wrap other errors
+      if (error instanceof ApiError) {
+        throw error;
+      }
+      throw new Error(error instanceof Error ? error.message : 'Failed to track keywords');
+    }
+  },
+
+  async getHistory(filters: HistoryFilters = {}): Promise<RankingHistoryResponse> {
+    const params = new URLSearchParams();
+    
+    if (filters.domain) params.append('domain', filters.domain);
+    if (filters.keyword) params.append('keyword', filters.keyword);
+    if (filters.limit) params.append('limit', filters.limit.toString());
+
+    const queryString = params.toString();
+    const url = queryString ? `/api/keyword-tracker/history?${queryString}` : '/api/keyword-tracker/history';
+
+    return await apiRequest<RankingHistoryResponse>(url);
+  },
+
+  async getStatistics(domain?: string): Promise<KeywordStatsResponse> {
+    const params = domain ? `?domain=${encodeURIComponent(domain)}` : '';
+    
+    return await apiRequest<KeywordStatsResponse>(`/api/keyword-tracker/stats${params}`);
+  },
+
+  async getDomains(): Promise<DomainsResponse> {
+    try {
+      console.log('Making request to /api/keyword-tracker/domains');
+      const response = await apiRequest<DomainsResponse | TrackedDomain[] | { domains: TrackedDomain[] }>('/api/keyword-tracker/domains');
+      console.log('Raw domains response:', response);
+
+      // If response is direct array, wrap it in standard format
+      if (Array.isArray(response)) {
+        return {
+          success: true,
+          data: {
+            domains: response
+          }
+        };
+      }
+
+      // If response is already in correct format, return as is
+      if ('success' in response && 'data' in response) {
+        return response as DomainsResponse;
+      }
+
+      // If response has direct domains array, wrap it
+      if ('domains' in response && Array.isArray(response.domains)) {
+        return {
+          success: true,
+          data: {
+            domains: response.domains
+          }
+        };
+      }
+
+      // Default to empty domains list
+      console.error('Invalid domains response format:', response);
+      return {
+        success: true,
+        data: {
+          domains: []
+        }
+      };
+    } catch (error) {
+      console.error('Error fetching domains:', error);
+      throw error;
+    }
+  },
+
+  async deleteRanking(id: string): Promise<void> {
+    await apiRequest(`/api/keyword-tracker/history/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async cleanupOldRankings(daysOld: number): Promise<void> {
+    const request: CleanupRequest = { daysOld };
+    
+    await apiRequest('/api/keyword-tracker/cleanup', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  },
+
+  async checkHealth(): Promise<{ status: string; timestamp: string }> {
+    return await apiRequest('/api/keyword-tracker/health');
   },
 }; 
