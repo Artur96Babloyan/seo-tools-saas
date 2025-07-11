@@ -410,19 +410,50 @@ export default function KeywordTrackerPage() {
           )}
 
           {/* Results Display */}
-          {results && results.success && results.data && results.data.results && (
+          {results && (
             <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Tracking Results</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Ranking Results</h3>
+                <div className="text-sm text-muted-foreground">
+                  Tracked on {formatDate(results.data.results[0]?.timestamp || new Date().toISOString())}
+                </div>
+              </div>
+
+              {/* Ranking Guide */}
+              <div className="mb-6 p-4 rounded-lg bg-muted/30 border border-border">
+                <div className="flex items-center space-x-2 mb-3">
+                  <AlertCircle className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">Understanding Your Rankings</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span className="text-foreground"><strong>#1-10:</strong> First page - Great visibility, gets most clicks</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <span className="text-foreground"><strong>#11-30:</strong> Pages 2-3 - Good positioning, some traffic</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span className="text-foreground"><strong>#31+:</strong> Page 4+ - Low visibility, needs improvement</span>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">
+                  💡 <strong>Tip:</strong> Rankings #1-3 get ~60% of all clicks. Moving from #5 to #3 can double your traffic!
+                </p>
+              </div>
+
               <div className="space-y-3">
                 {results.data.results.map((result, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                  <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:shadow-md transition-shadow">
                     <div className="flex-1">
                       <div className="font-medium text-foreground">{result.keyword}</div>
                       <div className="text-sm text-muted-foreground">
                         {results.data.domain} • {formatDate(result.timestamp)}
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${getRankColor(result.rank)}`}>
+                    <div className={`px-4 py-2 rounded-full text-sm font-medium ${getRankColor(result.rank)}`}>
                       {getRankLabel(result.rank)}
                     </div>
                   </div>
