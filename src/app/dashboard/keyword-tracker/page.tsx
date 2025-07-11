@@ -27,7 +27,7 @@ export default function KeywordTrackerPage() {
   // Results state
   const [results, setResults] = useState<KeywordTrackingResponse | null>(null);
   const [history, setHistory] = useState<RankingHistoryItem[]>([]);
-  const [stats, setStats] = useState<KeywordStatsResponse | null>(null);
+  const [stats, setStats] = useState<KeywordStatsResponse['data'] | null>(null);
   const [domains, setDomains] = useState<TrackedDomain[]>([]);
 
   // UI state
@@ -90,7 +90,7 @@ export default function KeywordTrackerPage() {
     setIsLoadingHistory(true);
     try {
       const response = await keywordTrackingService.getHistory(filters);
-      setHistory(response.data.rankings);
+      setHistory(response.rankings);
     } catch (error) {
       console.error('Failed to load history:', error);
     } finally {
@@ -150,6 +150,15 @@ export default function KeywordTrackerPage() {
       }
 
       console.log('Tracking keywords for domain:', formattedDomain);
+      console.log('Keywords array before sending:', keywords);
+      console.log('Keywords array length:', keywords.length);
+      console.log('Location:', location);
+
+      // Add validation check
+      if (keywords.length === 0) {
+        throw new Error('No keywords to track. Please add at least one keyword.');
+      }
+
       const response = await keywordTrackingService.trackKeywords(formattedDomain, keywords, location);
       console.log('Tracking response:', response);
 
@@ -180,8 +189,21 @@ export default function KeywordTrackerPage() {
       }
     } catch (error) {
       console.error('Failed to track keywords:', error);
+
+      // Log the full error details for debugging
       if (error instanceof ApiError) {
-        setTrackingError(error.message);
+        console.error('API Error details:', {
+          message: error.message,
+          statusCode: error.statusCode,
+          error: error
+        });
+
+        // Try to get more specific error details from the response
+        if (error.message.includes('Validation error')) {
+          setTrackingError(`Validation error: Please check your inputs. Domain: "${domain}", Keywords: [${keywords.join(', ')}], Location: "${location}"`);
+        } else {
+          setTrackingError(error.message);
+        }
       } else if (error instanceof Error) {
         setTrackingError(error.message);
       } else {
@@ -528,7 +550,7 @@ export default function KeywordTrackerPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Total Keywords Tracked</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.data.totalTracked}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats.totalTracked}</p>
                   </div>
                 </div>
               </div>
@@ -540,7 +562,7 @@ export default function KeywordTrackerPage() {
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Average Rank</p>
                     <p className="text-2xl font-bold text-foreground">
-                      {stats.data.averageRank ? Math.round(stats.data.averageRank) : '--'}
+                      {stats.averageRank ? Math.round(stats.averageRank) : '--'}
                     </p>
                   </div>
                 </div>
@@ -552,7 +574,7 @@ export default function KeywordTrackerPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">Top Keywords</p>
-                    <p className="text-2xl font-bold text-foreground">{stats.data.topKeywords.length}</p>
+                    <p className="text-2xl font-bold text-foreground">{stats.topKeywords.length}</p>
                   </div>
                 </div>
               </div>
@@ -560,11 +582,11 @@ export default function KeywordTrackerPage() {
           )}
 
           {/* Top Keywords */}
-          {stats && stats.data.topKeywords.length > 0 && (
+          {stats && stats.topKeywords.length > 0 && (
             <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-foreground mb-4">Top Performing Keywords</h3>
               <div className="space-y-2">
-                {stats.data.topKeywords.map((keyword, index) => (
+                {stats.topKeywords.map((keyword, index) => (
                   <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
                     <div className="flex-1">
                       <div className="font-medium text-foreground">{keyword.keyword}</div>

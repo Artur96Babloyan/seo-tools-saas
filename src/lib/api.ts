@@ -16,6 +16,36 @@ class ApiError extends Error {
   }
 }
 
+// Helper function to format Zod validation errors
+function formatValidationErrors(details: Record<string, unknown>): string {
+  if (!details || typeof details !== 'object') {
+    return 'Unknown validation error';
+  }
+  
+  const errors: string[] = [];
+  
+  // Extract error messages from Zod error format
+  const extractErrors = (obj: Record<string, unknown>, path: string = ''): void => {
+    if (obj._errors && Array.isArray(obj._errors)) {
+      obj._errors.forEach((error: string) => {
+        errors.push(path ? `${path}: ${error}` : error);
+      });
+    }
+    
+    if (obj && typeof obj === 'object') {
+      Object.keys(obj).forEach(key => {
+        if (key !== '_errors' && obj[key] && typeof obj[key] === 'object') {
+          extractErrors(obj[key] as Record<string, unknown>, path ? `${path}.${key}` : key);
+        }
+      });
+    }
+  };
+  
+  extractErrors(details);
+  
+  return errors.length > 0 ? errors.join(', ') : 'Validation failed';
+}
+
 async function apiRequest<T = unknown>(
   endpoint: string,
   options: RequestInit = {}
@@ -49,6 +79,12 @@ async function apiRequest<T = unknown>(
         // Clear auth data and redirect to login
         authService.logout();
         throw new ApiError(401, 'Authentication required. Please log in again.');
+      }
+      
+      // Handle validation errors with details
+      if (response.status === 400 && errorData.error === 'Validation error' && errorData.details) {
+        const validationDetails = formatValidationErrors(errorData.details);
+        throw new ApiError(response.status, `Validation error: ${validationDetails}`);
       }
       
       throw new ApiError(response.status, errorData.error || errorData.message || `HTTP ${response.status}`);

@@ -9,6 +9,9 @@ export class KeywordTrackerService {
     // 3. Finding domain positions
     // 4. Storing results in database
     
+    // Mock implementation - location parameter will be used when implementing real tracking
+    console.log(`Tracking keywords for domain: ${domain}, location: ${location}`);
+    
     return keywords.map(keyword => ({
       keyword,
       rank: Math.floor(Math.random() * 100) + 1, // Mock rank for now

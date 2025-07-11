@@ -756,29 +756,12 @@ export const keywordTrackingService = {
         throw new Error(`Invalid Google search domain: ${formattedLocation}. Please use format like 'google.com' or 'google.co.uk'`);
       }
 
-      // Extract country code from Google domain
-      let countryCode = 'US'; // Default to US for google.com
-      if (formattedLocation !== 'google.com') {
-        // Handle different domain patterns
-        if (formattedLocation.startsWith('google.co.')) {
-          countryCode = formattedLocation.split('.').pop()?.toUpperCase() || 'US';
-        } else if (formattedLocation.startsWith('google.com.')) {
-          countryCode = formattedLocation.split('.').pop()?.toUpperCase() || 'US';
-        } else {
-          countryCode = formattedLocation.replace('google.', '').toUpperCase();
-        }
-      }
-
-      // Validate country code format
-      if (!/^[A-Z]{2}$/.test(countryCode)) {
-        throw new Error(`Invalid country code format: ${countryCode}`);
-      }
-
-      // Create the request payload
+      // Create the request payload - send the full Google domain to backend
+      // The backend will handle the validation and country code extraction
       const request: KeywordTrackingRequest = {
         domain: formattedDomain,
         keywords: cleanedKeywords,
-        location: countryCode
+        location: formattedLocation  // Send full Google domain (e.g., "google.am")
       };
 
       // Log the request for debugging
@@ -789,6 +772,22 @@ export const keywordTrackingService = {
         location: request.location
       });
 
+      // Log the exact JSON being sent
+      const requestBody = JSON.stringify(request);
+      console.log('Request body JSON:', requestBody);
+      console.log('Request body parsed back:', JSON.parse(requestBody));
+      
+      // Validate request structure before sending
+      if (!request.keywords || !Array.isArray(request.keywords) || request.keywords.length === 0) {
+        console.error('CRITICAL: Invalid request structure - keywords array is missing or empty:', {
+          hasKeywords: !!request.keywords,
+          isArray: Array.isArray(request.keywords),
+          length: request.keywords?.length || 0,
+          requestStructure: Object.keys(request)
+        });
+        throw new Error('Invalid request structure: keywords array is missing or empty');
+      }
+
       // Make the API request
       const response = await apiRequest<KeywordTrackingResponse | { results: KeywordRankingResult[] }>('/api/keyword-tracker/track', {
         method: 'POST',
@@ -797,7 +796,7 @@ export const keywordTrackingService = {
           'Accept': 'application/json',
           'Accept-Language': '*'
         },
-        body: JSON.stringify(request)
+        body: requestBody
       });
 
       // Handle direct results array format
@@ -806,7 +805,7 @@ export const keywordTrackingService = {
           success: true,
           data: {
             domain: formattedDomain,
-            location: countryCode,
+            location: formattedLocation,
             results: response.results
           },
           message: 'Keywords tracked successfully'
@@ -841,7 +840,7 @@ export const keywordTrackingService = {
     }
   },
 
-  async getHistory(filters: HistoryFilters = {}): Promise<RankingHistoryResponse> {
+  async getHistory(filters: HistoryFilters = {}): Promise<RankingHistoryResponse['data']> {
     const params = new URLSearchParams();
     
     if (filters.domain) params.append('domain', filters.domain);
@@ -851,13 +850,13 @@ export const keywordTrackingService = {
     const queryString = params.toString();
     const url = queryString ? `/api/keyword-tracker/history?${queryString}` : '/api/keyword-tracker/history';
 
-    return await apiRequest<RankingHistoryResponse>(url);
+    return await apiRequest<RankingHistoryResponse['data']>(url);
   },
 
-  async getStatistics(domain?: string): Promise<KeywordStatsResponse> {
+  async getStatistics(domain?: string): Promise<KeywordStatsResponse['data']> {
     const params = domain ? `?domain=${encodeURIComponent(domain)}` : '';
     
-    return await apiRequest<KeywordStatsResponse>(`/api/keyword-tracker/stats${params}`);
+    return await apiRequest<KeywordStatsResponse['data']>(`/api/keyword-tracker/stats${params}`);
   },
 
   async getDomains(): Promise<DomainsResponse> {
