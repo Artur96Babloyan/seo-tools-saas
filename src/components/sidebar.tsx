@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp } from "lucide-react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,11 @@ const navigation = [
     name: "Keyword Tracker",
     href: "/dashboard/keyword-tracker",
     icon: TrendingUp,
+  },
+  {
+    name: "Competitor Analysis",
+    href: "/dashboard/competitor-analysis",
+    icon: Users,
   },
   {
     name: "Reports",
