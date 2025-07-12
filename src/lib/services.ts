@@ -10,10 +10,19 @@ import {
   HistoryFilters, 
   CleanupRequest 
 } from '@/types/keyword-tracker';
+import { 
+  CompetitorAnalysisRequest,
+  CompetitorAnalysisResult,
+  CompetitorReport,
+  CompetitorReportsResponse,
+  CompetitorAnalysisComparison,
+  CompetitorChartData,
+  ChartDataset 
+} from '@/types/competitor';
 import { isValidGoogleDomain } from './googleDomains';
 import { ApiError } from './api';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
 
 // Types for API responses
 export interface SeoAnalysis {
@@ -922,4 +931,148 @@ export const keywordTrackingService = {
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
     return await apiRequest('/api/keyword-tracker/health');
   },
+};
+
+// Competitor Analysis Services
+export const competitorService = {
+  async analyzeCompetitors(request: CompetitorAnalysisRequest): Promise<CompetitorAnalysisResult> {
+    // Validate domains
+    const domainRegex = /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/;
+    
+    if (!domainRegex.test(request.mainDomain)) {
+      throw new Error(`Invalid main domain format: ${request.mainDomain}`);
+    }
+    
+    if (!request.competitorDomains || request.competitorDomains.length === 0) {
+      throw new Error('At least one competitor domain is required');
+    }
+    
+    if (request.competitorDomains.length > 5) {
+      throw new Error('Maximum 5 competitor domains allowed');
+    }
+    
+    request.competitorDomains.forEach(domain => {
+      if (!domainRegex.test(domain)) {
+        throw new Error(`Invalid competitor domain format: ${domain}`);
+      }
+    });
+    
+    // Check for duplicate domains
+    const allDomains = [request.mainDomain, ...request.competitorDomains];
+    const uniqueDomains = new Set(allDomains);
+    if (uniqueDomains.size !== allDomains.length) {
+      throw new Error('Duplicate domains are not allowed');
+    }
+    
+    console.log('🔍 Starting competitor analysis:', {
+      mainDomain: request.mainDomain,
+      competitorCount: request.competitorDomains.length,
+      competitors: request.competitorDomains
+    });
+    
+    // Make real API call to backend
+    return await apiRequest<CompetitorAnalysisResult>('/api/competitor/analyze', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    });
+  },
+
+  async getReports(page = 1, limit = 10): Promise<CompetitorReportsResponse> {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+    return await apiRequest<CompetitorReportsResponse>(`/api/competitor/reports?${params}`);
+  },
+
+  async getReport(id: string): Promise<CompetitorReport> {
+    if (!id) {
+      throw new Error('Report ID is required');
+    }
+    
+    return await apiRequest<CompetitorReport>(`/api/competitor/reports/${id}`);
+  },
+
+  async deleteReport(id: string): Promise<void> {
+    if (!id) {
+      throw new Error('Report ID is required');
+    }
+    
+    await apiRequest(`/api/competitor/reports/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async checkHealth(): Promise<{ status: string; timestamp: string }> {
+    return await apiRequest('/api/competitor/health');
+  },
+
+  // Utility functions for data transformation
+  transformDataForChart(comparison: CompetitorAnalysisComparison): CompetitorChartData {
+    const scores = comparison.differences.seoScores;
+    const labels = ['Performance', 'SEO', 'Accessibility', 'Best Practices'];
+    
+    const datasets: ChartDataset[] = [
+      {
+        label: scores.mainDomain.domain,
+        data: [
+          scores.mainDomain.scores.performance,
+          scores.mainDomain.scores.seo,
+          scores.mainDomain.scores.accessibility,
+          scores.mainDomain.scores.bestPractices
+        ],
+        backgroundColor: 'rgba(99, 102, 241, 0.6)',
+        borderColor: 'rgba(99, 102, 241, 1)',
+        borderWidth: 2
+      },
+      ...scores.competitors.map((competitor, index) => ({
+        label: competitor.domain,
+        data: [
+          competitor.scores.performance,
+          competitor.scores.seo,
+          competitor.scores.accessibility,
+          competitor.scores.bestPractices
+        ],
+        backgroundColor: `rgba(${120 + index * 50}, ${180 - index * 30}, ${200 + index * 20}, 0.6)`,
+        borderColor: `rgba(${120 + index * 50}, ${180 - index * 30}, ${200 + index * 20}, 1)`,
+        borderWidth: 2
+      }))
+    ];
+    
+    return {
+      labels,
+      datasets
+    };
+  },
+
+  getScoreColor(score: number): string {
+    if (score >= 90) return 'text-green-600';
+    if (score >= 70) return 'text-yellow-600';
+    if (score >= 50) return 'text-orange-600';
+    return 'text-red-600';
+  },
+
+  getScoreBackground(score: number): string {
+    if (score >= 90) return 'bg-green-50 border-green-200';
+    if (score >= 70) return 'bg-yellow-50 border-yellow-200';
+    if (score >= 50) return 'bg-orange-50 border-orange-200';
+    return 'bg-red-50 border-red-200';
+  },
+
+  getDifferenceColor(difference: number): string {
+    if (difference > 0) return 'text-green-600';
+    if (difference < 0) return 'text-red-600';
+    return 'text-gray-600';
+  },
+
+  formatDifference(difference: number): string {
+    if (difference > 0) return `+${difference}`;
+    return difference.toString();
+  },
+
+  getDifferenceIcon(difference: number): string {
+    if (difference > 0) return '↑';
+    if (difference < 0) return '↓';
+    return '=';
+  }
 }; 

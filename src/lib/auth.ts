@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '@/types/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
 const TOKEN_COOKIE_NAME = 'seo-tools-token';
 const USER_COOKIE_NAME = 'seo-tools-user';
 
