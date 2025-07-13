@@ -1,6 +1,6 @@
 import { authService } from './auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5002';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.auditcraft.io';
 
 interface ApiResponse<T = unknown> {
   success: boolean;
