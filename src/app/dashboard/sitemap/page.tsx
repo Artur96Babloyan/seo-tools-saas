@@ -24,16 +24,13 @@ export default function SitemapGeneratorPage() {
     setCopySuccess({});
 
     try {
-      console.log(`🕷️ Starting sitemap generation for: ${url}`);
       const sitemapResult = await sitemapService.generateSitemap(url, {
         maxDepth,
         timeout: timeoutSeconds * 1000, // Convert to milliseconds
       });
 
-      console.log(`✅ Sitemap generation completed: ${sitemapResult.totalUrls} URLs found`);
       setResults(sitemapResult);
     } catch (err) {
-      console.error('❌ Sitemap generation failed:', err);
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -51,8 +48,8 @@ export default function SitemapGeneratorPage() {
       window.setTimeout(() => {
         setCopySuccess({ ...copySuccess, [key]: false });
       }, 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
+    } catch {
+      // Copy failed - no action needed
     }
   };
 

@@ -47,41 +47,34 @@ export default function KeywordTrackerPage() {
 
   const loadDomains = async () => {
     try {
-      console.log('Fetching domains...');
       const response = await keywordTrackingService.getDomains();
-      console.log('Domains response:', response);
 
-      // Handle empty response
       if (!response) {
-        console.error('Empty response from getDomains');
         setDomains([]);
         return;
       }
 
-      // Handle response without success flag
-      if (!('success' in response)) {
-        console.log('Response is direct array:', Array.isArray(response));
-        if (Array.isArray(response)) {
-          setDomains(response);
+      let domainsArray: TrackedDomain[] = [];
+
+      // Handle different response formats
+      if (Array.isArray(response)) {
+        domainsArray = response;
+      } else if (response && typeof response === 'object') {
+        if ('domains' in response && Array.isArray(response.domains)) {
+          domainsArray = response.domains;
+        } else if ('data' in response && Array.isArray(response.data)) {
+          domainsArray = response.data;
+        } else {
+          setDomains([]);
           return;
         }
+      } else {
+        setDomains([]);
+        return;
       }
 
-      // Handle standard response format
-      if (response.success && response.data && Array.isArray(response.data.domains)) {
-        setDomains(response.data.domains);
-      } else {
-        console.error('Unexpected domains response format:', {
-          hasSuccess: 'success' in response,
-          hasData: 'data' in response,
-          dataType: response.data ? typeof response.data : 'undefined',
-          hasDomains: response.data ? 'domains' in response.data : false,
-          isDomainsArray: response.data?.domains ? Array.isArray(response.data.domains) : false
-        });
-        setDomains([]);
-      }
-    } catch (error) {
-      console.error('Failed to load domains:', error);
+      setDomains(domainsArray);
+    } catch {
       setDomains([]);
     }
   };
@@ -91,8 +84,8 @@ export default function KeywordTrackerPage() {
     try {
       const response = await keywordTrackingService.getHistory(filters);
       setHistory(response.rankings);
-    } catch (error) {
-      console.error('Failed to load history:', error);
+    } catch {
+      setHistory([]);
     } finally {
       setIsLoadingHistory(false);
     }
@@ -103,8 +96,8 @@ export default function KeywordTrackerPage() {
     try {
       const response = await keywordTrackingService.getStatistics(selectedDomain);
       setStats(response);
-    } catch (error) {
-      console.error('Failed to load stats:', error);
+    } catch {
+      setStats(null);
     } finally {
       setIsLoadingStats(false);
     }
@@ -149,18 +142,12 @@ export default function KeywordTrackerPage() {
         throw new Error('Please enter a valid domain (e.g., example.com)');
       }
 
-      console.log('Tracking keywords for domain:', formattedDomain);
-      console.log('Keywords array before sending:', keywords);
-      console.log('Keywords array length:', keywords.length);
-      console.log('Location:', location);
-
       // Add validation check
       if (keywords.length === 0) {
         throw new Error('No keywords to track. Please add at least one keyword.');
       }
 
       const response = await keywordTrackingService.trackKeywords(formattedDomain, keywords, location);
-      console.log('Tracking response:', response);
 
       // Validate response structure
       if (!response) {
@@ -176,7 +163,6 @@ export default function KeywordTrackerPage() {
       }
 
       if (!Array.isArray(response.data.results)) {
-        console.error('Invalid results format:', response.data);
         throw new Error('Invalid results format received from server');
       }
 
@@ -188,16 +174,8 @@ export default function KeywordTrackerPage() {
         loadHistory();
       }
     } catch (error) {
-      console.error('Failed to track keywords:', error);
-
       // Log the full error details for debugging
       if (error instanceof ApiError) {
-        console.error('API Error details:', {
-          message: error.message,
-          statusCode: error.statusCode,
-          error: error
-        });
-
         // Try to get more specific error details from the response
         if (error.message.includes('Validation error')) {
           setTrackingError(`Validation error: Please check your inputs. Domain: "${domain}", Keywords: [${keywords.join(', ')}], Location: "${location}"`);

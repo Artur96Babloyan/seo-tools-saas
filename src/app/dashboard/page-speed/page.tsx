@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, Save, X, Timer, Globe, Loader2 } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 import PerformanceDisclaimer from "@/components/PerformanceDisclaimer";
@@ -217,6 +218,7 @@ const PageSpeedLoadingModal = ({
 };
 
 export default function PageSpeedAuditorPage() {
+  useAuth(); // Ensure user is authenticated
   const [url, setUrl] = useState("");
   const [strategy, setStrategy] = useState<'desktop' | 'mobile'>('desktop');
   const [categories, setCategories] = useState<string[]>(['performance', 'seo', 'accessibility', 'best-practices']);
@@ -284,8 +286,7 @@ export default function PageSpeedAuditorPage() {
       await reportService.saveReport(url, results);
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
-    } catch (err) {
-      console.error('Failed to save report:', err);
+    } catch {
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }
@@ -358,7 +359,7 @@ export default function PageSpeedAuditorPage() {
     if (score >= 50) return <AlertCircle className="h-4 w-4 text-warning" />;
     return <AlertCircle className="h-4 w-4 text-destructive" />;
   };
-  console.log('results', results)
+
   return (
     <div className="p-6">
       {/* Header */}

@@ -45,8 +45,8 @@ export default function DashboardPage() {
       try {
         const statistics = await reportService.getStatistics();
         setStats(statistics);
-      } catch (error) {
-        console.error('Failed to fetch dashboard statistics:', error);
+      } catch {
+        // Error fetching statistics - will use default values
       } finally {
         setIsLoading(false);
       }

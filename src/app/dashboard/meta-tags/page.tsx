@@ -20,8 +20,7 @@ export default function MetaTagValidatorPage() {
       setTimeout(() => {
         setCopiedStates(prev => ({ ...prev, [key]: false }));
       }, 2000);
-    } catch (err) {
-      console.error('Failed to copy text: ', err);
+    } catch {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = text;
@@ -46,18 +45,8 @@ export default function MetaTagValidatorPage() {
 
     try {
       const result = await metaTagService.validateMetaTags(url);
-
-      // Log the actual backend response
-      console.log('=== ENHANCED BACKEND API RESPONSE ===');
-      console.log('URL:', result.url);
-      console.log('Summary:', result.summary);
-      console.log('Tags:', result.tags);
-      console.log('ValidatedAt:', result.validatedAt);
-      console.log('=== END ENHANCED RESPONSE ===');
-
       setResults(result);
     } catch (err) {
-      console.error('Meta tag validation error:', err);
       setError(err instanceof Error ? err.message : 'Failed to validate meta tags. Please check the URL and try again.');
     } finally {
       setIsLoading(false);

@@ -362,26 +362,6 @@ export const reportService = {
     
     const response = await apiRequest<ReportsListResponse>(`/api/report/list?${params}`);
     
-    // Log the raw response from the backend
-    console.log('Raw backend response:', response);
-    
-    // Log each report's analysisResult structure
-    if (response.reports) {
-      response.reports.forEach((report, index) => {
-        console.log(`Backend Report ${index + 1}:`, {
-          id: report.id,
-          websiteUrl: report.websiteUrl,
-          analysisResult: report.analysisResult,
-          analysisResult_type: typeof report.analysisResult,
-          analysisResult_keys: report.analysisResult ? Object.keys(report.analysisResult) : 'null/undefined',
-          performance_exists: !!report.analysisResult?.performance,
-          performance_score: report.analysisResult?.performance?.score,
-          opportunities_exists: !!report.analysisResult?.opportunities,
-          opportunities_length: report.analysisResult?.opportunities?.length
-        });
-      });
-    }
-    
     return response;
   },
 
@@ -421,10 +401,6 @@ export const reportService = {
         throw new Error('No authentication token found. Please log in again.');
       }
 
-      console.log('🔄 Downloading report:', reportId);
-      console.log('🔑 Using token:', token ? 'Token found' : 'No token');
-      console.log('🌐 API URL:', `${API_BASE_URL}/api/report/${reportId}/download`);
-
       const response = await fetch(`${API_BASE_URL}/api/report/${reportId}/download`, {
         method: 'GET',
         headers: {
@@ -433,17 +409,7 @@ export const reportService = {
         },
       });
 
-      console.log('📡 Response status:', response.status);
-      console.log('📡 Response headers:', Object.fromEntries(response.headers.entries()));
-
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ Download failed:', {
-          status: response.status,
-          statusText: response.statusText,
-          body: errorText
-        });
-        
         // Handle 401 errors (token expired/invalid)
         if (response.status === 401) {
           authService.logout();
@@ -463,12 +429,8 @@ export const reportService = {
         }
       }
 
-      console.log('📁 Filename:', filename);
-
       // Create a blob from the response
       const blob = await response.blob();
-      console.log('📦 Blob size:', blob.size);
-      console.log('📦 Blob type:', blob.type);
       
       // Create a download link
       const url = window.URL.createObjectURL(blob);
@@ -480,9 +442,7 @@ export const reportService = {
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
 
-      console.log('✅ Download completed successfully');
     } catch (error) {
-      console.error('❌ Download error:', error);
       throw error;
     }
   },
@@ -548,8 +508,6 @@ export const sitemapService = {
 export const metaTagService = {
   async validateMetaTags(url: string): Promise<MetaTagValidationResult> {
     try {
-      console.log('🔍 Making API request to validate meta tags for:', url);
-      
       // The backend returns data directly, not wrapped in formatResponse.success()
       const data = await apiRequest<{
       url: string;
@@ -575,17 +533,12 @@ export const metaTagService = {
         body: JSON.stringify({ url }),
       });
 
-      console.log('📦 Raw API response:', data);
-      console.log('📦 Response keys:', Object.keys(data || {}));
-
       if (!data) {
-        console.error('❌ Backend response is empty');
         throw new Error('Backend response is empty');
       }
 
       if (!data.tags) {
-        console.error('❌ Backend response missing tags property');
-        throw new Error('Backend response missing tags property. Full response: ' + JSON.stringify(data));
+        throw new Error('Backend response missing tags property');
       }
 
       // Calculate summary ourselves if missing from backend
@@ -609,14 +562,6 @@ export const metaTagService = {
       };
 
       const summary = data.summary || calculateSummary(data.tags);
-
-      console.log('✅ Processed backend response:', {
-        url: data.url || 'URL missing',
-        hasTagsProperty: !!data.tags,
-        hasSummaryProperty: !!data.summary,
-        calculatedSummary: summary,
-        tagsKeys: data.tags ? Object.keys(data.tags) : 'tags is undefined'
-      });
 
       // Use the real backend response directly (no fake transformation)
       return {
@@ -691,7 +636,6 @@ export const metaTagService = {
         summary: summary
       };
     } catch (error) {
-      console.error('❌ Meta tag validation failed:', error);
       throw new Error(error instanceof Error ? error.message : 'Failed to validate meta tags');
     }
   },
@@ -773,27 +717,8 @@ export const keywordTrackingService = {
         location: formattedLocation  // Send full Google domain (e.g., "google.am")
       };
 
-      // Log the request for debugging
-      console.log('Tracking keywords request:', {
-        domain: request.domain,
-        keywordCount: request.keywords.length,
-        keywords: request.keywords,
-        location: request.location
-      });
-
-      // Log the exact JSON being sent
-      const requestBody = JSON.stringify(request);
-      console.log('Request body JSON:', requestBody);
-      console.log('Request body parsed back:', JSON.parse(requestBody));
-      
       // Validate request structure before sending
       if (!request.keywords || !Array.isArray(request.keywords) || request.keywords.length === 0) {
-        console.error('CRITICAL: Invalid request structure - keywords array is missing or empty:', {
-          hasKeywords: !!request.keywords,
-          isArray: Array.isArray(request.keywords),
-          length: request.keywords?.length || 0,
-          requestStructure: Object.keys(request)
-        });
         throw new Error('Invalid request structure: keywords array is missing or empty');
       }
 
@@ -805,7 +730,7 @@ export const keywordTrackingService = {
           'Accept': 'application/json',
           'Accept-Language': '*'
         },
-        body: requestBody
+        body: JSON.stringify(request)
       });
 
       // Handle direct results array format
@@ -830,18 +755,6 @@ export const keywordTrackingService = {
 
     } catch (error) {
       // Enhanced error logging
-      console.error('Error tracking keywords:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined,
-        inputs: {
-          domain,
-          keywordCount: keywords?.length,
-          location
-        }
-      });
-
-      // Rethrow ApiError as is, but wrap other errors
       if (error instanceof ApiError) {
         throw error;
       }
@@ -870,9 +783,7 @@ export const keywordTrackingService = {
 
   async getDomains(): Promise<DomainsResponse> {
     try {
-      console.log('Making request to /api/keyword-tracker/domains');
       const response = await apiRequest<DomainsResponse | TrackedDomain[] | { domains: TrackedDomain[] }>('/api/keyword-tracker/domains');
-      console.log('Raw domains response:', response);
 
       // If response is direct array, wrap it in standard format
       if (Array.isArray(response)) {
@@ -900,7 +811,6 @@ export const keywordTrackingService = {
       }
 
       // Default to empty domains list
-      console.error('Invalid domains response format:', response);
       return {
         success: true,
         data: {
@@ -908,7 +818,6 @@ export const keywordTrackingService = {
         }
       };
     } catch (error) {
-      console.error('Error fetching domains:', error);
       throw error;
     }
   },
@@ -963,12 +872,6 @@ export const competitorService = {
     if (uniqueDomains.size !== allDomains.length) {
       throw new Error('Duplicate domains are not allowed');
     }
-    
-    console.log('🔍 Starting competitor analysis:', {
-      mainDomain: request.mainDomain,
-      competitorCount: request.competitorDomains.length,
-      competitors: request.competitorDomains
-    });
     
     // Make real API call to backend
     return await apiRequest<CompetitorAnalysisResult>('/api/competitor/analyze', {

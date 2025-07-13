@@ -20,32 +20,15 @@ export default function ReportsPage() {
     try {
       if (query) {
         const searchResults = await reportService.searchReports(query);
-        console.log('Search results:', searchResults);
         setReports(searchResults);
         setTotalPages(1);
       } else {
         const response = await reportService.getReports(page, 10);
-        console.log('Reports response:', response);
-        console.log('Individual reports:', response.reports);
-
-        // Log each report's analysisResult structure
-        response.reports.forEach((report, index) => {
-          console.log(`Report ${index + 1} (${report.websiteUrl}):`, {
-            id: report.id,
-            websiteUrl: report.websiteUrl,
-            createdAt: report.createdAt,
-            analysisResult: report.analysisResult,
-            analysisResult_keys: report.analysisResult ? Object.keys(report.analysisResult) : 'analysisResult is null/undefined',
-            performance: report.analysisResult?.performance,
-            opportunities: report.analysisResult?.opportunities
-          });
-        });
 
         setReports(response.reports);
         setTotalPages(response.totalPages);
       }
     } catch (err) {
-      console.error('Error fetching reports:', err);
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
@@ -73,27 +56,15 @@ export default function ReportsPage() {
       await reportService.deleteReport(id);
       await fetchReports(currentPage, searchQuery);
     } catch (err) {
-      console.error('Failed to delete report:', err);
-      alert('Failed to delete report');
+      setError(err instanceof Error ? err.message : 'Failed to delete report');
     }
   };
 
   const handleDownload = async (id: string) => {
     try {
-      console.log('🔄 Starting download for report:', id);
       await reportService.downloadReport(id);
-      console.log('✅ Download completed successfully');
     } catch (err) {
-      console.error('❌ Failed to download report:', err);
-
-      // Show more specific error messages
-      let errorMessage = 'Failed to download report';
-      if (err instanceof Error) {
-        errorMessage = err.message;
-      }
-
-      // Show error to user
-      alert(`Download failed: ${errorMessage}`);
+      setError(err instanceof Error ? err.message : 'Failed to download report');
     }
   };
 

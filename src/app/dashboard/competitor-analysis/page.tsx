@@ -163,7 +163,6 @@ export default function CompetitorAnalysisPage() {
       setAnalysisResults(analysisResult);
     } else {
       // If no comparison data is found, create a minimal structure to prevent errors
-      console.warn('No comparison data found in report, creating minimal structure');
       const analysisResult: CompetitorAnalysisResult = {
         success: true,
         reportId: report.id,
@@ -234,9 +233,8 @@ export default function CompetitorAnalysisPage() {
     setCurrentView('history');
   };
 
-  const handleSaveReport = async (reportId: string) => {
+  const handleSaveReport = async () => {
     // Report is automatically saved by the backend
-    console.log('Report saved:', reportId);
     setReportsRefreshTrigger(prev => prev + 1);
   };
 

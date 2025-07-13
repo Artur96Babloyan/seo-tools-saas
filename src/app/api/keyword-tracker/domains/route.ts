@@ -10,8 +10,7 @@ export async function GET() {
         domains: []
       }
     });
-  } catch (error) {
-    console.error('Error fetching domains:', error);
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch domains' },
       { status: 500 }

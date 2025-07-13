@@ -26,14 +26,10 @@ export default function LoginPage() {
     setError('');
     setIsSubmitting(true);
 
-    console.log('Attempting login with credentials:', { email: credentials.email, password: '***' });
-
     try {
       await login(credentials);
-      console.log('Login successful, redirecting to dashboard');
       router.push('/dashboard');
     } catch (err) {
-      console.error('Login failed:', err);
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setIsSubmitting(false);

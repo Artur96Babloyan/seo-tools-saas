@@ -48,8 +48,7 @@ export async function POST(request: Request) {
     // Track keywords using the service
     const results = await keywordTracker.trackKeywords(
       validatedData.domain,
-      validatedData.keywords,
-      validatedData.location // This is now the country code
+      validatedData.keywords
     );
     
     return NextResponse.json({
@@ -70,7 +69,6 @@ export async function POST(request: Request) {
     }
     
     const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-    console.error('Error tracking keywords:', error);
     return NextResponse.json(
       { error: errorMessage },
       { status: 500 }

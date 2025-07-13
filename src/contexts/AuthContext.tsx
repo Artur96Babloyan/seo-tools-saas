@@ -24,8 +24,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           setUser(currentUser);
           setToken(authService.getToken() || null);
         }
-      } catch (error) {
-        console.error('Auth initialization error:', error);
+      } catch {
+        // Auth initialization failed - user will need to login
       } finally {
         setIsLoading(false);
       }
@@ -76,8 +76,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
         setToken(null);
       }
-    } catch (error) {
-      console.error('Auth refresh error:', error);
+    } catch {
       setUser(null);
       setToken(null);
     }

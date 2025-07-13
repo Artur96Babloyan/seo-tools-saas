@@ -10,15 +10,11 @@ class ReportController {
     const { website_url, analysis_result } = req.body;
     const userId = req.user.id; // User ID from authentication middleware
 
-    console.log(`[${req.id}] Saving report for: ${website_url} (User: ${userId})`);
-
     const savedReport = await reportService.saveReport(
       website_url,
       analysis_result,
       userId
     );
-
-    console.log(`[${req.id}] Report saved with ID: ${savedReport.id}`);
 
     res.status(201).json(
       formatResponse.success(
@@ -47,8 +43,6 @@ class ReportController {
 
     const userId = req.user.id; // User ID from authentication middleware
 
-    console.log(`[${req.id}] Fetching reports - Page: ${page}, Limit: ${limit} (User: ${userId})`);
-
     const result = await reportService.getAllReports({
       page: parseInt(page),
       limit: parseInt(limit),
@@ -76,8 +70,6 @@ class ReportController {
   getReportById = asyncHandler(async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id; // User ID from authentication middleware
-
-    console.log(`[${req.id}] Fetching report: ${id} (User: ${userId})`);
 
     const report = await reportService.getReportById(id, userId);
 
@@ -110,8 +102,6 @@ class ReportController {
     // Decode the URL parameter
     const decodedUrl = decodeURIComponent(websiteUrl);
 
-    console.log(`[${req.id}] Fetching reports for website: ${decodedUrl} (User: ${userId})`);
-
     const result = await reportService.getReportsByWebsite(decodedUrl, {
       page: parseInt(page),
       limit: parseInt(limit),
@@ -140,8 +130,6 @@ class ReportController {
     const { id } = req.params;
     const userId = req.user.id; // User ID from authentication middleware
 
-    console.log(`[${req.id}] Deleting report: ${id} (User: ${userId})`);
-
     const success = await reportService.deleteReport(id, userId);
 
     if (!success) {
@@ -167,8 +155,6 @@ class ReportController {
     const { website_url, analysis_result } = req.body;
     const userId = req.user.id; // User ID from authentication middleware
 
-    console.log(`[${req.id}] Updating report: ${id} (User: ${userId})`);
-
     const updateData = {};
     if (website_url) updateData.website_url = website_url;
     if (analysis_result) updateData.analysis_result = analysis_result;
@@ -192,8 +178,6 @@ class ReportController {
    */
   getStatistics = asyncHandler(async (req, res) => {
     const userId = req.user.id; // User ID from authentication middleware
-
-    console.log(`[${req.id}] Fetching report statistics (User: ${userId})`);
 
     const statistics = await reportService.getReportStatistics(userId);
 
@@ -221,8 +205,6 @@ class ReportController {
       );
     }
 
-    console.log(`[${req.id}] Searching reports with query: ${query} (User: ${userId})`);
-
     const result = await reportService.searchReports(query, {
       page: parseInt(page),
       limit: parseInt(limit),
@@ -249,19 +231,14 @@ class ReportController {
     const { id } = req.params;
     const userId = req.user.id; // User ID from authentication middleware
 
-    console.log(`[${req.id}] Downloading report: ${id} (User: ${userId})`);
-
     try {
       const reportFile = await reportService.getReportFile(id, userId);
 
       if (!reportFile) {
-        console.log(`[${req.id}] Report file not found: ${id}`);
         return res.status(404).json(
           formatResponse.error('Report file not found', 404)
         );
       }
-
-      console.log(`[${req.id}] Report file found: ${reportFile.filename} (${reportFile.content.length} chars)`);
 
       // Set headers for file download
       res.setHeader('Content-Type', 'text/plain; charset=utf-8');
@@ -272,10 +249,8 @@ class ReportController {
       res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
 
       // Send the file content
-      console.log(`[${req.id}] Sending report file: ${reportFile.filename}`);
       res.status(200).send(reportFile.content);
-    } catch (error) {
-      console.error(`[${req.id}] Error downloading report:`, error);
+    } catch {
       return res.status(500).json(
         formatResponse.error('Failed to download report', 500)
       );

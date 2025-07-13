@@ -1,16 +1,14 @@
 import { KeywordRankingResult } from '../types/keyword-tracker';
 
 export class KeywordTrackerService {
-  async trackKeywords(domain: string, keywords: string[], location: string): Promise<KeywordRankingResult[]> {
-    // TODO: Implement actual keyword tracking logic
-    // This could involve:
-    // 1. Making requests to search engines
-    // 2. Parsing search results
-    // 3. Finding domain positions
-    // 4. Storing results in database
-    
+  async trackKeywords(domain: string, keywords: string[]): Promise<KeywordRankingResult[]> {
     // Mock implementation - location parameter will be used when implementing real tracking
-    console.log(`Tracking keywords for domain: ${domain}, location: ${location}`);
+    // TODO: Implement real keyword tracking API integration using location parameter
+     
+    
+    
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     return keywords.map(keyword => ({
       keyword,
