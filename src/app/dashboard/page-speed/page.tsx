@@ -90,59 +90,62 @@ const PageSpeedLoadingModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-card border border-border rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-card border border-border rounded-lg p-4 sm:p-6 max-w-md w-full shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
-              <Loader2 className="h-5 w-5 animate-spin" />
+        <div className="flex flex-col space-y-4 mb-6">
+          <div className="flex items-start justify-between">
+            <div className="flex items-center space-x-3 min-w-0 flex-1">
+              <div className="flex h-12 w-12 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-primary text-white flex-shrink-0">
+                <Loader2 className="h-6 w-6 sm:h-5 sm:w-5 animate-spin" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="text-xl sm:text-lg font-semibold text-foreground">Analyzing Page Speed</h2>
+                <p className="text-sm text-muted-foreground">Please wait while we analyze your website</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-foreground">Analyzing Page Speed</h2>
-              <p className="text-sm text-muted-foreground">Please wait while we analyze your website</p>
-            </div>
+            <button
+              onClick={onCancel}
+              className="p-2 hover:bg-muted rounded-lg transition-colors flex-shrink-0 ml-2"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
           </div>
-          <button
-            onClick={onCancel}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
-            <X className="h-4 w-4 text-muted-foreground" />
-          </button>
         </div>
 
         {/* Website Info */}
-        <div className="mb-6 p-4 bg-muted/30 rounded-lg">
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-muted/30 rounded-lg">
           <div className="flex items-center space-x-2 mb-2">
-            <Globe className="h-4 w-4 text-primary" />
+            <Globe className="h-4 w-4 text-primary flex-shrink-0" />
             <span className="text-sm font-medium">Website:</span>
           </div>
-          <p className="text-sm text-muted-foreground truncate">{url}</p>
-          <div className="flex items-center space-x-4 mt-2 text-xs text-muted-foreground">
+          <p className="text-sm text-muted-foreground break-all">{url}</p>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-1 sm:space-y-0 mt-2 text-xs text-muted-foreground">
             <span>Strategy: {strategy}</span>
             <span>Categories: {categories.length}</span>
           </div>
         </div>
 
         {/* Timer Display */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center space-x-2">
-              <Timer className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium">Time Elapsed</span>
+        <div className="mb-4 sm:mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-3">
+            <div className="text-center sm:text-left">
+              <div className="flex items-center justify-center sm:justify-start space-x-2 mb-1">
+                <Timer className="h-4 w-4 text-primary" />
+                <span className="text-xs sm:text-sm font-medium">Time Elapsed</span>
+              </div>
+              <span className="text-xl sm:text-2xl font-bold text-primary">{formatTime(timeElapsed)}</span>
             </div>
-            <span className="text-2xl font-bold text-primary">{formatTime(timeElapsed)}</span>
-          </div>
-
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-sm text-muted-foreground">Estimated remaining</span>
-            <span className="text-sm font-medium text-muted-foreground">
-              {estimatedTimeRemaining > 0 ? `~${formatTime(estimatedTimeRemaining)}` : 'Almost done'}
-            </span>
+            <div className="text-center sm:text-right">
+              <div className="text-xs sm:text-sm text-muted-foreground mb-1">Estimated remaining</div>
+              <span className="text-sm sm:text-base font-medium text-muted-foreground">
+                {estimatedTimeRemaining > 0 ? `~${formatTime(estimatedTimeRemaining)}` : 'Almost done'}
+              </span>
+            </div>
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-4">
+          <div className="mb-3">
             <div className="bg-muted rounded-full h-2">
               <div
                 className="bg-primary rounded-full h-2 transition-all duration-1000 ease-out"
@@ -153,25 +156,25 @@ const PageSpeedLoadingModal = ({
         </div>
 
         {/* Current Phase */}
-        <div className="mb-6">
-          <div className="flex items-center space-x-2 mb-3">
+        <div className="mb-4 sm:mb-6">
+          <div className="flex items-center space-x-2 mb-2">
             <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             <span className="text-sm font-medium text-foreground">Current Phase</span>
           </div>
-          <p className="text-sm text-muted-foreground">{phases[currentPhase]?.name}</p>
+          <p className="text-sm text-muted-foreground pl-4">{phases[currentPhase]?.name}</p>
         </div>
 
         {/* Phase Progress */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <h4 className="text-sm font-medium text-foreground mb-3">Analysis Progress</h4>
-          <div className="space-y-2">
+          <div className="space-y-2 max-h-32 overflow-y-auto">
             {phases.map((phase, index) => (
               <div key={index} className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${index < currentPhase ? 'bg-success' :
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${index < currentPhase ? 'bg-success' :
                   index === currentPhase ? 'bg-primary animate-pulse' :
                     'bg-muted'
                   }`} />
-                <span className={`text-xs ${index < currentPhase ? 'text-success' :
+                <span className={`text-xs break-words ${index < currentPhase ? 'text-success' :
                   index === currentPhase ? 'text-foreground' :
                     'text-muted-foreground'
                   }`}>
@@ -183,10 +186,10 @@ const PageSpeedLoadingModal = ({
         </div>
 
         {/* Information */}
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+        <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
           <div className="flex items-start space-x-2">
-            <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5" />
-            <div>
+            <AlertCircle className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="min-w-0">
               <p className="text-sm text-blue-800 dark:text-blue-200">
                 <strong>PageSpeed analysis can take 1-3 minutes</strong> depending on your website&apos;s complexity and current API load.
               </p>
@@ -198,16 +201,16 @@ const PageSpeedLoadingModal = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex space-x-3">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+            className="flex-1 px-4 py-3 sm:py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
           >
             Cancel Analysis
           </button>
           <button
             disabled
-            className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
+            className="flex-1 px-4 py-3 sm:py-2 bg-primary text-white rounded-lg text-sm font-medium opacity-50 cursor-not-allowed"
           >
             Please Wait...
           </button>
@@ -708,20 +711,20 @@ export default function PageSpeedAuditorPage() {
 
           {/* Recommendations */}
           {results.recommendations && results.recommendations.length > 0 && (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
               <h3 className="text-lg font-semibold text-foreground mb-4">Recommendations</h3>
               <div className="space-y-4">
                 {results.recommendations.map((recommendation, index: number) => (
                   <div key={index} className="rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-medium text-foreground">{recommendation.title}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getImpactColor(recommendation.impact)}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
+                          <h4 className="font-medium text-foreground break-words">{recommendation.title}</h4>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getImpactColor(recommendation.impact)}`}>
                             {recommendation.priority}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{recommendation.description}</p>
+                        <p className="text-sm text-muted-foreground break-words">{recommendation.description}</p>
                         <div className="text-xs text-muted-foreground mt-1">Category: {recommendation.category}</div>
                       </div>
                     </div>
@@ -732,16 +735,16 @@ export default function PageSpeedAuditorPage() {
           )}
 
           {/* Save Report Section */}
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div>
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+              <div className="min-w-0">
                 <h3 className="text-lg font-semibold text-foreground">Save Report</h3>
                 <p className="text-sm text-muted-foreground">Save this analysis to your reports for future reference</p>
               </div>
               <button
                 onClick={handleSaveReport}
                 disabled={saveStatus === 'saving'}
-                className="flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-white font-medium transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto flex items-center justify-center space-x-2 rounded-lg bg-primary px-6 py-3 sm:py-2 text-white font-medium transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saveStatus === 'saving' ? (
                   <>
@@ -769,23 +772,23 @@ export default function PageSpeedAuditorPage() {
           </div>
 
           {/* Opportunities */}
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
             <h3 className="text-lg font-semibold text-foreground mb-4">Opportunities</h3>
             <div className="space-y-4">
               {(results.opportunities || []).length > 0 ? (
                 (results.opportunities || []).map((opportunity, index: number) => (
                   <div key={index} className="rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h4 className="font-medium text-foreground">{opportunity.title}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${getImpactColor(opportunity.impact)}`}>
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-3 sm:space-y-0">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
+                          <h4 className="font-medium text-foreground break-words">{opportunity.title}</h4>
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getImpactColor(opportunity.impact)}`}>
                             {opportunity.impact}
                           </span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{opportunity.description}</p>
+                        <p className="text-sm text-muted-foreground break-words">{opportunity.description}</p>
                       </div>
-                      <div className="text-right ml-4">
+                      <div className="text-left sm:text-right sm:ml-4 flex-shrink-0">
                         <div className="text-sm font-semibold text-success">Save {opportunity.savings}</div>
                       </div>
                     </div>
@@ -800,17 +803,17 @@ export default function PageSpeedAuditorPage() {
           </div>
 
           {/* Diagnostics */}
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
             <h3 className="text-lg font-semibold text-foreground mb-4">Diagnostics</h3>
             <div className="space-y-4">
               {(results.diagnostics || []).map((diagnostic, index: number) => (
                 <div key={index} className="rounded-lg border border-border p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between space-y-2 sm:space-y-0">
+                    <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-foreground mb-2">{diagnostic.title}</h4>
-                      <p className="text-sm text-muted-foreground">{diagnostic.description}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground break-words">{diagnostic.description}</p>
                     </div>
-                    <div className="text-right ml-4">
+                    <div className="text-left sm:text-right sm:ml-4 flex-shrink-0">
                       <div className="text-sm font-semibold text-warning">{diagnostic.value}</div>
                     </div>
                   </div>

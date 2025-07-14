@@ -303,3 +303,32 @@ select:focus {
     page-break-before: always;
   }
 }
+
+/* Global text overflow prevention */
+* {
+  word-wrap: break-word;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal overflow on mobile */
+@media (max-width: 640px) {
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Ensure long URLs and text break properly */
+  p,
+  div,
+  span,
+  td,
+  th {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+}
+
+/* Custom select dropdown styling */

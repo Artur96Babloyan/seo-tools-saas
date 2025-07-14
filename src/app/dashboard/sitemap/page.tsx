@@ -295,7 +295,7 @@ export default function SitemapGeneratorPage() {
               {results.urls.map((pageUrl: string, index: number) => (
                 <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors">
                   <div className="flex items-center space-x-3 flex-1 min-w-0">
-                    <div className="text-sm font-mono text-foreground truncate">
+                    <div className="text-sm font-mono text-foreground break-all">
                       {pageUrl}
                     </div>
                   </div>

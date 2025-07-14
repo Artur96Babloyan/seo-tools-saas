@@ -120,26 +120,26 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
   );
 
   const ComparisonTable = () => (
-    <div className="table-responsive overflow-x-auto">
-      <table className="w-full min-w-full">
+    <div className="overflow-x-auto -mx-4 sm:mx-0">
+      <table className="w-full min-w-[600px]">
         <thead>
           <tr className="border-b border-gray-200 dark:border-gray-700">
-            <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <th className="text-left py-3 px-2 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[120px]">
               Domain
             </th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Performance
+            <th className="text-center py-3 px-1 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[70px]">
+              Perf
             </th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <th className="text-center py-3 px-1 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[50px]">
               SEO
             </th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Accessibility
+            <th className="text-center py-3 px-1 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[60px]">
+              A11y
             </th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
-              Best Practices
+            <th className="text-center py-3 px-1 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[70px]">
+              Best
             </th>
-            <th className="text-center py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">
+            <th className="text-center py-3 px-1 sm:px-4 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[60px]">
               Overall
             </th>
           </tr>
@@ -147,39 +147,39 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
         <tbody>
           {/* Main Domain */}
           <tr className="border-b border-gray-100 dark:border-gray-800 bg-blue-50 dark:bg-blue-900/20">
-            <td className="py-3 px-4">
-              <div className="flex items-center space-x-2">
-                <Star className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <div className="font-medium text-gray-900 dark:text-white">
+            <td className="py-3 px-2 sm:px-4">
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <Star className="h-3 w-3 sm:h-4 sm:w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm break-all">
                     {safeData.seoScores.mainDomain.domain || 'Your Website'}
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">Your website</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Your website</div>
                 </div>
               </div>
             </td>
-            <td className="py-3 px-4 text-center">
-              <span className={`font-medium ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.performance)}`}>
+            <td className="py-3 px-1 sm:px-4 text-center">
+              <span className={`font-medium text-xs sm:text-sm ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.performance)}`}>
                 {safeData.seoScores.mainDomain.scores.performance}
               </span>
             </td>
-            <td className="py-3 px-4 text-center">
-              <span className={`font-medium ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.seo)}`}>
+            <td className="py-3 px-1 sm:px-4 text-center">
+              <span className={`font-medium text-xs sm:text-sm ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.seo)}`}>
                 {safeData.seoScores.mainDomain.scores.seo}
               </span>
             </td>
-            <td className="py-3 px-4 text-center">
-              <span className={`font-medium ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.accessibility)}`}>
+            <td className="py-3 px-1 sm:px-4 text-center">
+              <span className={`font-medium text-xs sm:text-sm ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.accessibility)}`}>
                 {safeData.seoScores.mainDomain.scores.accessibility}
               </span>
             </td>
-            <td className="py-3 px-4 text-center">
-              <span className={`font-medium ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.bestPractices)}`}>
+            <td className="py-3 px-1 sm:px-4 text-center">
+              <span className={`font-medium text-xs sm:text-sm ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.bestPractices)}`}>
                 {safeData.seoScores.mainDomain.scores.bestPractices}
               </span>
             </td>
-            <td className="py-3 px-4 text-center">
-              <span className={`font-bold ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.overall)}`}>
+            <td className="py-3 px-1 sm:px-4 text-center">
+              <span className={`font-bold text-xs sm:text-sm ${competitorService.getScoreColor(safeData.seoScores.mainDomain.scores.overall)}`}>
                 {safeData.seoScores.mainDomain.scores.overall}
               </span>
             </td>
@@ -188,24 +188,24 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
           {/* Competitors */}
           {safeData.seoScores.competitors.map((competitor, index) => (
             <tr key={competitor.domain} className="border-b border-gray-100 dark:border-gray-800">
-              <td className="py-3 px-4">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+              <td className="py-3 px-2 sm:px-4">
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                       {index + 1}
                     </span>
                   </div>
-                  <div>
-                    <div className="font-medium text-gray-900 dark:text-white">
+                  <div className="min-w-0">
+                    <div className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm break-all">
                       {competitor.domain}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400">Competitor</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">Competitor</div>
                   </div>
                 </div>
               </td>
-              <td className="py-3 px-4 text-center">
+              <td className="py-3 px-1 sm:px-4 text-center">
                 <div className="flex items-center justify-center space-x-2">
-                  <span className={`font-medium ${competitorService.getScoreColor(competitor?.scores?.performance || 0)}`}>
+                  <span className={`font-medium text-xs sm:text-sm ${competitorService.getScoreColor(competitor?.scores?.performance || 0)}`}>
                     {competitor?.scores?.performance || 0}
                   </span>
                   {safeData.scoreDifferences.differences[index] && (
@@ -411,7 +411,7 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
                   className={`${activeTab === tab.id
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                    } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
+                    } whitespace-nowrap sm:whitespace-normal py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
                 >
                   <Icon className="h-4 w-4" />
                   <span>{tab.label}</span>

@@ -138,10 +138,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="flex items-center space-x-3 p-2 rounded-lg bg-accent">
             <User className="h-8 w-8 text-muted-foreground" />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">
+              <p className="text-sm font-medium text-foreground break-words">
                 {user.name}
               </p>
-              <p className="text-xs text-muted-foreground truncate">
+              <p className="text-xs text-muted-foreground break-words">
                 {user.email}
               </p>
             </div>
@@ -179,8 +179,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           {/* Sidebar */}
           <div
             className={`absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border shadow-2xl flex flex-col transition-transform duration-500 ease-out ${animationState === 'opening' || animationState === 'open'
-                ? 'translate-x-0'
-                : '-translate-x-full'
+              ? 'translate-x-0'
+              : '-translate-x-full'
               }`}
             style={{
               animation: animationState === 'opening'
