@@ -97,17 +97,21 @@ export default function SitemapGeneratorPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white">
-            <Globe className="h-5 w-5" />
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white">
+              <Globe className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Sitemap Generator</h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Sitemap Generator</h1>
-            <p className="text-muted-foreground">
-              Crawl websites and generate comprehensive sitemaps for better SEO
+          <div className="sm:ml-auto">
+            <p className="text-sm text-muted-foreground">
+              Generate comprehensive sitemaps for better SEO
             </p>
           </div>
         </div>

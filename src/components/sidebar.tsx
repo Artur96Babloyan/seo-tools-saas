@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,11 @@ const navigation = [
     icon: Zap,
   },
   {
+    name: "Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
+  },
+  {
     name: "Keyword Tracker",
     href: "/dashboard/keyword-tracker",
     icon: TrendingUp,
@@ -38,94 +44,168 @@ const navigation = [
     href: "/dashboard/competitor-analysis",
     icon: Users,
   },
-  {
-    name: "Reports",
-    href: "/dashboard/reports",
-    icon: FileText,
-  },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
+  const previousPathnameRef = useRef(pathname);
 
-  const handleLogout = () => {
-    logout();
+  // Handle animation states
+  useEffect(() => {
+    if (isOpen && animationState === 'closed') {
+      setAnimationState('opening');
+      setTimeout(() => setAnimationState('open'), 400); // Slightly longer for smoother feel
+    } else if (!isOpen && (animationState === 'open' || animationState === 'opening')) {
+      setAnimationState('closing');
+      setTimeout(() => setAnimationState('closed'), 400); // Match opening duration
+    }
+  }, [isOpen, animationState]);
+
+  // Close when navigating to a different page (only track actual pathname changes)
+  useEffect(() => {
+    if (previousPathnameRef.current !== pathname && isOpen) {
+      onClose();
+    }
+    previousPathnameRef.current = pathname;
+  }, [pathname, onClose, isOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch {
+      // Silent error - user will see any relevant feedback through the auth context
+    }
   };
 
-  return (
-    <div className="flex w-64 flex-col border-r border-border bg-card">
+  const sidebarContent = (
+    <>
       {/* Header */}
-      <div className="flex h-16 items-center border-b border-border px-6">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <BarChart3 className="h-5 w-5" />
-          </div>
-          <span className="text-lg font-semibold text-foreground">SEO Tools</span>
-        </Link>
+      <div className="flex items-center justify-between h-16 px-6 border-b border-border">
+        <div className="flex items-center space-x-2">
+          <BarChart3 className="h-8 w-8 text-primary" />
+          <span className="text-xl font-bold text-foreground">SEO Tools</span>
+        </div>
+        {/* Close button for mobile */}
+        <button
+          onClick={onClose}
+          className="lg:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
 
-      {/* User Info */}
-      {user && (
-        <div className="border-b border-border p-4">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              <User className="h-5 w-5" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{user.name}</p>
-              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 p-4">
-        {navigation.map((item) => {
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "group flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              )}
-            >
-              <item.icon
-                className={cn(
-                  "mr-3 h-5 w-5",
-                  isActive ? "text-primary-foreground" : "text-muted-foreground"
-                )}
-              />
-              {item.name}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto py-4">
+        <ul className="space-y-1 px-3">
+          {navigation.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+            return (
+              <li key={item.name}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-lg transition-colors",
+                    isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.name}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
       {/* Footer */}
       <div className="border-t border-border p-4 space-y-4">
-        {/* Theme Toggle */}
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">
-            Theme
-          </div>
+          <span className="text-sm text-muted-foreground">Theme</span>
           <ThemeToggle />
         </div>
 
-        {/* Logout Button */}
+        {user && (
+          <div className="flex items-center space-x-3 p-2 rounded-lg bg-accent">
+            <User className="h-8 w-8 text-muted-foreground" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {user.name}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
+          </div>
+        )}
+
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="flex items-center space-x-3 w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
         >
-          <LogOut className="mr-3 h-4 w-4" />
-          Logout
+          <LogOut className="h-5 w-5" />
+          <span>Sign out</span>
         </button>
       </div>
-    </div>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:flex w-64 flex-col border-r border-border bg-card">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile Sidebar - Smooth Animation Implementation */}
+      {animationState !== 'closed' && (
+        <div className="fixed inset-0 z-[100] lg:hidden">
+          {/* Backdrop */}
+          <div
+            className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-500 ease-out ${animationState === 'closing' ? 'opacity-0' : 'opacity-100'
+              }`}
+            onClick={onClose}
+          />
+
+          {/* Sidebar */}
+          <div
+            className={`absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border shadow-2xl flex flex-col transition-transform duration-500 ease-out ${animationState === 'opening' || animationState === 'open'
+                ? 'translate-x-0'
+                : '-translate-x-full'
+              }`}
+            style={{
+              animation: animationState === 'opening'
+                ? 'slideInFromLeft 0.4s ease-out forwards'
+                : animationState === 'closing'
+                  ? 'slideOutToLeft 0.4s ease-out forwards'
+                  : 'none'
+            }}
+          >
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+export function MobileMenuButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="lg:hidden p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
+      type="button"
+    >
+      <Menu className="h-5 w-5" />
+    </button>
   );
 } 

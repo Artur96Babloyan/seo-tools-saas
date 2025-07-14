@@ -440,45 +440,51 @@ export default function CompetitorAnalysisPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Competitor Analysis
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Compare your website&apos;s SEO performance against your competitors
-          </p>
-        </div>
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500 text-white">
+              <BarChart3 className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Competitor Analysis</h1>
+            </div>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-auto">
+            <p className="text-sm text-muted-foreground">
+              Compare your website&apos;s SEO performance against your competitors
+            </p>
+            <div className="flex items-center space-x-2">
+              {currentView === 'results' && (
+                <button
+                  onClick={handleNewAnalysis}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  New Analysis
+                </button>
+              )}
 
-        <div className="flex items-center space-x-2">
-          {currentView === 'results' && (
-            <button
-              onClick={handleNewAnalysis}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              New Analysis
-            </button>
-          )}
+              {currentView !== 'history' && (
+                <button
+                  onClick={handleViewHistory}
+                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
+                >
+                  View History
+                </button>
+              )}
 
-          {currentView !== 'history' && (
-            <button
-              onClick={handleViewHistory}
-              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              View History
-            </button>
-          )}
-
-          {currentView === 'history' && (
-            <button
-              onClick={handleNewAnalysis}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              New Analysis
-            </button>
-          )}
+              {currentView === 'history' && (
+                <button
+                  onClick={handleNewAnalysis}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  New Analysis
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

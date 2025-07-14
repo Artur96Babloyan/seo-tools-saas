@@ -120,8 +120,8 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
   );
 
   const ComparisonTable = () => (
-    <div className="overflow-x-auto">
-      <table className="w-full">
+    <div className="table-responsive overflow-x-auto">
+      <table className="w-full min-w-full">
         <thead>
           <tr className="border-b border-gray-200 dark:border-gray-700">
             <th className="text-left py-3 px-4 text-sm font-medium text-gray-700 dark:text-gray-300">

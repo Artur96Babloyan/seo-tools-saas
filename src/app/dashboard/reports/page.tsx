@@ -90,16 +90,20 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white">
-            <FileText className="h-5 w-5" />
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500 text-white">
+              <FileText className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Reports</h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Reports</h1>
-            <p className="text-muted-foreground">
+          <div className="sm:ml-auto">
+            <p className="text-sm text-muted-foreground">
               View and manage your saved SEO analysis reports
             </p>
           </div>
@@ -107,8 +111,8 @@ export default function ReportsPage() {
       </div>
 
       {/* Search */}
-      <div className="mb-6">
-        <form onSubmit={handleSearch} className="flex gap-2">
+      <div className="mb-4 sm:mb-6">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <input
               type="text"
@@ -121,7 +125,7 @@ export default function ReportsPage() {
           </div>
           <button
             type="submit"
-            className="rounded-lg bg-primary px-4 py-2 text-white font-medium transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            className="rounded-lg bg-primary px-4 py-2 text-white font-medium transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 w-full sm:w-auto"
           >
             Search
           </button>
@@ -130,7 +134,7 @@ export default function ReportsPage() {
 
       {/* Error Display */}
       {error && (
-        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50 p-4">
+        <div className="mb-4 sm:mb-6 rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950/50 p-4">
           <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
         </div>
       )}
@@ -139,7 +143,7 @@ export default function ReportsPage() {
       {isLoading ? (
         <div className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div key={i} className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
               <div className="animate-pulse">
                 <div className="h-4 bg-muted rounded w-1/2 mb-3"></div>
                 <div className="h-3 bg-muted rounded w-1/4 mb-2"></div>
@@ -149,104 +153,104 @@ export default function ReportsPage() {
           ))}
         </div>
       ) : reports.length === 0 ? (
-        <div className="text-center py-12">
-          <FileText className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+        <div className="text-center py-8 sm:py-12">
+          <FileText className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">No Reports Found</h3>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground px-4">
             {searchQuery ? 'No reports match your search criteria.' : 'Start analyzing websites to create your first report.'}
           </p>
         </div>
       ) : (
         <div className="space-y-4">
           {reports.map((report) => (
-            <div key={report.id} className="rounded-lg border border-border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <h3 className="font-semibold text-card-foreground">{report.websiteUrl}</h3>
-                    <div className="flex items-center space-x-2">
-                      <Calendar className="h-4 w-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">{formatDate(report.createdAt)}</span>
+            <div key={report.id} className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-4">
+                    <h3 className="font-semibold text-card-foreground truncate">{report.websiteUrl}</h3>
+                    <div className="flex items-center space-x-2 text-xs sm:text-sm">
+                      <Calendar className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                      <span className="text-muted-foreground">{formatDate(report.createdAt)}</span>
                     </div>
                   </div>
 
                   {report.analysisResult ? (
                     <div className="space-y-4">
                       {/* All Scores Display */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
                         {/* Performance Score */}
                         <div className="text-center">
-                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.performance?.score || 0)}`}>
+                          <div className={`inline-flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${getScoreColor(report.analysisResult.performance?.score || 0)}`}>
                             Performance: {report.analysisResult.performance?.score || 0}
                           </div>
                         </div>
 
                         {/* SEO Score */}
                         <div className="text-center">
-                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.seo?.score || 0)}`}>
+                          <div className={`inline-flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${getScoreColor(report.analysisResult.seo?.score || 0)}`}>
                             SEO: {report.analysisResult.seo?.score || 0}
                           </div>
                         </div>
 
                         {/* Accessibility Score */}
                         <div className="text-center">
-                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.accessibility?.score || 0)}`}>
+                          <div className={`inline-flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${getScoreColor(report.analysisResult.accessibility?.score || 0)}`}>
                             A11y: {report.analysisResult.accessibility?.score || 0}
                           </div>
                         </div>
 
                         {/* Best Practices Score */}
                         <div className="text-center">
-                          <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium ${getScoreColor(report.analysisResult.bestPractices?.score || 0)}`}>
+                          <div className={`inline-flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-medium ${getScoreColor(report.analysisResult.bestPractices?.score || 0)}`}>
                             Best: {report.analysisResult.bestPractices?.score || 0}
                           </div>
                         </div>
                       </div>
 
                       {/* Additional Details */}
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-muted-foreground pt-3 border-t border-border">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground pt-3 border-t border-border">
                         <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4" />
+                          <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                           <span>Load Time: {report.analysisResult.performance?.loadTime || '--'}s</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <FileText className="h-4 w-4" />
+                          <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
                           <span>{report.analysisResult.opportunities?.length || 0} Opportunities</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <Search className="h-4 w-4" />
+                          <Search className="h-3 w-3 sm:h-4 sm:w-4" />
                           <span>Avg: {report.analysisResult.summary?.averageScore || Math.round(((report.analysisResult.performance?.score || 0) + (report.analysisResult.seo?.score || 0) + (report.analysisResult.accessibility?.score || 0) + (report.analysisResult.bestPractices?.score || 0)) / 4)}</span>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       <p>Analysis data is incomplete or missing</p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex items-center space-x-2 ml-4">
+                <div className="flex sm:flex-col items-center sm:items-end space-x-2 sm:space-x-0 sm:space-y-2 mt-4 sm:mt-0 sm:ml-4">
                   <button
                     onClick={() => window.open(report.websiteUrl, '_blank')}
-                    className="p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+                    className="flex-1 sm:flex-none p-2 rounded-lg border border-border hover:bg-muted transition-colors"
                     title="Visit website"
                   >
-                    <ExternalLink className="h-4 w-4" />
+                    <ExternalLink className="h-4 w-4 mx-auto" />
                   </button>
                   <button
                     onClick={() => handleDownload(report.id)}
-                    className="p-2 rounded-lg border border-border hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors"
+                    className="flex-1 sm:flex-none p-2 rounded-lg border border-border hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors"
                     title="Download report"
                   >
-                    <FileText className="h-4 w-4" />
+                    <FileText className="h-4 w-4 mx-auto" />
                   </button>
                   <button
                     onClick={() => handleDelete(report.id)}
-                    className="p-2 rounded-lg border border-border hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
+                    className="flex-1 sm:flex-none p-2 rounded-lg border border-border hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-colors"
                     title="Delete report"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-4 w-4 mx-auto" />
                   </button>
                 </div>
               </div>
@@ -257,11 +261,11 @@ export default function ReportsPage() {
 
       {/* Pagination */}
       {totalPages > 1 && !searchQuery && (
-        <div className="mt-8 flex items-center justify-center space-x-2">
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-2">
           <button
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1 rounded border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-4 py-2 rounded border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Previous
           </button>
@@ -273,7 +277,7 @@ export default function ReportsPage() {
           <button
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1 rounded border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-4 py-2 rounded border border-border hover:bg-muted transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
           </button>

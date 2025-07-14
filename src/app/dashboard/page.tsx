@@ -56,11 +56,11 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">SEO Dashboard</h1>
-        <p className="mt-2 text-muted-foreground">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">SEO Dashboard</h1>
+        <p className="mt-2 text-sm sm:text-base text-muted-foreground">
           Analyze and optimize your website&apos;s SEO performance with our comprehensive tools.
         </p>
       </div>

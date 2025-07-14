@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -19,7 +19,11 @@ export const metadata: Metadata = {
   description: "Comprehensive SEO tools including sitemap generator, meta tag validator, and page speed auditor. Boost your website's search engine performance.",
   keywords: ["SEO", "sitemap generator", "meta tags", "page speed", "website optimization"],
   authors: [{ name: "SEO Tools" }],
-  viewport: "width=device-width, initial-scale=1",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({

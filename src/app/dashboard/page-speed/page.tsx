@@ -361,17 +361,21 @@ export default function PageSpeedAuditorPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6">
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center space-x-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-500 text-white">
-            <Zap className="h-5 w-5" />
+      <div className="mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-500 text-white">
+              <Zap className="h-5 w-5" />
+            </div>
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Page Speed Auditor</h1>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Page Speed Auditor</h1>
-            <p className="text-muted-foreground">
-              Comprehensive page speed analysis with actionable recommendations
+          <div className="sm:ml-auto">
+            <p className="text-sm text-muted-foreground">
+              Comprehensive speed analysis & recommendations
             </p>
           </div>
         </div>
