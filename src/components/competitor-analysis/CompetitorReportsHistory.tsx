@@ -154,11 +154,11 @@ export default function CompetitorReportsHistory({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between mb-4">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
           <div className="flex items-center space-x-2">
             <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
               Previous Reports
             </h2>
             <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -168,7 +168,7 @@ export default function CompetitorReportsHistory({
         </div>
 
         {/* Search and Filters */}
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
@@ -181,7 +181,7 @@ export default function CompetitorReportsHistory({
           </div>
 
           <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-400" />
+            <Filter className="h-4 w-4 text-gray-400 flex-shrink-0" />
             <select
               value={`${sortBy}-${sortOrder}`}
               onChange={(e) => {
@@ -189,7 +189,7 @@ export default function CompetitorReportsHistory({
                 setSortBy(field as 'createdAt' | 'mainDomain');
                 setSortOrder(order as 'asc' | 'desc');
               }}
-              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm"
             >
               <option value="createdAt-desc">Newest First</option>
               <option value="createdAt-asc">Oldest First</option>
@@ -209,7 +209,7 @@ export default function CompetitorReportsHistory({
         )}
 
         {filteredReports.length === 0 ? (
-          <div className="px-6 py-8 text-center">
+          <div className="px-4 sm:px-6 py-8 text-center">
             <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500 dark:text-gray-400">
               {searchQuery ? 'No reports match your search' : 'No competitor analysis reports yet'}
@@ -217,25 +217,26 @@ export default function CompetitorReportsHistory({
           </div>
         ) : (
           filteredReports.map((report) => (
-            <div key={report.id} className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center space-x-3 mb-2">
+            <div key={report.id} className="px-4 sm:px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex-1 min-w-0">
+                  {/* Main Domain and Score */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 space-y-2 sm:space-y-0">
                     <div className="flex items-center space-x-2">
-                      <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                      <TrendingUp className="h-4 w-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white break-words">
                         {report.mainDomain}
                       </h3>
                     </div>
 
                     {getOverallScore(report) && (
-                      <div className="flex items-center space-x-2">
-                        <div className={`px-2 py-1 rounded text-xs font-medium ${competitorService.getScoreBackground(getOverallScore(report)!)
+                      <div className="flex items-center space-x-2 self-start sm:self-auto">
+                        <div className={`px-2 py-1 rounded text-xs font-medium whitespace-nowrap ${competitorService.getScoreBackground(getOverallScore(report)!)
                           }`}>
                           Score: {getOverallScore(report)}
                         </div>
                         {getRanking(report) && (
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                             Rank: {getRanking(report)}
                           </div>
                         )}
@@ -243,23 +244,25 @@ export default function CompetitorReportsHistory({
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                  {/* Metadata */}
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-sm text-gray-500 dark:text-gray-400 space-y-1 sm:space-y-0">
                     <div className="flex items-center space-x-1">
-                      <Users className="h-4 w-4" />
+                      <Users className="h-4 w-4 flex-shrink-0" />
                       <span>vs {report.competitorDomains.length} competitors</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Calendar className="h-4 w-4" />
+                      <Calendar className="h-4 w-4 flex-shrink-0" />
                       <span>{formatDate(report.createdAt)}</span>
                     </div>
                   </div>
 
+                  {/* Competitor Domains */}
                   <div className="mt-2">
                     <div className="flex flex-wrap gap-1">
                       {report.competitorDomains.slice(0, 3).map((domain) => (
                         <span
                           key={domain}
-                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded"
+                          className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300 rounded break-words"
                         >
                           {domain}
                         </span>
@@ -273,7 +276,8 @@ export default function CompetitorReportsHistory({
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2">
+                {/* Action Buttons */}
+                <div className="flex items-center space-x-2 self-start sm:self-auto">
                   <button
                     onClick={() => onViewReport(report)}
                     className="p-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-md transition-colors"
@@ -297,13 +301,13 @@ export default function CompetitorReportsHistory({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="px-4 sm:px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+            <div className="text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
               Showing {filteredReports.length} of {totalReports} reports
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-2">
               <button
                 onClick={() => loadReports(currentPage - 1)}
                 disabled={currentPage === 1}
@@ -317,7 +321,7 @@ export default function CompetitorReportsHistory({
                   <button
                     key={page}
                     onClick={() => loadReports(page)}
-                    className={`px-3 py-1 rounded-md text-sm ${currentPage === page
+                    className={`px-2 sm:px-3 py-1 rounded-md text-sm ${currentPage === page
                       ? 'bg-blue-600 text-white'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       } transition-colors`}

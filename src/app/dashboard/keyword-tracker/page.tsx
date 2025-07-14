@@ -393,9 +393,9 @@ export default function KeywordTrackerPage() {
 
           {/* Results Display */}
           {results && (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-foreground">Ranking Results</h3>
+            <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-foreground">Ranking Results</h3>
                 <div className="text-sm text-muted-foreground">
                   Tracked on {formatDate(results.data.results[0]?.timestamp || new Date().toISOString())}
                 </div>
@@ -404,38 +404,50 @@ export default function KeywordTrackerPage() {
               {/* Ranking Guide */}
               <div className="mb-6 p-4 rounded-lg bg-muted/30 border border-border">
                 <div className="flex items-center space-x-2 mb-3">
-                  <AlertCircle className="h-4 w-4 text-primary" />
+                  <AlertCircle className="h-4 w-4 text-primary flex-shrink-0" />
                   <span className="font-medium text-foreground">Understanding Your Rankings</span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                    <span className="text-foreground"><strong>#1-10:</strong> First page - Great visibility, gets most clicks</span>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-green-500 flex-shrink-0"></div>
+                      <span className="text-sm text-foreground break-words">
+                        <strong>#1-10:</strong> First page - Great visibility, gets most clicks
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <span className="text-foreground"><strong>#11-30:</strong> Pages 2-3 - Good positioning, some traffic</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-yellow-500 flex-shrink-0"></div>
+                      <span className="text-sm text-foreground break-words">
+                        <strong>#11-30:</strong> Pages 2-3 - Good positioning, some traffic
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <span className="text-foreground"><strong>#31+:</strong> Page 4+ - Low visibility, needs improvement</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-red-500 flex-shrink-0"></div>
+                      <span className="text-sm text-foreground break-words">
+                        <strong>#31+:</strong> Page 4+ - Low visibility, needs improvement
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground mt-2">
+                <p className="text-xs text-muted-foreground mt-3 break-words">
                   💡 <strong>Tip:</strong> Rankings #1-3 get ~60% of all clicks. Moving from #5 to #3 can double your traffic!
                 </p>
               </div>
 
               <div className="space-y-3">
                 {results.data.results.map((result, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 rounded-lg border border-border hover:shadow-md transition-shadow">
-                    <div className="flex-1">
-                      <div className="font-medium text-foreground">{result.keyword}</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 rounded-lg border border-border hover:shadow-md transition-shadow">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-foreground break-words">{result.keyword}</div>
+                      <div className="text-sm text-muted-foreground break-words">
                         {results.data.domain} • {formatDate(result.timestamp)}
                       </div>
                     </div>
-                    <div className={`px-4 py-2 rounded-full text-sm font-medium ${getRankColor(result.rank)}`}>
+                    <div className={`px-4 py-2 rounded-full text-sm font-medium w-full sm:w-auto text-center ${getRankColor(result.rank)}`}>
                       {getRankLabel(result.rank)}
                     </div>
                   </div>
@@ -446,14 +458,14 @@ export default function KeywordTrackerPage() {
 
           {/* Tracked Domains */}
           {domains.length > 0 && (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Tracked Domains</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Tracked Domains</h3>
+              <div className="grid grid-cols-1 gap-4">
                 {domains.map((domainData, index) => (
                   <div key={index} className="p-4 rounded-lg border border-border hover:shadow-md transition-shadow">
                     <div className="flex items-center space-x-2 mb-2">
-                      <Globe className="h-4 w-4 text-primary" />
-                      <span className="font-medium text-foreground">{domainData.domain}</span>
+                      <Globe className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="font-medium text-foreground break-words">{domainData.domain}</span>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
                       <div>Keywords: {domainData.uniqueKeywords}</div>
@@ -472,9 +484,9 @@ export default function KeywordTrackerPage() {
       {activeTab === 'history' && (
         <div className="space-y-6">
           {/* History Filters */}
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Filter History</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Filter History</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Domain</label>
                 <input
@@ -510,7 +522,7 @@ export default function KeywordTrackerPage() {
             </div>
             <button
               onClick={() => loadHistory(historyFilters)}
-              className="mt-4 flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-white font-medium transition-colors hover:bg-primary-dark"
+              className="mt-4 flex items-center space-x-2 rounded-lg bg-primary px-4 py-2 text-white font-medium transition-colors hover:bg-primary-dark w-full sm:w-auto justify-center"
             >
               <Filter className="h-4 w-4" />
               <span>Apply Filters</span>
@@ -518,8 +530,8 @@ export default function KeywordTrackerPage() {
           </div>
 
           {/* History Results */}
-          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Ranking History</h3>
+          <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+            <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Ranking History</h3>
             {isLoadingHistory ? (
               <div className="flex items-center justify-center py-8">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
@@ -532,14 +544,14 @@ export default function KeywordTrackerPage() {
             ) : (
               <div className="space-y-2">
                 {history.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div className="flex-1">
-                      <div className="font-medium text-foreground">{item.keyword}</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div key={item.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-lg border border-border">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-foreground break-words">{item.keyword}</div>
+                      <div className="text-sm text-muted-foreground break-words">
                         {item.domain} • {formatDate(item.createdAt)}
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${getRankColor(item.rank)}`}>
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium w-full sm:w-auto text-center ${getRankColor(item.rank)}`}>
                       {getRankLabel(item.rank)}
                     </div>
                   </div>
@@ -555,24 +567,24 @@ export default function KeywordTrackerPage() {
         <div className="space-y-6">
           {/* Stats Overview */}
           {stats && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+              <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary flex-shrink-0">
                     <Target className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-muted-foreground">Total Keywords Tracked</p>
                     <p className="text-2xl font-bold text-foreground">{stats.totalTracked}</p>
                   </div>
                 </div>
               </div>
-              <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+              <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-500/10 text-yellow-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-500/10 text-yellow-600 flex-shrink-0">
                     <BarChart3 className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-muted-foreground">Average Rank</p>
                     <p className="text-2xl font-bold text-foreground">
                       {stats.averageRank ? Math.round(stats.averageRank) : '--'}
@@ -580,12 +592,12 @@ export default function KeywordTrackerPage() {
                   </div>
                 </div>
               </div>
-              <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+              <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
                 <div className="flex items-center space-x-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-600">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10 text-green-600 flex-shrink-0">
                     <TrendingUp className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-sm font-medium text-muted-foreground">Top Keywords</p>
                     <p className="text-2xl font-bold text-foreground">{stats.topKeywords.length}</p>
                   </div>
@@ -596,18 +608,18 @@ export default function KeywordTrackerPage() {
 
           {/* Top Keywords */}
           {stats && stats.topKeywords.length > 0 && (
-            <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Top Performing Keywords</h3>
+            <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+              <h3 className="text-lg sm:text-xl font-semibold text-foreground mb-4">Top Performing Keywords</h3>
               <div className="space-y-2">
                 {stats.topKeywords.map((keyword, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                    <div className="flex-1">
-                      <div className="font-medium text-foreground">{keyword.keyword}</div>
-                      <div className="text-sm text-muted-foreground">
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 rounded-lg border border-border">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-foreground break-words">{keyword.keyword}</div>
+                      <div className="text-sm text-muted-foreground break-words">
                         {keyword.domain} • {formatDate(keyword.createdAt)}
                       </div>
                     </div>
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${getRankColor(keyword.rank)}`}>
+                    <div className={`px-3 py-1 rounded-full text-sm font-medium w-full sm:w-auto text-center ${getRankColor(keyword.rank)}`}>
                       {getRankLabel(keyword.rank)}
                     </div>
                   </div>
@@ -621,17 +633,17 @@ export default function KeywordTrackerPage() {
             <button
               onClick={() => loadStats()}
               disabled={isLoadingStats}
-              className="flex items-center space-x-2 rounded-lg bg-primary px-6 py-3 text-white font-medium transition-colors hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed mx-auto"
+              className="flex items-center space-x-2 rounded-lg bg-primary px-6 py-3 text-white font-medium transition-colors hover:bg-primary-dark disabled:opacity-50 disabled:cursor-not-allowed mx-auto w-full sm:w-auto justify-center"
             >
               {isLoadingStats ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>Loading...</span>
+                  <span>Loading Statistics...</span>
                 </>
               ) : (
                 <>
                   <BarChart3 className="h-4 w-4" />
-                  <span>Refresh Statistics</span>
+                  <span>Load Statistics</span>
                 </>
               )}
             </button>

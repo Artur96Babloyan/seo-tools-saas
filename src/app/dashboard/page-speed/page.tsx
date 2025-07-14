@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, Save, X, Timer, Globe, Loader2 } from "lucide-react";
+import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, X, Timer, Globe, Loader2, Save } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
@@ -286,10 +286,13 @@ export default function PageSpeedAuditorPage() {
 
     setSaveStatus('saving');
     try {
+      // Save to database for history
       await reportService.saveReport(url, results);
+
       setSaveStatus('saved');
       setTimeout(() => setSaveStatus('idle'), 3000);
-    } catch {
+    } catch (error) {
+      console.error('Error saving report:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
     }

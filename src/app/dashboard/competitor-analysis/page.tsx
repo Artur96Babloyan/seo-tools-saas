@@ -9,6 +9,7 @@ import CompetitorAnalysisForm from '@/components/competitor-analysis/CompetitorA
 import CompetitorAnalysisResults from '@/components/competitor-analysis/CompetitorAnalysisResults';
 import CompetitorReportsHistory from '@/components/competitor-analysis/CompetitorReportsHistory';
 import { Clock, CheckCircle, TrendingUp, Users, Target, BarChart3, Globe, Search, Activity } from 'lucide-react';
+import { generateSimpleCompetitorPDF } from '@/lib/simplePdfGenerator';
 
 type ViewState = 'form' | 'analyzing' | 'results' | 'history';
 
@@ -29,6 +30,7 @@ export default function CompetitorAnalysisPage() {
   const [analysisSteps, setAnalysisSteps] = useState<AnalysisStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [analysisData, setAnalysisData] = useState<CompetitorAnalysisRequest | null>(null);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Simulate step progression during analysis
   useEffect(() => {
@@ -233,9 +235,41 @@ export default function CompetitorAnalysisPage() {
     setCurrentView('history');
   };
 
-  const handleSaveReport = async () => {
-    // Report is automatically saved by the backend
-    setReportsRefreshTrigger(prev => prev + 1);
+  const handleSaveReport = async (reportId: string) => {
+    try {
+      // Generate and download professional PDF report
+
+      if (analysisResults && analysisResults.comparison) {
+        // Create report data for PDF generation
+        const reportData = {
+          id: reportId,
+          analysis: analysisResults.comparison,
+          exportedAt: new Date().toISOString()
+        };
+
+        // Generate and download the PDF
+        generateSimpleCompetitorPDF(reportData);
+
+        // Show success message
+        setNotification({
+          type: 'success',
+          message: 'Professional PDF report downloaded successfully! Perfect for sharing with your team.'
+        });
+      } else {
+        setNotification({ type: 'success', message: 'Report saved successfully! You can find it in your Reports History.' });
+      }
+
+      // Refresh the reports list to show the saved report
+      setReportsRefreshTrigger(prev => prev + 1);
+
+      // Clear notification after 5 seconds
+      setTimeout(() => setNotification(null), 5000);
+
+    } catch (error) {
+      console.error('Error generating PDF report:', error);
+      setNotification({ type: 'error', message: 'Failed to generate PDF report. Please try again.' });
+      setTimeout(() => setNotification(null), 5000);
+    }
   };
 
   const getStepIcon = (step: AnalysisStep['step']) => {
@@ -277,17 +311,17 @@ export default function CompetitorAnalysisPage() {
     const progress = analysisSteps.length > 0 ? (currentStepIndex / analysisSteps.length) * 100 : 0;
 
     return (
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center mb-6">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="flex items-center justify-center mb-4 sm:mb-6">
+              <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-4 border-blue-600 border-t-transparent"></div>
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
               Analyzing Competitors
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 break-words">
               {analysisData ? (
                 <>Analyzing {analysisData.mainDomain} vs {analysisData.competitorDomains.length} competitors</>
               ) : (
@@ -297,8 +331,8 @@ export default function CompetitorAnalysisPage() {
           </div>
 
           {/* Progress Bar */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-2">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-2">
               <span className="text-sm text-gray-600 dark:text-gray-400">Progress</span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
                 {currentStepIndex + 1} of {analysisSteps.length} steps
@@ -314,27 +348,30 @@ export default function CompetitorAnalysisPage() {
 
           {/* Current Step */}
           {currentStep && (
-            <div className="mb-8">
-              <div className="flex items-center justify-center space-x-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  <span className="font-medium text-blue-900 dark:text-blue-300">
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-center gap-3 sm:space-x-3 sm:gap-0 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <div className="flex items-center space-x-2 justify-center sm:justify-start">
+                  <Globe className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                  <span className="font-medium text-blue-900 dark:text-blue-300 break-words text-center sm:text-left">
                     {currentStep.domain === 'Analysis Complete' ? 'Analysis Complete' : currentStep.domain}
                   </span>
                 </div>
-                <span className="text-blue-600 dark:text-blue-400">→</span>
-                <div className="flex items-center space-x-2">
-                  {React.createElement(getStepIcon(currentStep.step), { className: "h-5 w-5 text-blue-600 dark:text-blue-400" })}
-                  <span className="font-medium text-blue-900 dark:text-blue-300">
-                    {getStepLabel(currentStep.step)}
-                  </span>
+                <span className="text-blue-600 dark:text-blue-400 text-center sm:block hidden">→</span>
+                <div className="flex items-center justify-center sm:justify-start">
+                  <span className="text-blue-600 dark:text-blue-400 sm:hidden mr-2">↓</span>
+                  <div className="flex items-center space-x-2">
+                    {React.createElement(getStepIcon(currentStep.step), { className: "h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0" })}
+                    <span className="font-medium text-blue-900 dark:text-blue-300 break-words text-center sm:text-left">
+                      {getStepLabel(currentStep.step)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
           {/* Steps List */}
-          <div className="space-y-3 mb-8">
+          <div className="space-y-2 sm:space-y-3 mb-6 sm:mb-8">
             {analysisSteps.slice(0, 12).map((step, index) => {
               const StepIcon = getStepIcon(step.step);
 
@@ -348,17 +385,17 @@ export default function CompetitorAnalysisPage() {
                       : 'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
                     }`}
                 >
-                  <div className="flex items-center space-x-2 flex-1">
+                  <div className="flex items-center space-x-2 flex-1 min-w-0">
                     {step.status === 'completed' ? (
-                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 dark:text-green-400 flex-shrink-0" />
                     ) : step.status === 'analyzing' ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
+                      <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-blue-600 border-t-transparent flex-shrink-0" />
                     ) : (
-                      <StepIcon className="h-5 w-5 text-gray-400" />
+                      <StepIcon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 flex-shrink-0" />
                     )}
-                    <div className="flex-1">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-sm font-medium ${step.status === 'completed'
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0">
+                        <span className={`text-sm font-medium break-words ${step.status === 'completed'
                           ? 'text-green-900 dark:text-green-300'
                           : step.status === 'analyzing'
                             ? 'text-blue-900 dark:text-blue-300'
@@ -387,7 +424,7 @@ export default function CompetitorAnalysisPage() {
 
           {/* Tip */}
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <p className="text-sm text-blue-700 dark:text-blue-300">
+            <p className="text-sm text-blue-700 dark:text-blue-300 break-words">
               💡 <strong>Tip:</strong> While we analyze your competitors, the results will be automatically saved to your reports for future reference.
             </p>
           </div>
@@ -441,26 +478,43 @@ export default function CompetitorAnalysisPage() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
+      {/* Notification */}
+      {notification && (
+        <div className={`p-4 rounded-lg border ${notification.type === 'success'
+          ? 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-300'
+          : 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-300'
+          }`}>
+          <div className="flex items-center justify-between">
+            <p className="text-sm font-medium">{notification.message}</p>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500 text-white">
-              <BarChart3 className="h-5 w-5" />
+        <div className="flex flex-col space-y-4">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-3 lg:space-y-0">
+            <div className="flex items-center space-x-3">
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-purple-500 text-white">
+                <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5" />
+              </div>
+              <div>
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Competitor Analysis</h1>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Competitor Analysis</h1>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 sm:ml-auto">
-            <p className="text-sm text-muted-foreground">
-              Compare your website&apos;s SEO performance against your competitors
-            </p>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               {currentView === 'results' && (
                 <button
                   onClick={handleNewAnalysis}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
                 >
                   New Analysis
                 </button>
@@ -469,7 +523,7 @@ export default function CompetitorAnalysisPage() {
               {currentView !== 'history' && (
                 <button
                   onClick={handleViewHistory}
-                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors"
+                  className="px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted transition-colors text-center"
                 >
                   View History
                 </button>
@@ -478,29 +532,34 @@ export default function CompetitorAnalysisPage() {
               {currentView === 'history' && (
                 <button
                   onClick={handleNewAnalysis}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
                 >
                   New Analysis
                 </button>
               )}
             </div>
           </div>
+          <div>
+            <p className="text-sm text-muted-foreground">
+              Compare your website&apos;s SEO performance against your competitors
+            </p>
+          </div>
         </div>
       </div>
 
       {/* Stats */}
       {currentView === 'form' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
               <div key={stat.name} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
                 <div className="flex items-center">
-                  <div className={`${stat.bgColor} dark:${stat.bgColor.replace('bg-', 'bg-')}/20 p-2 rounded-lg`}>
+                  <div className={`${stat.bgColor} dark:${stat.bgColor.replace('bg-', 'bg-')}/20 p-2 rounded-lg flex-shrink-0`}>
                     <Icon className={`h-5 w-5 ${stat.color} dark:${stat.color.replace('text-', 'text-')}`} />
                   </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{stat.name}</p>
+                  <div className="ml-3 min-w-0">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 break-words">{stat.name}</p>
                     <p className="text-lg font-semibold text-gray-900 dark:text-white">{stat.value}</p>
                   </div>
                 </div>
@@ -512,15 +571,15 @@ export default function CompetitorAnalysisPage() {
 
       {/* Navigation Breadcrumbs */}
       {currentView !== 'form' && (
-        <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
+        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 text-sm text-gray-500 dark:text-gray-400">
           <button
             onClick={handleNewAnalysis}
-            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
           >
             Competitor Analysis
           </button>
-          <span>/</span>
-          <span className="text-gray-900 dark:text-white">
+          <span className="hidden sm:inline">/</span>
+          <span className="text-gray-900 dark:text-white break-words">
             {currentView === 'analyzing' && 'Analyzing...'}
             {currentView === 'results' && (selectedReport ? `Results - ${selectedReport.mainDomain}` : 'Results')}
             {currentView === 'history' && 'Report History'}

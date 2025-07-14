@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Clock, ExternalLink, FileText, Search, Trash2 } from "lucide-react";
+import { Calendar, Clock, ExternalLink, FileText, Search, Trash2, Download } from "lucide-react";
 import { reportService, type Report } from "@/lib/services";
 import { ApiError } from "@/lib/api";
+import { generatePageSpeedPDF } from "@/lib/pageSpeedPdfGenerator";
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -12,6 +13,7 @@ export default function ReportsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [downloadingReports, setDownloadingReports] = useState<Set<string>>(new Set());
 
   const fetchReports = async (page = 1, query = "") => {
     setIsLoading(true);
@@ -60,11 +62,27 @@ export default function ReportsPage() {
     }
   };
 
-  const handleDownload = async (id: string) => {
+  const handleDownload = async (report: Report) => {
     try {
-      await reportService.downloadReport(id);
+      setDownloadingReports(prev => new Set(prev).add(report.id));
+
+      // Generate PDF from the saved report data
+      const reportData = {
+        id: report.id,
+        analysis: report.analysisResult,
+        exportedAt: new Date().toISOString()
+      };
+
+      generatePageSpeedPDF(reportData);
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to download report');
+      setError(err instanceof Error ? err.message : 'Failed to download PDF report');
+    } finally {
+      setDownloadingReports(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(report.id);
+        return newSet;
+      });
     }
   };
 
@@ -239,11 +257,19 @@ export default function ReportsPage() {
                     <ExternalLink className="h-4 w-4 mx-auto" />
                   </button>
                   <button
-                    onClick={() => handleDownload(report.id)}
-                    className="flex-1 sm:flex-none p-2 rounded-lg border border-border hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors"
-                    title="Download report"
+                    onClick={() => handleDownload(report)}
+                    className="flex-1 sm:flex-none p-2 rounded-lg border border-border hover:bg-blue-50 hover:border-blue-200 hover:text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Download PDF report"
+                    disabled={downloadingReports.has(report.id)}
                   >
-                    <FileText className="h-4 w-4 mx-auto" />
+                    {downloadingReports.has(report.id) ? (
+                      <svg className="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                    ) : (
+                      <Download className="h-4 w-4 mx-auto" />
+                    )}
                   </button>
                   <button
                     onClick={() => handleDelete(report.id)}

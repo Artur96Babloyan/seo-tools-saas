@@ -106,15 +106,15 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
     rank: number;
     total: number;
   }) => (
-    <div className={`p-4 rounded-lg border-2 ${competitorService.getScoreBackground(score)}`}>
-      <div className="flex items-center justify-between mb-2">
-        <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">{title}</h3>
-        <div className="flex items-center space-x-1">
-          <Trophy className="h-4 w-4 text-yellow-500" />
+    <div className={`p-3 sm:p-4 rounded-lg border-2 ${competitorService.getScoreBackground(score)}`}>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 space-y-1 sm:space-y-0">
+        <h3 className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 break-words">{title}</h3>
+        <div className="flex items-center space-x-1 self-start sm:self-auto">
+          <Trophy className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-500 flex-shrink-0" />
           <span className="text-xs text-gray-600 dark:text-gray-400">#{rank}/{total}</span>
         </div>
       </div>
-      <div className="text-2xl font-bold text-gray-900 dark:text-white">{score}</div>
+      <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{score}</div>
       <div className="text-xs text-gray-500 dark:text-gray-400">out of 100</div>
     </div>
   );
@@ -346,31 +346,31 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-3 sm:space-y-0">
+          <div className="min-w-0">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Competitor Analysis Results
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 break-words">
               Analysis completed for {safeData.summary.mainDomain} vs {safeData.summary.totalCompetitors} competitors
             </p>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 self-start sm:self-auto">
             <button
               onClick={() => onSaveReport?.(results.reportId)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="px-3 py-2 sm:px-4 sm:py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm sm:text-base"
             >
               <Download className="h-4 w-4 mr-2 inline" />
-              Save Report
+              Download Report
             </button>
           </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <ScoreCard
             title="Overall Score"
             score={safeData.summary.overallScore}
@@ -401,7 +401,7 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
       {/* Tabs */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="border-b border-gray-200 dark:border-gray-700">
-          <nav className="flex space-x-8 px-6" aria-label="Tabs">
+          <nav className="flex flex-wrap sm:flex-nowrap space-x-2 sm:space-x-8 px-4 sm:px-6 py-2 sm:py-0" aria-label="Tabs">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -411,17 +411,18 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
                   className={`${activeTab === tab.id
                     ? 'border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                    } whitespace-nowrap sm:whitespace-normal py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
+                    } whitespace-nowrap py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm flex items-center space-x-1 sm:space-x-2`}
                 >
-                  <Icon className="h-4 w-4" />
-                  <span>{tab.label}</span>
+                  <Icon className="h-3 w-3 sm:h-4 sm:w-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               );
             })}
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {activeTab === 'overview' && (
             <div className="space-y-6">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

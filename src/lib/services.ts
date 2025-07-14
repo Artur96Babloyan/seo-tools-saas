@@ -949,17 +949,17 @@ export const competitorService = {
   },
 
   getScoreColor(score: number): string {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    if (score >= 50) return 'text-orange-600';
-    return 'text-red-600';
+    if (score >= 90) return 'text-green-700 dark:text-green-400';
+    if (score >= 70) return 'text-yellow-700 dark:text-yellow-400';
+    if (score >= 50) return 'text-orange-700 dark:text-orange-400';
+    return 'text-red-700 dark:text-red-400';
   },
 
   getScoreBackground(score: number): string {
-    if (score >= 90) return 'bg-green-50 border-green-200';
-    if (score >= 70) return 'bg-yellow-50 border-yellow-200';
-    if (score >= 50) return 'bg-orange-50 border-orange-200';
-    return 'bg-red-50 border-red-200';
+    if (score >= 90) return 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-700 dark:text-green-300';
+    if (score >= 70) return 'bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-700 dark:text-yellow-300';
+    if (score >= 50) return 'bg-orange-50 border-orange-200 text-orange-800 dark:bg-orange-900/20 dark:border-orange-700 dark:text-orange-300';
+    return 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-700 dark:text-red-300';
   },
 
   getDifferenceColor(difference: number): string {
