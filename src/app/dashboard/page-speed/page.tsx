@@ -230,6 +230,84 @@ export default function PageSpeedAuditorPage() {
   const [error, setError] = useState<string | null>(null);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [modalCategory, setModalCategory] = useState<string>('');
+
+  // Ref for recommendations section
+  const recommendationsRef = useRef<HTMLDivElement>(null);
+
+  const handleCategoryClick = (category: string) => {
+    setSelectedCategory(category);
+    // Smooth scroll to recommendations section
+    setTimeout(() => {
+      recommendationsRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
+
+  const handleDetailClick = (category: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setModalCategory(category);
+    setShowDetailModal(true);
+  };
+
+  const getCategoryGuidance = (category: string) => {
+    const guidance = {
+      performance: {
+        title: "Performance Optimization Guide",
+        tips: [
+          "Optimize images: Use WebP format and compress images",
+          "Minimize JavaScript: Remove unused code and defer non-critical JS",
+          "Enable text compression (Gzip/Brotli)",
+          "Use a Content Delivery Network (CDN)",
+          "Implement lazy loading for images and videos",
+          "Minimize CSS and remove unused styles",
+          "Optimize web fonts loading"
+        ]
+      },
+      seo: {
+        title: "SEO Improvement Guide",
+        tips: [
+          "Add descriptive meta titles and descriptions",
+          "Use proper heading hierarchy (H1, H2, H3)",
+          "Implement structured data (Schema markup)",
+          "Optimize images with alt text",
+          "Create an XML sitemap",
+          "Fix crawl errors and broken links",
+          "Ensure mobile-friendly design"
+        ]
+      },
+      accessibility: {
+        title: "Accessibility Enhancement Guide",
+        tips: [
+          "Add alt text to all images",
+          "Ensure sufficient color contrast (4.5:1 ratio)",
+          "Make all interactive elements keyboard accessible",
+          "Use semantic HTML elements",
+          "Add ARIA labels for screen readers",
+          "Ensure form inputs have proper labels",
+          "Test with screen reader software"
+        ]
+      },
+      'best-practices': {
+        title: "Best Practices Implementation Guide",
+        tips: [
+          "Use HTTPS for all pages",
+          "Avoid deprecated JavaScript APIs",
+          "Implement proper error handling",
+          "Use modern JavaScript features",
+          "Avoid console errors and warnings",
+          "Implement proper caching strategies",
+          "Follow security best practices"
+        ]
+      }
+    };
+
+    return guidance[category as keyof typeof guidance] || { title: "Improvement Guide", tips: [] };
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -499,7 +577,10 @@ export default function PageSpeedAuditorPage() {
             <h2 className="text-xl font-semibold text-foreground mb-6">Analysis Scores</h2>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
-                <div className={`p-4 rounded-lg border-2 ${getScoreBg(results.performance?.score || 0)}`}>
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${getScoreBg(results.performance?.score || 0)} ${selectedCategory === 'performance' ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => handleCategoryClick('performance')}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <Zap className="h-5 w-5 text-primary" />
@@ -529,9 +610,19 @@ export default function PageSpeedAuditorPage() {
                       style={{ width: `${results.performance?.score || 0}%` }}
                     />
                   </div>
+                  <div className="mt-2 text-xs text-primary">Click to see recommendations →</div>
+                  <button
+                    onClick={(e) => handleDetailClick('performance', e)}
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    View detailed guide
+                  </button>
                 </div>
 
-                <div className={`p-4 rounded-lg border-2 ${getScoreBg(results.seo?.score || 0)}`}>
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${getScoreBg(results.seo?.score || 0)} ${selectedCategory === 'seo' ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => handleCategoryClick('seo')}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <Search className="h-5 w-5 text-primary" />
@@ -561,11 +652,21 @@ export default function PageSpeedAuditorPage() {
                       style={{ width: `${results.seo?.score || 0}%` }}
                     />
                   </div>
+                  <div className="mt-2 text-xs text-primary">Click to see recommendations →</div>
+                  <button
+                    onClick={(e) => handleDetailClick('seo', e)}
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    View detailed guide
+                  </button>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <div className={`p-4 rounded-lg border-2 ${getScoreBg(results.accessibility?.score || 0)}`}>
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${getScoreBg(results.accessibility?.score || 0)} ${selectedCategory === 'accessibility' ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => handleCategoryClick('accessibility')}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="h-5 w-5 text-primary" />
@@ -595,9 +696,19 @@ export default function PageSpeedAuditorPage() {
                       style={{ width: `${results.accessibility?.score || 0}%` }}
                     />
                   </div>
+                  <div className="mt-2 text-xs text-primary">Click to see recommendations →</div>
+                  <button
+                    onClick={(e) => handleDetailClick('accessibility', e)}
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    View detailed guide
+                  </button>
                 </div>
 
-                <div className={`p-4 rounded-lg border-2 ${getScoreBg(results.bestPractices?.score || 0)}`}>
+                <div
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${getScoreBg(results.bestPractices?.score || 0)} ${selectedCategory === 'best-practices' ? 'ring-2 ring-primary' : ''}`}
+                  onClick={() => handleCategoryClick('best-practices')}
+                >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="h-5 w-5 text-primary" />
@@ -627,6 +738,13 @@ export default function PageSpeedAuditorPage() {
                       style={{ width: `${results.bestPractices?.score || 0}%` }}
                     />
                   </div>
+                  <div className="mt-2 text-xs text-primary">Click to see recommendations →</div>
+                  <button
+                    onClick={(e) => handleDetailClick('best-practices', e)}
+                    className="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                  >
+                    View detailed guide
+                  </button>
                 </div>
               </div>
             </div>
@@ -714,25 +832,62 @@ export default function PageSpeedAuditorPage() {
 
           {/* Recommendations */}
           {results.recommendations && results.recommendations.length > 0 && (
-            <div className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Recommendations</h3>
+            <div ref={recommendationsRef} className="rounded-lg border border-border bg-card p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+                <h3 className="text-lg font-semibold text-foreground">Recommendations</h3>
+                {selectedCategory && (
+                  <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+                    <span className="text-sm text-muted-foreground">Filtered by:</span>
+                    <span className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium capitalize">
+                      {selectedCategory}
+                    </span>
+                    <button
+                      onClick={() => setSelectedCategory(null)}
+                      className="text-xs text-muted-foreground hover:text-foreground underline"
+                    >
+                      Show all
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className="space-y-4">
-                {results.recommendations.map((recommendation, index: number) => (
-                  <div key={index} className="rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
-                    <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
-                          <h4 className="font-medium text-foreground break-words">{recommendation.title}</h4>
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getImpactColor(recommendation.impact)}`}>
-                            {recommendation.priority}
-                          </span>
+                {results.recommendations
+                  .filter(recommendation =>
+                    !selectedCategory ||
+                    recommendation.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+                    selectedCategory === 'best-practices' && recommendation.category.toLowerCase().includes('best')
+                  )
+                  .map((recommendation, index: number) => (
+                    <div key={index} className="rounded-lg border border-border p-4 hover:bg-muted/50 transition-colors">
+                      <div className="flex flex-col sm:flex-row sm:items-start space-y-3 sm:space-y-0">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-2">
+                            <h4 className="font-medium text-foreground break-words">{recommendation.title}</h4>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium w-fit ${getImpactColor(recommendation.impact)}`}>
+                              {recommendation.priority}
+                            </span>
+                          </div>
+                          <p className="text-sm text-muted-foreground break-words">{recommendation.description}</p>
+                          <div className="text-xs text-muted-foreground mt-1">Category: {recommendation.category}</div>
                         </div>
-                        <p className="text-sm text-muted-foreground break-words">{recommendation.description}</p>
-                        <div className="text-xs text-muted-foreground mt-1">Category: {recommendation.category}</div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                {results.recommendations.filter(recommendation =>
+                  !selectedCategory ||
+                  recommendation.category.toLowerCase().includes(selectedCategory.toLowerCase()) ||
+                  selectedCategory === 'best-practices' && recommendation.category.toLowerCase().includes('best')
+                ).length === 0 && selectedCategory && (
+                    <div className="text-center py-8 text-muted-foreground">
+                      <p>No recommendations found for &apos;{selectedCategory}&apos;. </p>
+                      <button
+                        onClick={() => setSelectedCategory(null)}
+                        className="text-primary hover:underline mt-2"
+                      >
+                        View all recommendations
+                      </button>
+                    </div>
+                  )}
               </div>
             </div>
           )}
@@ -877,6 +1032,60 @@ export default function PageSpeedAuditorPage() {
         strategy={strategy}
         categories={categories}
       />
+
+      {/* Detail Guidance Modal */}
+      {showDetailModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card border border-border rounded-lg p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="text-xl font-semibold text-foreground">
+                {getCategoryGuidance(modalCategory).title}
+              </h2>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+              >
+                <X className="h-4 w-4 text-muted-foreground" />
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <p className="text-sm text-muted-foreground mb-4">
+                Here are specific actionable steps to improve your {modalCategory} score:
+              </p>
+
+              <div className="space-y-3">
+                {getCategoryGuidance(modalCategory).tips.map((tip, index) => (
+                  <div key={index} className="flex items-start space-x-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="flex-shrink-0 w-6 h-6 bg-primary text-white rounded-full flex items-center justify-center text-xs font-medium">
+                      {index + 1}
+                    </div>
+                    <p className="text-sm text-foreground">{tip}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
+              <button
+                onClick={() => {
+                  setShowDetailModal(false);
+                  handleCategoryClick(modalCategory);
+                }}
+                className="flex-1 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-dark transition-colors"
+              >
+                View Specific Recommendations
+              </button>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className="flex-1 px-4 py-2 border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
