@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Homepage -->
   <url>
-    <loc>/</loc>
+    <loc>https://auditcraft.io/</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
@@ -10,7 +10,7 @@
 
   <!-- Dashboard -->
   <url>
-    <loc>/dashboard</loc>
+    <loc>https://auditcraft.io/dashboard</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -18,49 +18,49 @@
 
   <!-- SEO Tools -->
   <url>
-    <loc>/dashboard/seo-optimizer</loc>
+    <loc>https://auditcraft.io/dashboard/seo-optimizer</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/sitemap</loc>
+    <loc>https://auditcraft.io/dashboard/sitemap</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/meta-tags</loc>
+    <loc>https://auditcraft.io/dashboard/meta-tags</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/page-speed</loc>
+    <loc>https://auditcraft.io/dashboard/page-speed</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/keyword-tracker</loc>
+    <loc>https://auditcraft.io/dashboard/keyword-tracker</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/competitor-analysis</loc>
+    <loc>https://auditcraft.io/dashboard/competitor-analysis</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
-    <loc>/dashboard/reports</loc>
+    <loc>https://auditcraft.io/dashboard/reports</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -68,14 +68,14 @@
 
   <!-- Auth Pages -->
   <url>
-    <loc>/auth/login</loc>
+    <loc>https://auditcraft.io/auth/login</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>/auth/register</loc>
+    <loc>https://auditcraft.io/auth/register</loc>
     <lastmod>2024-12-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
