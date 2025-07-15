@@ -17,19 +17,44 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "SEO Tools - Professional SEO Analysis Suite",
-  description: "Comprehensive SEO tools including AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis. Boost your website's search engine performance.",
+  description: "Professional SEO tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis.",
   keywords: ["SEO", "AI content optimization", "sitemap generator", "meta tags", "page speed", "keyword tracking", "competitor analysis", "website optimization"],
   authors: [{ name: "SEO Tools" }],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://auditcraft.io',
+  },
   openGraph: {
     title: "SEO Tools - Professional SEO Analysis Suite",
     description: "Comprehensive SEO tools for modern websites. AI-powered content optimization, performance analysis, and competitive insights.",
     type: "website",
     locale: "en_US",
+    url: "https://auditcraft.io",
+    siteName: "SEO Tools",
+    images: [
+      {
+        url: "https://auditcraft.io/globe.svg",
+        width: 1200,
+        height: 630,
+        alt: "SEO Tools - Professional SEO Analysis Suite",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "SEO Tools - Professional SEO Analysis Suite",
     description: "Comprehensive SEO tools for modern websites. AI-powered content optimization, performance analysis, and competitive insights.",
+    images: ["https://auditcraft.io/globe.svg"],
   },
 };
 
