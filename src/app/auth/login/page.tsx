@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { LoginCredentials } from '@/types/auth';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap, AlertCircle } from 'lucide-react';
 
+
 export default function LoginPage() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
@@ -15,6 +16,9 @@ export default function LoginPage() {
   const [error, setError] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [isRateLimited, setIsRateLimited] = useState(false);
+  const [retryCountdown, setRetryCountdown] = useState(0);
+  const [lastAttemptTime, setLastAttemptTime] = useState(0);
 
   const { login } = useAuth();
   const router = useRouter();
@@ -23,6 +27,16 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Prevent rapid-fire attempts
+    const now = Date.now();
+    const timeSinceLastAttempt = now - lastAttemptTime;
+    if (timeSinceLastAttempt < 2000) { // 2 second minimum between attempts
+      setError('Please wait a moment before trying again.');
+      return;
+    }
+
+    setLastAttemptTime(now);
     setError('');
     setIsSubmitting(true);
 
@@ -30,7 +44,26 @@ export default function LoginPage() {
       await login(credentials);
       router.push('/dashboard');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
+
+      // Handle rate limiting
+      if (errorMessage.includes('Too many requests') || errorMessage.includes('rate limit')) {
+        setIsRateLimited(true);
+        setRetryCountdown(30); // 30 seconds cooldown
+
+        // Start countdown
+        const interval = setInterval(() => {
+          setRetryCountdown(prev => {
+            if (prev <= 1) {
+              clearInterval(interval);
+              setIsRateLimited(false);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -66,9 +99,19 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 animate-in slide-in-from-top-2 duration-300">
+              <div className={`flex items-center gap-3 p-4 border rounded-xl animate-in slide-in-from-top-2 duration-300 ${error.includes('Too many requests') || error.includes('rate limit')
+                ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-700 dark:text-yellow-400'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
+                }`}>
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                <span className="text-sm font-medium">{error}</span>
+                <div className="flex-1">
+                  <span className="text-sm font-medium">{error}</span>
+                  {(error.includes('Too many requests') || error.includes('rate limit')) && (
+                    <p className="text-xs mt-1 opacity-90">
+                      Please wait before trying again. This helps protect against brute force attacks.
+                    </p>
+                  )}
+                </div>
               </div>
             )}
 
@@ -128,13 +171,18 @@ export default function LoginPage() {
             {/* Submit Button */}
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || isRateLimited}
               className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-md transform hover:scale-[1.02] disabled:scale-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
             >
               {isSubmitting ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Signing in...</span>
+                </>
+              ) : isRateLimited ? (
+                <>
+                  <span>Rate Limited</span>
+                  <span className="text-sm">({retryCountdown}s)</span>
                 </>
               ) : (
                 <>

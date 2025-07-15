@@ -5,6 +5,7 @@ import { Globe, Search, Download, ExternalLink, AlertCircle, Clock, CheckCircle,
 import { sitemapService, type SitemapResult } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 
+
 export default function SitemapGeneratorPage() {
   const [url, setUrl] = useState("");
   const [maxDepth, setMaxDepth] = useState(2);

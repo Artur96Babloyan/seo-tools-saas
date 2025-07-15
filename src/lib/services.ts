@@ -138,6 +138,12 @@ export interface MetaTagValidationResult {
       issues?: string[];
       recommendations?: string[];
     };
+    metaKeywords: {
+      exists: boolean;
+      content?: string | null;
+      issues?: string[];
+      recommendations?: string[];
+    };
     metaRobots: {
       exists: boolean;
       content?: string | null;
@@ -580,6 +586,12 @@ export const metaTagService = {
             length: data.tags.metaDescription?.length || 0,
             issues: data.tags.metaDescription?.issues || [],
             recommendations: data.tags.metaDescription?.recommendations || []
+          },
+          metaKeywords: {
+            exists: data.tags.metaKeywords?.exists || false,
+            content: data.tags.metaKeywords?.content || null,
+            issues: data.tags.metaKeywords?.issues || [],
+            recommendations: data.tags.metaKeywords?.recommendations || []
           },
           metaRobots: {
             exists: data.tags.metaRobots?.exists || false,

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { TrendingUp, Search, Plus, X, Filter, Target, BarChart3, Globe, AlertCircle } from "lucide-react";
 import { keywordTrackingService } from "@/lib/services";
 import { ApiError } from "@/lib/api";
+
 import { getGoogleDomains } from "@/lib/googleDomains";
 import {
   KeywordTrackingResponse,
@@ -11,6 +12,8 @@ import {
   KeywordStatsResponse,
   TrackedDomain
 } from "@/types/keyword-tracker";
+
+
 
 // Get Google domains using the utility function
 const GOOGLE_DOMAINS = getGoogleDomains();

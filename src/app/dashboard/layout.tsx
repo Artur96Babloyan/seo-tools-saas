@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Sidebar, MobileMenuButton } from "@/components/sidebar";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default function DashboardLayout({
   children,
@@ -43,7 +44,10 @@ export default function DashboardLayout({
 
           {/* Main Content */}
           <main className="flex-1 overflow-auto">
-            {children}
+            <div className="p-4 sm:p-6">
+              <Breadcrumb />
+              {children}
+            </div>
           </main>
         </div>
       </div>

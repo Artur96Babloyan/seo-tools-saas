@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp } from "lucide-react";
+import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp, Users, Wand2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { reportService, type ReportStatistics } from "@/lib/services";
+
 
 const tools = [
   {
@@ -33,6 +34,20 @@ const tools = [
     icon: TrendingUp,
     href: "/dashboard/keyword-tracker",
     color: "bg-purple-500",
+  },
+  {
+    name: "Competitor Analysis",
+    description: "Analyze your competitors' SEO strategies, backlinks, and content",
+    icon: Users,
+    href: "/dashboard/competitor-analysis",
+    color: "bg-orange-500",
+  },
+  {
+    name: "AI Content Optimizer",
+    description: "Optimize your content for better SEO with AI-powered suggestions",
+    icon: Wand2,
+    href: "/dashboard/seo-optimizer",
+    color: "bg-pink-500",
   },
 ];
 
@@ -170,6 +185,60 @@ export default function DashboardPage() {
               </div>
             </Link>
           ))}
+        </div>
+      </div>
+
+      {/* Learn More - AI Content Optimizer */}
+      <div className="mb-8 rounded-lg border border-border bg-gradient-to-r from-pink-500/5 to-purple-500/10 p-6">
+        <div className="flex items-start space-x-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-pink-500 text-white">
+            <Wand2 className="h-6 w-6" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-foreground">🎯 New: AI Content Optimizer</h3>
+            <p className="mt-2 text-muted-foreground">
+              Transform your content with AI-powered SEO optimization. Our advanced tool analyzes your text and provides
+              intelligent suggestions to improve search engine rankings and user engagement.
+            </p>
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">✨ Key Features:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• AI-powered content optimization</li>
+                  <li>• Keyword density analysis</li>
+                  <li>• Readability scoring</li>
+                  <li>• SEO suggestions and recommendations</li>
+                  <li>• URL-based content extraction</li>
+                  <li>• Multiple export formats</li>
+                </ul>
+              </div>
+              <div className="space-y-2">
+                <h4 className="font-medium text-foreground">🚀 How It Works:</h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Enter your content or extract from URL</li>
+                  <li>• Set your focus keyword</li>
+                  <li>• Get AI-optimized content instantly</li>
+                  <li>• View detailed suggestions and scores</li>
+                  <li>• Export in your preferred format</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/dashboard/seo-optimizer"
+                className="inline-flex items-center rounded-lg bg-pink-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-pink-600"
+              >
+                Try AI Content Optimizer
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+              <Link
+                href="/dashboard/seo-optimizer/history"
+                className="inline-flex items-center rounded-lg border border-border bg-card px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+              >
+                View Optimization History
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 

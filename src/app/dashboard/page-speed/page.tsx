@@ -7,6 +7,7 @@ import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 import PerformanceDisclaimer from "@/components/PerformanceDisclaimer";
 
+
 // Enhanced Loading Component
 const PageSpeedLoadingModal = ({
   isOpen,

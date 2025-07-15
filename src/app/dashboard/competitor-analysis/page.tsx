@@ -11,6 +11,7 @@ import CompetitorReportsHistory from '@/components/competitor-analysis/Competito
 import { Clock, CheckCircle, TrendingUp, Users, Target, BarChart3, Globe, Search, Activity } from 'lucide-react';
 import { generateSimpleCompetitorPDF } from '@/lib/simplePdfGenerator';
 
+
 type ViewState = 'form' | 'analyzing' | 'results' | 'history';
 
 interface AnalysisStep {

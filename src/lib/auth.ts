@@ -47,13 +47,15 @@ class AuthService {
     }
   }
 
-  // Make authenticated API request
+  // Make authenticated API request with retry logic
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    retryCount = 0
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const token = this.getToken();
+    const maxRetries = 3;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -79,6 +81,20 @@ class AuthService {
         if (response.status === 401) {
           this.clearAuthData();
           throw new Error('Authentication required. Please log in again.');
+        }
+
+        // Handle 429 rate limiting with exponential backoff
+        if (response.status === 429 && retryCount < maxRetries) {
+          const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          retryCount++;
+          
+          return this.makeRequest<T>(endpoint, options, retryCount);
+        }
+
+        // Handle 429 without retries left
+        if (response.status === 429) {
+          throw new Error('Too many requests. Please wait a moment before trying again.');
         }
 
         throw new Error(errorData.message || `Request failed with status ${response.status}`);

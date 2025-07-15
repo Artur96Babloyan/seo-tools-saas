@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Calendar, Clock, ExternalLink, FileText, Search, Trash2, Download } from "lucide-react";
+import { FileText, Search, Download, Trash2, Calendar, Clock, ExternalLink } from "lucide-react";
 import { reportService, type Report } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 import { generatePageSpeedPDF } from "@/lib/pageSpeedPdfGenerator";
+
 
 export default function ReportsPage() {
   const [reports, setReports] = useState<Report[]>([]);
@@ -22,20 +23,47 @@ export default function ReportsPage() {
     try {
       if (query) {
         const searchResults = await reportService.searchReports(query);
-        setReports(searchResults);
-        setTotalPages(1);
+        // Handle the new response format with query, reports, and pagination
+        if (searchResults && typeof searchResults === 'object' && 'reports' in searchResults) {
+          // New format: { query, reports: Report[], pagination }
+          const searchResponse = searchResults as unknown as { reports: Report[]; pagination?: { totalPages: number } };
+          if (Array.isArray(searchResponse.reports)) {
+            setReports(searchResponse.reports);
+            setTotalPages(searchResponse.pagination?.totalPages || 1);
+          } else {
+            console.error('Search results.reports is not an array:', searchResponse.reports);
+            setReports([]);
+            setError('Invalid search results format');
+          }
+        } else if (Array.isArray(searchResults)) {
+          // Legacy format: Report[] array directly
+          setReports(searchResults);
+          setTotalPages(1);
+        } else {
+          console.error('Search results is not in expected format:', searchResults);
+          setReports([]);
+          setError('Invalid search results format');
+        }
       } else {
         const response = await reportService.getReports(page, 10);
 
-        setReports(response.reports);
-        setTotalPages(response.totalPages);
+        if (response && Array.isArray(response.reports)) {
+          setReports(response.reports);
+          setTotalPages(response.totalPages);
+        } else {
+          console.error('Reports response is invalid:', response);
+          setReports([]);
+          setError('Invalid reports response format');
+        }
       }
     } catch (err) {
+      console.error('Error fetching reports:', err);
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
         setError('Failed to fetch reports');
       }
+      setReports([]);
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +198,7 @@ export default function ReportsPage() {
             </div>
           ))}
         </div>
-      ) : reports.length === 0 ? (
+      ) : !Array.isArray(reports) || reports.length === 0 ? (
         <div className="text-center py-8 sm:py-12">
           <FileText className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-medium text-foreground mb-2">No Reports Found</h3>

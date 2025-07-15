@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckCircle, Search, AlertTriangle, XCircle, Copy, Check } from "lucide-react";
 import { metaTagService, type MetaTagValidationResult } from "@/lib/services";
 
+
 export default function MetaTagValidatorPage() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);

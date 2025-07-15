@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X } from "lucide-react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,11 @@ const navigation = [
     name: "Dashboard",
     href: "/dashboard",
     icon: Home,
+  },
+  {
+    name: "AI Content Optimizer",
+    href: "/dashboard/seo-optimizer",
+    icon: Sparkles,
   },
   {
     name: "Sitemap Generator",
@@ -30,11 +35,6 @@ const navigation = [
     icon: Zap,
   },
   {
-    name: "Reports",
-    href: "/dashboard/reports",
-    icon: FileText,
-  },
-  {
     name: "Keyword Tracker",
     href: "/dashboard/keyword-tracker",
     icon: TrendingUp,
@@ -43,6 +43,11 @@ const navigation = [
     name: "Competitor Analysis",
     href: "/dashboard/competitor-analysis",
     icon: Users,
+  },
+  {
+    name: "Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
   },
 ];
 
@@ -126,6 +131,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           })}
         </ul>
       </nav>
+
+
 
       {/* Footer */}
       <div className="border-t border-border p-4 space-y-4">

@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { RegisterCredentials } from '@/types/auth';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Zap, AlertCircle, CheckCircle } from 'lucide-react';
 
+
 export default function RegisterPage() {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
     name: '',
