@@ -16,10 +16,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SEO Tools - Professional SEO Analysis Suite",
-  description: "Professional SEO tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis.",
-  keywords: ["SEO", "AI content optimization", "sitemap generator", "meta tags", "page speed", "keyword tracking", "competitor analysis", "website optimization"],
-  authors: [{ name: "SEO Tools" }],
+  title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
+  description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
+  keywords: [
+    "auditcraft", "audit craft", "audit seo", "seo audit", "website audit",
+    "seo analysis", "website analysis", "seo tools", "audit tools",
+    "AI content optimization", "sitemap generator", "meta tag validator",
+    "page speed auditor", "keyword tracking", "competitor analysis",
+    "website optimization", "seo optimization", "auditcraft.io"
+  ],
+  authors: [{ name: "AuditCraft" }],
+  creator: "AuditCraft",
+  publisher: "AuditCraft",
   robots: {
     index: true,
     follow: true,
@@ -34,26 +42,29 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://auditcraft.io',
   },
+  verification: {
+    google: 'your-google-verification-code', // Add your Google Search Console verification code here
+  },
   openGraph: {
-    title: "SEO Tools - Professional SEO Analysis Suite",
-    description: "Comprehensive SEO tools for modern websites. AI-powered content optimization, performance analysis, and competitive insights.",
+    title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
+    description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
     type: "website",
     locale: "en_US",
     url: "https://auditcraft.io",
-    siteName: "SEO Tools",
+    siteName: "AuditCraft",
     images: [
       {
         url: "https://auditcraft.io/globe.svg",
         width: 1200,
         height: 630,
-        alt: "SEO Tools - Professional SEO Analysis Suite",
+        alt: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SEO Tools - Professional SEO Analysis Suite",
-    description: "Comprehensive SEO tools for modern websites. AI-powered content optimization, performance analysis, and competitive insights.",
+    title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
+    description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
     images: ["https://auditcraft.io/globe.svg"],
   },
 };
@@ -71,12 +82,27 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Apple Touch Icons */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+        {/* Android Chrome Icons */}
+        <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png" />
+
+        {/* Microsoft Tiles */}
+        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="msapplication-TileImage" content="/favicon-32x32.png" />
+
+        {/* Manifest and theme */}
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#3b82f6" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="SEO Tools" />
-        <link rel="apple-touch-icon" href="/globe.svg" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -89,9 +115,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "SEO Tools - Professional SEO Analysis Suite",
-              "description": "Comprehensive SEO tools including AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis.",
-              "url": "/",
+              "name": "AuditCraft - Professional SEO Analysis & Website Audit Tools",
+              "description": "Professional SEO audit tools including AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis.",
+              "url": "https://auditcraft.io",
               "applicationCategory": "BusinessApplication",
               "operatingSystem": "Web Browser",
               "offers": {
@@ -106,15 +132,17 @@ export default function RootLayout({
                 "Page Speed Auditor",
                 "Keyword Tracking",
                 "Competitor Analysis",
-                "SEO Reports"
+                "SEO Reports",
+                "Website Audit",
+                "SEO Analysis"
               ],
               "author": {
                 "@type": "Organization",
-                "name": "SEO Tools"
+                "name": "AuditCraft"
               },
               "publisher": {
                 "@type": "Organization",
-                "name": "SEO Tools"
+                "name": "AuditCraft"
               }
             })
           }}
