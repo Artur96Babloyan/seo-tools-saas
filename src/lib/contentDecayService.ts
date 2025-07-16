@@ -55,50 +55,24 @@ class ContentDecayService {
   async handleCallback(code: string, state: string): Promise<CallbackResponse> {
     console.log('Handling OAuth callback...', { code, state });
     
-    // Try form-encoded data first (more common for OAuth callbacks)
-    const formData = new URLSearchParams();
-    formData.append('code', code);
-    formData.append('state', state);
+    // Send OAuth parameters as query parameters (common OAuth approach)
+    const queryParams = new URLSearchParams({
+      code: code,
+      state: state
+    });
     
-    console.log('Sending callback request with form data:', formData.toString());
+    const endpoint = `/api/content-decay/callback?${queryParams.toString()}`;
+    console.log('Sending callback request to:', endpoint);
     
-    try {
-      const response = await apiRequest<CallbackResponse>(
-        '/api/content-decay/callback',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: formData.toString(),
-        }
-      );
-      console.log('Callback response:', response);
-      return response;
-    } catch (error) {
-      console.log('Form data failed, trying JSON format...', error);
-      
-      // Fallback to JSON format
-      const requestBody = {
-        code: code,
-        state: state
-      };
-      
-      console.log('Sending callback request with JSON body:', requestBody);
-      
-      const response = await apiRequest<CallbackResponse>(
-        '/api/content-decay/callback',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
-      console.log('Callback response:', response);
-      return response;
-    }
+    const response = await apiRequest<CallbackResponse>(
+      endpoint,
+      {
+        method: 'POST',
+        // No body needed since parameters are in URL
+      }
+    );
+    console.log('Callback response:', response);
+    return response;
   }
 
   async disconnect(): Promise<DisconnectResponse> {
