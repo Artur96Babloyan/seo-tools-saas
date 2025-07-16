@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles } from "lucide-react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles, TrendingDown } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -43,6 +43,11 @@ const navigation = [
     name: "Competitor Analysis",
     href: "/dashboard/competitor-analysis",
     icon: Users,
+  },
+  {
+    name: "Content Decay Detection",
+    href: "/dashboard/content-decay",
+    icon: TrendingDown,
   },
   {
     name: "Reports",

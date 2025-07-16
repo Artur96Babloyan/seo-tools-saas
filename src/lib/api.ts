@@ -92,8 +92,6 @@ async function apiRequest<T = unknown>(
 
     const data: ApiResponse<T> = await response.json();
     
-
-    
     if (!data.success) {
       throw new ApiError(400, data.error || data.message || 'API request failed');
     }
