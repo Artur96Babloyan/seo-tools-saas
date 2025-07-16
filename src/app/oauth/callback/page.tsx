@@ -17,15 +17,25 @@ function OAuthCallbackContent() {
         const code = searchParams.get('code');
         const state = searchParams.get('state');
 
+        console.log('URL search params:', Object.fromEntries(searchParams.entries()));
+        console.log('Extracted code:', code);
+        console.log('Extracted state:', state);
+
         if (!code || !state) {
           setStatus('error');
           setMessage('Missing authorization code or state parameter');
+          console.error('Missing OAuth parameters:', { code: !!code, state: !!state });
           return;
         }
 
-        console.log('Processing OAuth callback with:', { code, state });
+        console.log('Processing OAuth callback with:', {
+          code: code.substring(0, 20) + '...',
+          state: state.substring(0, 20) + '...'
+        });
 
         const result = await contentDecayService.handleCallback(code, state);
+
+        console.log('Callback result:', result);
 
         if (result.connected) {
           setStatus('success');
