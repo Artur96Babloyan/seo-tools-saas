@@ -320,12 +320,33 @@ export default function ContentDecayPage() {
                 </ul>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-6 space-y-3">
                 <button
                   onClick={() => setCurrentView('analyzing')}
                   className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Start Analysis
+                </button>
+
+                <button
+                  onClick={async () => {
+                    try {
+                      setIsLoading(true);
+                      const isAvailable = await contentDecayService.testEndpoint();
+                      if (isAvailable) {
+                        setError('✅ Content decay detection endpoint is available');
+                      } else {
+                        setError('❌ Content decay detection endpoint is not available');
+                      }
+                    } catch (err) {
+                      setError('❌ Error testing endpoint: ' + (err instanceof Error ? err.message : 'Unknown error'));
+                    } finally {
+                      setIsLoading(false);
+                    }
+                  }}
+                  className="block w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
+                >
+                  Test Endpoint Availability
                 </button>
               </div>
             </div>
