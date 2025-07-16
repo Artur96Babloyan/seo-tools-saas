@@ -43,8 +43,9 @@ class ContentDecayService {
 
   async getAuthUrl(): Promise<AuthUrlResponse> {
     console.log('Getting Google OAuth URL...');
+    console.log('API Base URL:', process.env.NEXT_PUBLIC_API_URL || 'https://api.auditcraft.io');
     const response = await apiRequest<AuthUrlResponse>(
-      'api/content-decay/auth-url',
+      '/api/content-decay/auth-url',
       { method: 'GET' }
     );
     console.log('Auth URL response:', response);
