@@ -46,7 +46,11 @@ export default function ContentDecayAnalysis({
       setError(null);
       setValidationError(null);
 
+      console.log('Starting content decay analysis for URL:', siteUrl);
+      console.log('Request object:', { siteUrl });
+
       const analysisResults = await contentDecayService.detectContentDecay({ siteUrl });
+      console.log('Analysis completed successfully:', analysisResults);
       onAnalysisComplete(analysisResults);
     } catch (err) {
       console.error('Content decay analysis failed:', err);
@@ -56,6 +60,8 @@ export default function ContentDecayAnalysis({
           setError('Google Search Console not connected. Please connect your account first.');
         } else if (err.message.includes('400')) {
           setError('Invalid website URL or no data available for analysis.');
+        } else if (err.message.includes('500')) {
+          setError('Server error: The content decay detection service is currently unavailable. Please try again later.');
         } else {
           setError(err.message || 'Analysis failed. Please try again.');
         }

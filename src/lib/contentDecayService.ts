@@ -90,15 +90,34 @@ class ContentDecayService {
    */
   async detectContentDecay(request: ContentDecayRequest): Promise<AnalysisResult> {
     console.log('Detecting content decay for:', request.siteUrl);
-    const response = await apiRequest<AnalysisResult>(
-      '/api/content-decay/detect',
-      {
-        method: 'POST',
-        body: JSON.stringify(request),
+    console.log('Request body:', JSON.stringify(request, null, 2));
+    
+    try {
+      const response = await apiRequest<AnalysisResult>(
+        '/api/content-decay/detect',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(request),
+        }
+      );
+      console.log('Content decay detection response:', response);
+      return response;
+    } catch (error) {
+      console.error('Content decay detection error details:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        request: request
+      });
+      
+      // Re-throw with more context
+      if (error instanceof Error) {
+        throw new Error(`Content decay detection failed: ${error.message}`);
       }
-    );
-    console.log('Content decay detection response:', response);
-    return response;
+      throw new Error('Content decay detection failed: Unknown error');
+    }
   }
 
   /**
