@@ -32,6 +32,36 @@ export default function CompetitorAnalysisPage() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [analysisData, setAnalysisData] = useState<CompetitorAnalysisRequest | null>(null);
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [stats, setStats] = useState([
+    {
+      name: 'Total Analyses',
+      value: '0',
+      icon: BarChart3,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-50'
+    },
+    {
+      name: 'Domains Tracked',
+      value: '0',
+      icon: Target,
+      color: 'text-green-600',
+      bgColor: 'bg-green-50'
+    },
+    {
+      name: 'Competitors Analyzed',
+      value: '0',
+      icon: Users,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-50'
+    },
+    {
+      name: 'Avg. Score Improvement',
+      value: '0%',
+      icon: TrendingUp,
+      color: 'text-orange-600',
+      bgColor: 'bg-orange-50'
+    }
+  ]);
 
   // Simulate step progression during analysis
   useEffect(() => {
@@ -58,36 +88,49 @@ export default function CompetitorAnalysisPage() {
     }
   }, [isAnalyzing, analysisSteps.length]);
 
-  const stats = [
-    {
-      name: 'Total Analyses',
-      value: '24',
-      icon: BarChart3,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      name: 'Domains Tracked',
-      value: '12',
-      icon: Target,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      name: 'Competitors Analyzed',
-      value: '48',
-      icon: Users,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    },
-    {
-      name: 'Avg. Score Improvement',
-      value: '+15%',
-      icon: TrendingUp,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50'
-    }
-  ];
+  // Fetch statistics on component mount
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const statistics = await competitorService.getStatistics();
+        setStats([
+          {
+            name: 'Total Analyses',
+            value: statistics.totalAnalyses.toString(),
+            icon: BarChart3,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
+            name: 'Domains Tracked',
+            value: statistics.domainsTracked.toString(),
+            icon: Target,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50'
+          },
+          {
+            name: 'Competitors Analyzed',
+            value: statistics.competitorsAnalyzed.toString(),
+            icon: Users,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50'
+          },
+          {
+            name: 'Avg. Score Improvement',
+            value: `${statistics.avgScoreImprovement > 0 ? '+' : ''}${statistics.avgScoreImprovement}%`,
+            icon: TrendingUp,
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-50'
+          }
+        ]);
+      } catch (error) {
+        console.error('Failed to fetch competitor statistics:', error);
+        // Keep default values if fetch fails
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const generateAnalysisSteps = (request: CompetitorAnalysisRequest): AnalysisStep[] => {
     const steps: AnalysisStep[] = [];
@@ -130,6 +173,43 @@ export default function CompetitorAnalysisPage() {
       setAnalysisResults(results);
       setCurrentView('results');
       setReportsRefreshTrigger(prev => prev + 1);
+
+      // Refresh statistics after successful analysis
+      try {
+        const statistics = await competitorService.getStatistics();
+        setStats([
+          {
+            name: 'Total Analyses',
+            value: statistics.totalAnalyses.toString(),
+            icon: BarChart3,
+            color: 'text-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
+            name: 'Domains Tracked',
+            value: statistics.domainsTracked.toString(),
+            icon: Target,
+            color: 'text-green-600',
+            bgColor: 'bg-green-50'
+          },
+          {
+            name: 'Competitors Analyzed',
+            value: statistics.competitorsAnalyzed.toString(),
+            icon: Users,
+            color: 'text-purple-600',
+            bgColor: 'bg-purple-50'
+          },
+          {
+            name: 'Avg. Score Improvement',
+            value: `${statistics.avgScoreImprovement > 0 ? '+' : ''}${statistics.avgScoreImprovement}%`,
+            icon: TrendingUp,
+            color: 'text-orange-600',
+            bgColor: 'bg-orange-50'
+          }
+        ]);
+      } catch (error) {
+        console.error('Failed to refresh statistics:', error);
+      }
     } catch (err) {
       let errorMessage = 'Failed to analyze competitors';
 

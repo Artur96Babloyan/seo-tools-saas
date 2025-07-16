@@ -922,6 +922,39 @@ export const competitorService = {
     return await apiRequest('/api/competitor/health');
   },
 
+  async getStatistics(): Promise<{
+    totalAnalyses: number;
+    domainsTracked: number;
+    competitorsAnalyzed: number;
+    avgScoreImprovement: number;
+  }> {
+    const response = await apiRequest<{
+      data?: {
+        totalAnalyses: number;
+        domainsTracked: number;
+        competitorsAnalyzed: number;
+        avgScoreImprovement: number;
+      };
+      totalAnalyses?: number;
+      domainsTracked?: number;
+      competitorsAnalyzed?: number;
+      avgScoreImprovement?: number;
+    }>('/api/competitor/statistics');
+    
+    // Extract data from the backend response format
+    if (response.data) {
+      return response.data;
+    }
+    
+    // Fallback to direct response if data property doesn't exist
+    return {
+      totalAnalyses: response.totalAnalyses || 0,
+      domainsTracked: response.domainsTracked || 0,
+      competitorsAnalyzed: response.competitorsAnalyzed || 0,
+      avgScoreImprovement: response.avgScoreImprovement || 0,
+    };
+  },
+
   // Utility functions for data transformation
   transformDataForChart(comparison: CompetitorAnalysisComparison): CompetitorChartData {
     const scores = comparison.differences.seoScores;
