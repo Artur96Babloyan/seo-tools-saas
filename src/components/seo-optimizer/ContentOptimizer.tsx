@@ -173,7 +173,7 @@ export default function ContentOptimizer({
         {/* Draft restore notification */}
         {showDraftRestore && (
           <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
                 <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                 <span className="text-sm text-blue-800 dark:text-blue-200">
@@ -201,11 +201,11 @@ export default function ContentOptimizer({
 
       {/* Input Mode Toggle */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex space-x-4">
+        <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           <button
             type="button"
             onClick={() => setInputMode('manual')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'manual'
+            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'manual'
               ? 'bg-purple-600 text-white'
               : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
@@ -216,7 +216,7 @@ export default function ContentOptimizer({
           <button
             type="button"
             onClick={() => setInputMode('url')}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'url'
+            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'url'
               ? 'bg-purple-600 text-white'
               : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
@@ -236,7 +236,7 @@ export default function ContentOptimizer({
               <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Website URL *
               </label>
-              <div className="flex space-x-2">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
                 <input
                   type="url"
                   id="websiteUrl"
@@ -388,12 +388,12 @@ export default function ContentOptimizer({
             )}
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center space-x-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 space-y-3 sm:space-y-0">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   type="submit"
                   disabled={isOptimizing || !title.trim() || !content.trim() || !focusKeyword.trim()}
-                  className="inline-flex items-center space-x-2 px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isOptimizing ? (
                     <>
@@ -411,14 +411,14 @@ export default function ContentOptimizer({
                 <button
                   type="button"
                   onClick={handleClearForm}
-                  className="inline-flex items-center space-x-2 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="inline-flex items-center justify-center space-x-2 px-4 py-3 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                 >
                   <RotateCcw className="h-4 w-4" />
                   <span>Clear</span>
                 </button>
               </div>
 
-              <div className="text-xs text-gray-500 dark:text-gray-400">
+              <div className="text-xs text-gray-500 dark:text-gray-400 text-center sm:text-left">
                 Press <kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-xs">Ctrl+Enter</kbd> to optimize
               </div>
             </div>
