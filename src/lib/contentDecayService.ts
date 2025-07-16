@@ -55,26 +55,50 @@ class ContentDecayService {
   async handleCallback(code: string, state: string): Promise<CallbackResponse> {
     console.log('Handling OAuth callback...', { code, state });
     
-    // Ensure code and state are properly encoded and sent
-    const requestBody = {
-      code: code,
-      state: state
-    };
+    // Try form-encoded data first (more common for OAuth callbacks)
+    const formData = new URLSearchParams();
+    formData.append('code', code);
+    formData.append('state', state);
     
-    console.log('Sending callback request with body:', requestBody);
+    console.log('Sending callback request with form data:', formData.toString());
     
-    const response = await apiRequest<CallbackResponse>(
-      '/api/content-decay/callback',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
-    console.log('Callback response:', response);
-    return response;
+    try {
+      const response = await apiRequest<CallbackResponse>(
+        '/api/content-decay/callback',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formData.toString(),
+        }
+      );
+      console.log('Callback response:', response);
+      return response;
+    } catch (error) {
+      console.log('Form data failed, trying JSON format...', error);
+      
+      // Fallback to JSON format
+      const requestBody = {
+        code: code,
+        state: state
+      };
+      
+      console.log('Sending callback request with JSON body:', requestBody);
+      
+      const response = await apiRequest<CallbackResponse>(
+        '/api/content-decay/callback',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+      console.log('Callback response:', response);
+      return response;
+    }
   }
 
   async disconnect(): Promise<DisconnectResponse> {
