@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, ExternalLink, LogOut } from 'lucide-react';
 import { contentDecayService, ContentDecayStatus } from '@/lib/contentDecayService';
+import { AnalysisResult } from '@/types/content-decay';
 import ConnectionStatus from '@/components/content-decay/ConnectionStatus';
+import ContentDecayAnalysis from '@/components/content-decay/ContentDecayAnalysis';
 
 type ViewState = 'status' | 'connect' | 'analyzing' | 'results' | 'not-implemented';
 
@@ -13,6 +15,7 @@ export default function ContentDecayPage() {
   const [error, setError] = useState<string | null>(null);
   const [serviceStatus, setServiceStatus] = useState<ContentDecayStatus | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [analysisResults, setAnalysisResults] = useState<AnalysisResult | null>(null);
 
   const checkServiceStatus = async () => {
     try {
@@ -112,6 +115,16 @@ export default function ContentDecayPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAnalysisComplete = (results: AnalysisResult) => {
+    setAnalysisResults(results);
+    setCurrentView('results');
+  };
+
+  const handleNewAnalysis = () => {
+    setAnalysisResults(null);
+    setCurrentView('status');
   };
 
   // Check service status on mount
@@ -321,12 +334,20 @@ export default function ContentDecayPage() {
 
       case 'analyzing':
         return (
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <p className="text-gray-600 dark:text-gray-400">Analyzing content decay...</p>
-            </div>
-          </div>
+          <ContentDecayAnalysis
+            onAnalysisComplete={handleAnalysisComplete}
+            onNewAnalysis={handleNewAnalysis}
+            results={analysisResults}
+          />
+        );
+
+      case 'results':
+        return (
+          <ContentDecayAnalysis
+            onAnalysisComplete={handleAnalysisComplete}
+            onNewAnalysis={handleNewAnalysis}
+            results={analysisResults}
+          />
         );
 
       default:
