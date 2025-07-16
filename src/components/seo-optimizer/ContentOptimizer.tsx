@@ -31,14 +31,15 @@ export default function ContentOptimizer({
     updateCharacterCounts,
     autoSave,
     loadDraft,
-    clearDraft
+    clearDraft,
+    setValidationErrors
   } = useSeoOptimizer();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [focusKeyword, setFocusKeyword] = useState('');
   const [showDraftRestore, setShowDraftRestore] = useState(false);
-  const [inputMode, setInputMode] = useState<'manual' | 'url'>('manual');
+  const [inputMode, setInputMode] = useState<'manual' | 'url'>('url');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [isExtracting, setIsExtracting] = useState(false);
 
@@ -104,13 +105,34 @@ export default function ContentOptimizer({
     }
   };
 
+  const handleUrlKeyDown = (e: React.KeyboardEvent) => {
+    // Enter key to extract content
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleExtractFromUrl();
+    }
+  };
+
+  // Helper function to normalize URL
+  const normalizeUrl = (url: string): string => {
+    let normalized = url.trim();
+
+    // Add https:// if no protocol is specified
+    if (!normalized.match(/^https?:\/\//)) {
+      normalized = `https://${normalized}`;
+    }
+
+    return normalized;
+  };
+
   const handleExtractFromUrl = async () => {
     if (!websiteUrl.trim()) return;
 
     setIsExtracting(true);
     try {
+      const normalizedUrl = normalizeUrl(websiteUrl);
       const extractedContent = await contentExtractorService.extractContent({
-        url: websiteUrl.trim()
+        url: normalizedUrl
       });
 
       // Populate form with extracted content
@@ -121,8 +143,12 @@ export default function ContentOptimizer({
       // Switch to manual mode to show the extracted content
       setInputMode('manual');
 
+      // Clear validation errors after successful extraction
+      setValidationErrors({});
+
       // Show success message if extraction was successful
       if (extractedContent.title || extractedContent.mainContent) {
+        // Success - content was extracted
       }
     } catch {
       // Show user-friendly error message
@@ -204,17 +230,6 @@ export default function ContentOptimizer({
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4">
           <button
             type="button"
-            onClick={() => setInputMode('manual')}
-            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'manual'
-              ? 'bg-purple-600 text-white'
-              : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-              }`}
-          >
-            <FileText className="h-4 w-4" />
-            <span>Manual Input</span>
-          </button>
-          <button
-            type="button"
             onClick={() => setInputMode('url')}
             className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'url'
               ? 'bg-purple-600 text-white'
@@ -223,6 +238,17 @@ export default function ContentOptimizer({
           >
             <Globe className="h-4 w-4" />
             <span>Extract from URL</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setInputMode('manual')}
+            className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-colors ${inputMode === 'manual'
+              ? 'bg-purple-600 text-white'
+              : 'text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+              }`}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Manual Input</span>
           </button>
         </div>
       </div>
@@ -242,7 +268,8 @@ export default function ContentOptimizer({
                   id="websiteUrl"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  placeholder="https://example.com"
+                  onKeyDown={handleUrlKeyDown}
+                  placeholder="example.com or https://example.com"
                   className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   required
                 />
@@ -260,7 +287,7 @@ export default function ContentOptimizer({
                 </button>
               </div>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                Enter a website URL to automatically extract title, content, and keywords for optimization.
+                Enter a website URL to automatically extract title, content, and keywords for optimization. You can enter just the domain (e.g., auditcraft.io) or full URL. Press Enter to extract.
               </p>
             </div>
           </div>

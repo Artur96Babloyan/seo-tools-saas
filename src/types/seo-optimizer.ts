@@ -6,17 +6,26 @@ export interface ContentOptimizationRequest {
   focusKeyword: string;
 }
 
+export interface OptimizedContentStructure {
+  h1: string;
+  mainContent: string;
+  features: {
+    title: string;
+    items: string[];
+  };
+}
+
 export interface ContentOptimizationResponse {
   id: string;
   optimizedTitle: string;
-  optimizedContent: string;
+  optimizedContent: OptimizedContentStructure;
   metaDescription: string;
-  suggestions: string[]; // Backend returns array of strings, not objects
+  suggestions: string[];
   createdAt: string;
   originalTitle: string;
   originalContent: string;
   focusKeyword: string;
-  updatedAt?: string; // Optional field from backend
+  updatedAt?: string;
 }
 
 export interface OptimizationSuggestion {

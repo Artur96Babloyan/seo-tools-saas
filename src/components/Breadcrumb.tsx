@@ -23,7 +23,44 @@ export default function Breadcrumb() {
     let currentPath = '';
     paths.forEach((path, index) => {
       currentPath += `/${path}`;
-      const label = path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, ' ');
+
+      // Special handling for different route types
+      let label = '';
+
+      if (path === 'dashboard') {
+        label = 'Dashboard';
+      } else if (path === 'seo-optimizer') {
+        label = 'SEO Optimizer';
+      } else if (path === 'history') {
+        label = 'History';
+      } else if (path === 'sitemap') {
+        label = 'Sitemap Generator';
+      } else if (path === 'meta-tags') {
+        label = 'Meta Tag Validator';
+      } else if (path === 'page-speed') {
+        label = 'Page Speed Auditor';
+      } else if (path === 'keyword-tracker') {
+        label = 'Keyword Tracker';
+      } else if (path === 'competitor-analysis') {
+        label = 'Competitor Analysis';
+      } else if (path === 'reports') {
+        label = 'Reports';
+      } else if (path === 'auth') {
+        label = 'Authentication';
+      } else if (path === 'login') {
+        label = 'Login';
+      } else if (path === 'register') {
+        label = 'Register';
+      } else {
+        // For optimization IDs or other dynamic routes, show a more user-friendly label
+        if (paths.includes('seo-optimizer') && index === paths.length - 1 && paths.length > 2) {
+          // This is an optimization ID - show a generic label
+          label = 'Optimization Details';
+        } else {
+          // Default behavior - capitalize and replace hyphens
+          label = path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, ' ');
+        }
+      }
 
       breadcrumbs.push({
         label,

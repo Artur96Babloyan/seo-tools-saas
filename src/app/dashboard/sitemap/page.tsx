@@ -15,6 +15,18 @@ export default function SitemapGeneratorPage() {
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState<{ [key: string]: boolean }>({});
 
+  // Helper function to normalize URL
+  const normalizeUrl = (url: string): string => {
+    let normalized = url.trim();
+
+    // Add https:// if no protocol is specified
+    if (!normalized.match(/^https?:\/\//)) {
+      normalized = `https://${normalized}`;
+    }
+
+    return normalized;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
@@ -25,7 +37,8 @@ export default function SitemapGeneratorPage() {
     setCopySuccess({});
 
     try {
-      const sitemapResult = await sitemapService.generateSitemap(url, {
+      const normalizedUrl = normalizeUrl(url);
+      const sitemapResult = await sitemapService.generateSitemap(normalizedUrl, {
         maxDepth,
         timeout: timeoutSeconds * 1000, // Convert to milliseconds
       });
@@ -39,6 +52,15 @@ export default function SitemapGeneratorPage() {
       }
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (url) {
+        handleSubmit(e as unknown as React.FormEvent);
+      }
     }
   };
 
@@ -132,7 +154,8 @@ export default function SitemapGeneratorPage() {
                   id="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://example.com"
+                  onKeyDown={handleKeyDown}
+                  placeholder="example.com or https://example.com"
                   className="w-full rounded-lg border border-border bg-input px-4 py-3 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   required
                 />

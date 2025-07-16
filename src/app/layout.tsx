@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
-  description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
+  title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
+  description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
   keywords: [
     "auditcraft", "audit craft", "audit seo", "seo audit", "website audit",
     "seo analysis", "website analysis", "seo tools", "audit tools",
@@ -46,26 +46,26 @@ export const metadata: Metadata = {
     google: 'your-google-verification-code', // Add your Google Search Console verification code here
   },
   openGraph: {
-    title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
-    description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
+    title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
+    description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
     type: "website",
     locale: "en_US",
     url: "https://auditcraft.io",
     siteName: "AuditCraft",
     images: [
       {
-        url: "https://auditcraft.io/globe.svg",
+        url: "https://auditcraft.io/android-chrome-512x512.png",
         width: 1200,
         height: 630,
-        alt: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
+        alt: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AuditCraft - Professional SEO Analysis & Website Audit Tools",
-    description: "Professional SEO audit tools for website optimization. AI content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis by AuditCraft.",
-    images: ["https://auditcraft.io/globe.svg"],
+    title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
+    description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
+    images: ["https://auditcraft.io/android-chrome-512x512.png"],
   },
 };
 

@@ -310,6 +310,18 @@ export default function PageSpeedAuditorPage() {
     return guidance[category as keyof typeof guidance] || { title: "Improvement Guide", tips: [] };
   };
 
+  // Helper function to normalize URL
+  const normalizeUrl = (url: string): string => {
+    let normalized = url.trim();
+
+    // Add https:// if no protocol is specified
+    if (!normalized.match(/^https?:\/\//)) {
+      normalized = `https://${normalized}`;
+    }
+
+    return normalized;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
@@ -324,7 +336,8 @@ export default function PageSpeedAuditorPage() {
     setAbortController(controller);
 
     try {
-      const analysis = await seoService.analyzeWebsite(url, {
+      const normalizedUrl = normalizeUrl(url);
+      const analysis = await seoService.analyzeWebsite(normalizedUrl, {
         strategy,
         categories,
       });
@@ -349,6 +362,15 @@ export default function PageSpeedAuditorPage() {
         setIsLoading(false);
       }
       setAbortController(null);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (url) {
+        handleSubmit(e as unknown as React.FormEvent);
+      }
     }
   };
 
@@ -483,7 +505,8 @@ export default function PageSpeedAuditorPage() {
                   id="url"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://example.com"
+                  onKeyDown={handleKeyDown}
+                  placeholder="example.com or https://example.com"
                   className="w-full rounded-lg border border-border bg-input px-4 py-3 text-foreground placeholder-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   required
                 />
