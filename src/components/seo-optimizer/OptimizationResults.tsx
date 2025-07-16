@@ -109,32 +109,33 @@ export default function OptimizationResults({
     <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 ${className}`}>
       {/* Header */}
       <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+        <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between space-y-4 xl:space-y-0">
+          <div className="flex items-center space-x-3 min-w-0 flex-shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex-shrink-0">
               <TrendingUp className="h-5 w-5" />
             </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="min-w-0">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white truncate">
                 Optimization Results
               </h2>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                 Optimized on {formatDate(result.createdAt)}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 min-w-0 flex-shrink-0">
             <CopyToClipboard
               text={`${result.optimizedTitle}\n\n${result.optimizedContent.h1}\n\n${result.optimizedContent.mainContent}\n\n${result.optimizedContent.features.title}\n${result.optimizedContent.features.items.map(item => `- ${item}`).join('\n')}`}
-              label="Copy AI"
+              label="Copy All"
               variant="button"
+              className="w-full sm:w-auto flex-shrink-0"
             />
-            <div className="flex items-center space-x-2">
-              <div className="relative">
+            <div className="flex items-center space-x-2 w-full sm:w-auto min-w-0">
+              <div className="relative flex-1 sm:flex-none">
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-3 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex-shrink-0"
                   title="Export Options"
                 >
                   <Download className="h-4 w-4" />
@@ -175,7 +176,7 @@ export default function OptimizationResults({
               {onNewOptimization && (
                 <button
                   onClick={onNewOptimization}
-                  className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                  className="flex-1 sm:flex-none inline-flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm flex-shrink-0"
                 >
                   <Target className="h-4 w-4" />
                   <span className="hidden sm:inline">New Optimization</span>

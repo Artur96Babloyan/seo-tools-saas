@@ -250,7 +250,11 @@ export default function OptimizationHistory({
                           {optimization.optimizedTitle}
                         </h3>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">
-                          {optimization.optimizedContent}
+                          {optimization.optimizedContent && typeof optimization.optimizedContent === 'object' && 'mainContent' in optimization.optimizedContent
+                            ? optimization.optimizedContent.mainContent
+                            : typeof optimization.optimizedContent === 'string'
+                              ? optimization.optimizedContent
+                              : 'No preview available'}
                         </p>
                       </div>
                       <div className="flex items-center space-x-2 ml-3">
@@ -264,7 +268,11 @@ export default function OptimizationHistory({
                           </button>
                         )}
                         <CopyToClipboard
-                          text={`${optimization.optimizedTitle}\n\n${optimization.optimizedContent}`}
+                          text={`${optimization.optimizedTitle}\n\n${optimization.optimizedContent && typeof optimization.optimizedContent === 'object' && 'mainContent' in optimization.optimizedContent
+                            ? `${optimization.optimizedContent.h1 || 'No title'}\n\n${optimization.optimizedContent.mainContent}`
+                            : typeof optimization.optimizedContent === 'string'
+                              ? optimization.optimizedContent
+                              : 'No content available'}`}
                           variant="icon"
                         />
                         <button
