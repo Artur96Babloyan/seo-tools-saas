@@ -114,7 +114,8 @@ class ContentDecayService {
         message: error instanceof Error ? error.message : 'Unknown error',
         request: request,
         errorType: error instanceof Error ? error.constructor.name : 'Unknown',
-        errorStack: error instanceof Error ? error.stack : 'No stack trace'
+        errorStack: error instanceof Error ? error.stack : 'No stack trace',
+        fullError: JSON.stringify(error, Object.getOwnPropertyNames(error), 2)
       });
       
       // Check if it's a network error vs server error
@@ -136,9 +137,9 @@ class ContentDecayService {
   /**
    * Test if the content decay detection endpoint is available
    */
-  async testEndpoint(): Promise<boolean> {
+  async testEndpoint(): Promise<{ available: boolean; error?: string; method?: string }> {
     try {
-      console.log('Testing content decay detection endpoint...');
+      console.log('Testing content decay detection endpoint with GET...');
       
       // Try a simple GET request to see if the endpoint exists
       const response = await apiRequest<{ available: boolean }>(
@@ -148,11 +149,58 @@ class ContentDecayService {
         }
       );
       
-      console.log('Endpoint test response:', response);
-      return true;
+      console.log('GET endpoint test response:', response);
+      return { available: true, method: 'GET' };
     } catch (error) {
-      console.log('Endpoint test failed:', error);
-      return false;
+      console.log('GET endpoint test failed:', error);
+      
+      // Try a simple POST with minimal data to see if it's a data issue
+      try {
+        console.log('Trying minimal POST request...');
+        const minimalResponse = await apiRequest<{ available: boolean }>(
+          '/api/content-decay/detect',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ siteUrl: 'https://example.com' }),
+          }
+        );
+        console.log('Minimal POST test response:', minimalResponse);
+        return { available: true, method: 'POST' };
+      } catch (postError) {
+        console.log('Minimal POST test also failed:', postError);
+        
+        // Try with different URLs to see if it's URL-specific
+        const testUrls = ['https://google.com', 'https://example.com', 'https://github.com'];
+        
+        for (const testUrl of testUrls) {
+          try {
+            console.log(`Testing with URL: ${testUrl}`);
+            const urlTestResponse = await apiRequest<{ available: boolean }>(
+              '/api/content-decay/detect',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ siteUrl: testUrl }),
+              }
+            );
+            console.log(`URL test response for ${testUrl}:`, urlTestResponse);
+            return { available: true, method: 'POST', error: `Works with ${testUrl}` };
+          } catch (urlError) {
+            console.log(`URL test failed for ${testUrl}:`, urlError);
+          }
+        }
+        
+        return { 
+          available: false, 
+          error: error instanceof Error ? error.message : 'Unknown error',
+          method: 'POST'
+        };
+      }
     }
   }
 

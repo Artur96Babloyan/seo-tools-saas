@@ -332,11 +332,11 @@ export default function ContentDecayPage() {
                   onClick={async () => {
                     try {
                       setIsLoading(true);
-                      const isAvailable = await contentDecayService.testEndpoint();
-                      if (isAvailable) {
-                        setError('✅ Content decay detection endpoint is available');
+                      const result = await contentDecayService.testEndpoint();
+                      if (result.available) {
+                        setError(`✅ Content decay detection endpoint is available (${result.method})${result.error ? ` - ${result.error}` : ''}`);
                       } else {
-                        setError('❌ Content decay detection endpoint is not available');
+                        setError(`❌ Content decay detection endpoint is not available: ${result.error || 'Unknown error'}`);
                       }
                     } catch (err) {
                       setError('❌ Error testing endpoint: ' + (err instanceof Error ? err.message : 'Unknown error'));

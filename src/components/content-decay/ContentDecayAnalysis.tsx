@@ -244,6 +244,9 @@ export default function ContentDecayAnalysis({
                 }`}
               disabled={isAnalyzing}
             />
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+              Try: https://example.com or https://google.com for testing
+            </div>
             {validationError && (
               <p className="mt-2 text-sm text-red-600 dark:text-red-400">{validationError}</p>
             )}
