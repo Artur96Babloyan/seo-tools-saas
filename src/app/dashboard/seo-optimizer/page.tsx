@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ArrowLeft, History, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ContentOptimizationResponse } from '@/types/seo-optimizer';
+import { ContentOptimizationResponse } from '@/shared/types/seo-optimizer';
 import ContentOptimizer from '@/components/seo-optimizer/ContentOptimizer';
 import OptimizationResults from '@/components/seo-optimizer/OptimizationResults';
 import OptimizationHistory from '@/components/seo-optimizer/OptimizationHistory';

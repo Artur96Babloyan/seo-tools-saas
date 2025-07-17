@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles, Search } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { useAuth } from "@/contexts/AuthContext";
-import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/shared/ui/theme";
+import { useAuth } from '@/entities/user';
+import { cn } from "@/shared/lib/utils";
 
 const navigation = [
   {

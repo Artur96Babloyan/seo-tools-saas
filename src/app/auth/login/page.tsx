@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
-import type { LoginCredentials } from '@/types/auth';
+import { useAuth } from '@/entities/user';
+import type { LoginCredentials } from '@/shared/types/auth';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Zap, AlertCircle } from 'lucide-react';
 
 

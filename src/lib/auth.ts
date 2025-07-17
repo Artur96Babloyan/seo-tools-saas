@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '@/types/auth';
+import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '@/shared/types/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.auditcraft.io';
 const TOKEN_COOKIE_NAME = 'seo-tools-token';

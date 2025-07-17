@@ -5,7 +5,7 @@ import {
   ContentAnalysisRequest,
   ContentAnalysisResponse,
   ContentAnalysisResult
-} from '@/types/content-extractor';
+} from '@/shared/types/content-extractor';
 import { ApiError } from './api';
 import { metaTagService } from './services';
 

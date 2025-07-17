@@ -4,7 +4,7 @@ import {
   ContentOptimizationResponse, 
   OptimizationHistoryResponse, 
   OptimizationFilters 
-} from '@/types/seo-optimizer';
+} from '@/shared/types/seo-optimizer';
 import { ApiError } from './api';
 
 // API_BASE_URL is used by apiRequest function

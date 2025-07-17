@@ -11,7 +11,7 @@ import {
   RankingHistoryItem,
   KeywordStatsResponse,
   TrackedDomain
-} from "@/types/keyword-tracker";
+} from "@/shared/types/keyword-tracker";
 
 
 

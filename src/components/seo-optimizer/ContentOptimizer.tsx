@@ -3,12 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Wand2, Save, RotateCcw, AlertCircle, Globe, FileText } from 'lucide-react';
 import { useSeoOptimizer } from '@/hooks/useSeoOptimizer';
-import { ContentOptimizationRequest } from '@/types/seo-optimizer';
+import { ContentOptimizationRequest } from '@/shared/types/seo-optimizer';
 import { contentExtractorService } from '@/lib/contentExtractorService';
 import CharacterCounter from './CharacterCounter';
 import LoadingSpinner from './LoadingSpinner';
 
-import { ContentOptimizationResponse } from '@/types/seo-optimizer';
+import { ContentOptimizationResponse } from '@/shared/types/seo-optimizer';
 
 interface ContentOptimizerProps {
   onOptimizationComplete?: (result: ContentOptimizationResponse) => void;
@@ -63,7 +63,7 @@ export default function ContentOptimizer({
     if (title || content || focusKeyword) {
       autoSave(title, content, focusKeyword);
     }
-  }, [title, content, focusKeyword]);
+  }, [title, content, focusKeyword, autoSave]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

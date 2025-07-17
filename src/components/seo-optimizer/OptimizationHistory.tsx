@@ -41,7 +41,7 @@ export default function OptimizationHistory({
   // Load history on component mount
   useEffect(() => {
     loadOptimizationHistory();
-  }, []); // Only run on mount
+  }, [loadOptimizationHistory]); // Add loadOptimizationHistory dependency
 
   // Handle search with debounce
   useEffect(() => {

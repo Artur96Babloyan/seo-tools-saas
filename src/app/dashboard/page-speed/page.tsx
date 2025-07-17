@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Zap, Search, Clock, Image, Wifi, AlertCircle, CheckCircle, X, Timer, Globe, Loader2, Save } from "lucide-react";
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/entities/user';
 import { seoService, reportService, type SeoAnalysis } from "@/lib/services";
 import { ApiError } from "@/lib/api";
 import PerformanceDisclaimer from "@/components/PerformanceDisclaimer";

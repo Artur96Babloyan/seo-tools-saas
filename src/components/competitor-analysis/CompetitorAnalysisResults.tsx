@@ -10,7 +10,7 @@ import {
   BarChart3,
   Star
 } from 'lucide-react';
-import { CompetitorAnalysisResult } from '@/types/competitor';
+import { CompetitorAnalysisResult } from '@/shared/types/competitor';
 import { competitorService } from '@/lib/services';
 
 interface CompetitorAnalysisResultsProps {

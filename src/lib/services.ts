@@ -9,7 +9,7 @@ import {
   KeywordRankingResult,
   HistoryFilters, 
   CleanupRequest 
-} from '@/types/keyword-tracker';
+} from '@/shared/types/keyword-tracker';
 import { 
   CompetitorAnalysisRequest,
   CompetitorAnalysisResult,
@@ -18,7 +18,7 @@ import {
   CompetitorAnalysisComparison,
   CompetitorChartData,
   ChartDataset 
-} from '@/types/competitor';
+} from '@/shared/types/competitor';
 import { isValidGoogleDomain } from './googleDomains';
 import { ApiError } from './api';
 

@@ -14,7 +14,7 @@ import {
   Filter,
   TrendingUp
 } from 'lucide-react';
-import { CompetitorReport } from '@/types/competitor';
+import { CompetitorReport } from '@/shared/types/competitor';
 import { competitorService } from '@/lib/services';
 
 interface CompetitorReportsHistoryProps {

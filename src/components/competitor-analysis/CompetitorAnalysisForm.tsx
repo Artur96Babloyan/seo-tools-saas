@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Plus, X, Users, TrendingUp, AlertCircle } from 'lucide-react';
-import { CompetitorAnalysisRequest } from '@/types/competitor';
+import { CompetitorAnalysisRequest } from '@/shared/types/competitor';
 
 interface CompetitorAnalysisFormProps {
   onSubmit: (request: CompetitorAnalysisRequest) => void;

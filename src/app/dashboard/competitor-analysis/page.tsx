@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/entities/user';
 import { competitorService } from '@/lib/services';
-import { CompetitorAnalysisRequest, CompetitorAnalysisResult, CompetitorReport } from '@/types/competitor';
+import { CompetitorAnalysisRequest, CompetitorAnalysisResult, CompetitorReport } from '@/shared/types/competitor';
 import { ApiError } from '@/lib/api';
 import CompetitorAnalysisForm from '@/components/competitor-analysis/CompetitorAnalysisForm';
 import CompetitorAnalysisResults from '@/components/competitor-analysis/CompetitorAnalysisResults';

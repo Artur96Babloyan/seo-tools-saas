@@ -13,7 +13,7 @@ import {
   Globe,
   FileText
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/entities/user';
 import { contentExtractorService } from '@/lib/contentExtractorService';
 
 interface SerpAnalysisRequest {

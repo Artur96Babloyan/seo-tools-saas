@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import type { AuthContextType, User, LoginCredentials, RegisterCredentials } from '@/types/auth';
+import type { AuthContextType, User, LoginCredentials, RegisterCredentials } from '@/shared/types/auth';
 import { authService } from '@/lib/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

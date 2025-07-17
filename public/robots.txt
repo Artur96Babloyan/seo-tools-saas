@@ -1,33 +1,158 @@
+# SEO Tools SaaS - Robots.txt
+# Comprehensive crawling rules for AuditCraft.io
+
+# ========================================
+# GLOBAL RULES
+# ========================================
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: /sitemap.xml
+# Sitemap location
+Sitemap: https://auditcraft.io/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1
 
-# Disallow admin and private areas
+# ========================================
+# BLOCKED AREAS
+# ========================================
+
+# API endpoints (private functionality)
 Disallow: /api/
+
+# Next.js internal files
 Disallow: /_next/
+Disallow: /_next/static/
+Disallow: /_next/image/
+
+# Authentication and private areas
+Disallow: /auth/login
+Disallow: /auth/register
+Disallow: /dashboard/
+Disallow: /oauth/
+
+# Development and admin areas
 Disallow: /admin/
 Disallow: /private/
+Disallow: /internal/
 
-# Allow important pages
-Allow: /dashboard/
-Allow: /auth/
-Allow: /sitemap.xml
-Allow: /manifest.json
+# Temporary and cache files
+Disallow: /temp/
+Disallow: /cache/
+Disallow: /tmp/
 
-# Block common bot patterns
+# Search and filter pages (to avoid duplicate content)
+Disallow: /*?*
+Disallow: /*search*
+Disallow: /*filter*
+
+# ========================================
+# SPECIFIC BOT RULES
+# ========================================
+
+# Aggressive SEO tools - higher crawl delays
 User-agent: AhrefsBot
 Crawl-delay: 10
+Disallow: /api/
+Disallow: /dashboard/
 
 User-agent: SemrushBot
 Crawl-delay: 10
+Disallow: /api/
+Disallow: /dashboard/
 
 User-agent: MJ12bot
 Crawl-delay: 10
+Disallow: /api/
+Disallow: /dashboard/
 
 User-agent: DotBot
 Crawl-delay: 10 
+Disallow: /api/
+Disallow: /dashboard/
+
+User-agent: BLEXBot
+Crawl-delay: 10
+Disallow: /api/
+Disallow: /dashboard/
+
+# Social media bots
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 1
+
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+# Google bots - standard rules
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-Image
+Allow: /
+Crawl-delay: 1
+
+User-agent: Googlebot-Mobile
+Allow: /
+Crawl-delay: 1
+
+# Bing bots
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# ========================================
+# ALLOWED RESOURCES
+# ========================================
+
+# Important static files
+Allow: /manifest.json
+Allow: /robots.txt
+Allow: /sitemap.xml
+Allow: /favicon.ico
+
+# Public assets
+Allow: /public/
+Allow: /*.css
+Allow: /*.js
+Allow: /*.png
+Allow: /*.jpg
+Allow: /*.jpeg
+Allow: /*.gif
+Allow: /*.svg
+Allow: /*.ico
+Allow: /*.woff
+Allow: /*.woff2
+Allow: /*.ttf
+Allow: /*.eot
+
+# ========================================
+# ADDITIONAL SEO CONSIDERATIONS
+# ========================================
+
+# Block common bot patterns that might cause issues
+User-agent: *
+Disallow: /api/competitor/analyze
+Disallow: /api/keyword-analysis/
+Disallow: /api/keyword-tracker/
+Disallow: /api/seo/optimize-content
+
+# Allow main landing page and important public pages
+Allow: /
+Allow: /about
+Allow: /features
+Allow: /pricing
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+Allow: /blog
+
+# ========================================
+# END OF ROBOTS.TXT
+# ======================================== 

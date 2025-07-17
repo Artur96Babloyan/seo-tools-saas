@@ -1,4 +1,4 @@
-import { KeywordRankingResult } from '../types/keyword-tracker';
+import { KeywordRankingResult } from '@/shared/types/keyword-tracker';
 import puppeteer from 'puppeteer';
 
 export class KeywordTrackerService {

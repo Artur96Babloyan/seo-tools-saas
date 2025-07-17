@@ -11,7 +11,7 @@ import {
   Eye,
   ChevronDown
 } from 'lucide-react';
-import { ContentOptimizationResponse } from '@/types/seo-optimizer';
+import { ContentOptimizationResponse } from '@/shared/types/seo-optimizer';
 import CopyToClipboard from './CopyToClipboard';
 import FormattedContentView from './FormattedContentView';
 

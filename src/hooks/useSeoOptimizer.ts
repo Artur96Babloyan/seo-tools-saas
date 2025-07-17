@@ -7,7 +7,7 @@ import {
   CharacterCounts,
   ValidationErrors,
   DraftData
-} from '@/types/seo-optimizer';
+} from '@/shared/types/seo-optimizer';
 
 const DRAFT_STORAGE_KEY = 'seo-optimizer-draft';
 const AUTO_SAVE_DELAY = 3000; // 3 seconds
@@ -187,7 +187,7 @@ export const useSeoOptimizer = () => {
       const result = await seoOptimizerService.getOptimizationHistory(updatedFilters);
 
       // Ensure we have complete data for each optimization
-      const completeHistory = result.content.map((optimization) => ({
+      const completeHistory = result.content.map((optimization: ContentOptimizationResponse) => ({
         ...optimization,
         originalTitle: optimization.originalTitle || 'Original title not available',
         originalContent: optimization.originalContent || 'Original content not available',

@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/shared/ui/theme";
+import { AuthProvider } from '@/entities/user';
 import Script from "next/script";
 
 const geistSans = Geist({
@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
-  description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
+  description: "Unlock your website's potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
   keywords: [
     "auditcraft", "audit craft", "audit seo", "seo audit", "website audit",
     "seo analysis", "website analysis", "seo tools", "audit tools",
@@ -43,11 +43,11 @@ export const metadata: Metadata = {
     canonical: 'https://auditcraft.io',
   },
   verification: {
-    google: 'your-google-verification-code', // Add your Google Search Console verification code here
+    google: 'your-google-verification-code',
   },
   openGraph: {
     title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
-    description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
+    description: "Unlock your website's potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
     type: "website",
     locale: "en_US",
     url: "https://auditcraft.io",
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "AuditCraft: Professional SEO Analysis & Website Audit Tools",
-    description: "Unlock your website’s potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
+    description: "Unlock your website's potential with AuditCraft. AI-driven SEO analysis, content optimization, sitemap generator, meta tag validator, page speed auditor, keyword tracking, and competitor analysis—all in one platform.",
     images: ["https://auditcraft.io/android-chrome-512x512.png"],
   },
 };
