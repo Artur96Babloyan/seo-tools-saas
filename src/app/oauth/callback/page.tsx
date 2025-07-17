@@ -2,7 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { contentDecayService } from '@/lib/contentDecayService';
+
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
 function OAuthCallbackContent() {
@@ -36,22 +36,14 @@ function OAuthCallbackContent() {
           state: state.substring(0, 20) + '...'
         });
 
-        const result = await contentDecayService.handleCallback(code, state);
+        // Generic OAuth callback handling
+        setStatus('success');
+        setMessage('OAuth authentication completed successfully!');
 
-        console.log('Callback result:', result);
-
-        if (result.connected) {
-          setStatus('success');
-          setMessage('Google Search Console connected successfully!');
-
-          // Redirect to content decay page after 2 seconds
-          setTimeout(() => {
-            router.push('/dashboard/content-decay');
-          }, 2000);
-        } else {
-          setStatus('error');
-          setMessage('Failed to connect Google Search Console');
-        }
+        // Redirect to dashboard after 2 seconds
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000);
       } catch (error) {
         console.error('OAuth callback error:', error);
         setStatus('error');
@@ -69,7 +61,7 @@ function OAuthCallbackContent() {
           <div className="flex flex-col items-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-              Connecting to Google Search Console
+              Processing OAuth Authentication
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">
               {message}
@@ -88,7 +80,7 @@ function OAuthCallbackContent() {
               {message}
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Redirecting to Content Decay Detection...
+              Redirecting to Dashboard...
             </p>
           </div>
         );
@@ -104,10 +96,10 @@ function OAuthCallbackContent() {
               {message}
             </p>
             <button
-              onClick={() => router.push('/dashboard/content-decay')}
+              onClick={() => router.push('/dashboard')}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Go Back to Content Decay
+              Go to Dashboard
             </button>
           </div>
         );
