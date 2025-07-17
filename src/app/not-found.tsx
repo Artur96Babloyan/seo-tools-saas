@@ -1,5 +1,17 @@
 import Script from "next/script";
 import NotFoundContent from "@/components/NotFoundContent";
+import { Metadata } from 'next';
+import { generateMetadata } from '@/lib/seo';
+
+export const metadata: Metadata = generateMetadata({
+  title: "Page Not Found - 404 Error | AuditCraft",
+  description: "The page you're looking for doesn't exist. Explore our comprehensive SEO tools for website optimization, content analysis, and performance auditing.",
+  keywords: [
+    "404 error", "page not found", "seo tools", "website optimization",
+    "auditcraft", "audit craft"
+  ],
+  canonical: "/404",
+});
 
 export default function NotFound() {
   return (
