@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles } from "lucide-react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles, Search } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
@@ -18,6 +18,11 @@ const navigation = [
     name: "AI Content Optimizer",
     href: "/dashboard/seo-optimizer",
     icon: Sparkles,
+  },
+  {
+    name: "SERP Optimizer",
+    href: "/dashboard/serp-optimizer",
+    icon: Search,
   },
   {
     name: "Sitemap Generator",
