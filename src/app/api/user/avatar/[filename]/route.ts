@@ -5,14 +5,47 @@ export async function GET(
   { params }: { params: Promise<{ filename: string }> }
 ) {
   const { filename } = await params;
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+  
   try {
-    const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
-    
-    // Fetch the image from the backend
-    const response = await fetch(`${API_BASE_URL}/uploads/avatars/${filename}`);
-    
-    if (!response.ok) {
-      return NextResponse.json({ error: 'Avatar not found' }, { status: 404 });
+    // Try multiple possible avatar endpoints
+    const endpoints = [
+      `${API_BASE_URL}/uploads/avatars/${filename}`,
+      `${API_BASE_URL}/api/user/avatar/${filename}`,
+      `${API_BASE_URL}/avatars/${filename}`,
+      `${API_BASE_URL}/static/avatars/${filename}`,
+    ];
+
+    let response: Response | null = null;
+    let lastError: Error | null = null;
+
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying to fetch avatar from: ${endpoint}`);
+        response = await fetch(endpoint);
+        
+        if (response.ok) {
+          console.log(`Successfully fetched avatar from: ${endpoint}`);
+          break;
+        }
+      } catch (error) {
+        console.log(`Failed to fetch from ${endpoint}:`, error);
+        lastError = error as Error;
+        continue;
+      }
+    }
+
+    if (!response || !response.ok) {
+      console.error('All avatar endpoints failed. Last error:', lastError);
+      console.error('Attempted filename:', filename);
+      console.error('API_BASE_URL:', API_BASE_URL);
+      
+      // Return a default avatar or error image
+      return NextResponse.json({ 
+        error: 'Avatar not found',
+        message: `Could not find avatar: ${filename}`,
+        triedEndpoints: endpoints
+      }, { status: 404 });
     }
 
     // Get the image data
@@ -29,6 +62,8 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching avatar:', error);
+    console.error('Attempted to fetch avatar with filename:', filename);
+    console.error('API_BASE_URL:', API_BASE_URL);
     return NextResponse.json({ error: 'Failed to fetch avatar' }, { status: 500 });
   }
 } 

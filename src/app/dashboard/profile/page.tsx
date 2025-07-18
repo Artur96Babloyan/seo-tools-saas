@@ -537,19 +537,25 @@ export default function UserProfilePage() {
                           className="w-full h-full object-cover"
                         />
                       ) : profile?.avatar ? (
-                        <Image
-                          src={profile.avatar.startsWith('http') ? profile.avatar :
-                            profile.avatar.startsWith('/uploads/avatars/') ?
-                              `/api/user/avatar/${profile.avatar.split('/').pop()}` :
-                              profile.avatar}
-                          alt="Profile avatar"
-                          width={96}
-                          height={96}
-                          className="w-full h-full object-cover"
-                          onError={() => {
-                            console.error('Failed to load avatar:', profile.avatar);
-                          }}
-                        />
+                        <>
+                          <Image
+                            src={profile.avatar.startsWith('http') ? profile.avatar :
+                              profile.avatar.startsWith('/uploads/avatars/') ?
+                                `/api/user/avatar/${profile.avatar.split('/').pop()}` :
+                                profile.avatar}
+                            alt="Profile avatar"
+                            width={96}
+                            height={96}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error('Failed to load avatar:', profile.avatar);
+                              // Hide the image and show the default user icon
+                              e.currentTarget.style.display = 'none';
+                              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <User className="h-12 w-12 text-muted-foreground hidden" />
+                        </>
                       ) : (
                         <User className="h-12 w-12 text-muted-foreground" />
                       )}
