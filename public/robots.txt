@@ -20,10 +20,11 @@ Crawl-delay: 1
 # API endpoints (private functionality)
 Disallow: /api/
 
-# Next.js internal files
-Disallow: /_next/
-Disallow: /_next/static/
-Disallow: /_next/image/
+# Next.js internal files - FIXED: Allow static assets for rendering
+# ⚠️ DO NOT block _next/static — needed for rendering
+# Allow critical assets for rendering
+Allow: /_next/static/
+Allow: /_next/image/
 
 # Authentication and private areas
 Disallow: /auth/login
@@ -152,6 +153,9 @@ Allow: /contact
 Allow: /privacy
 Allow: /terms
 Allow: /blog
+Allow: /help
+Allow: /status
+Allow: /feedback
 
 # ========================================
 # END OF ROBOTS.TXT

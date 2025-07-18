@@ -7,13 +7,13 @@ import { useSeoOptimizer } from '@/hooks/useSeoOptimizer';
 import OptimizationResults from '@/components/seo-optimizer/OptimizationResults';
 import LoadingSpinner from '@/components/seo-optimizer/LoadingSpinner';
 
-interface OptimizationDetailPageProps {
+interface OptimizationDetailProps {
   params: Promise<{
     id: string;
   }>;
 }
 
-export default function OptimizationDetailPage({ params }: OptimizationDetailPageProps) {
+export default function OptimizationDetailPage({ params }: OptimizationDetailProps) {
   const router = useRouter();
   const { id } = use(params);
   const { isLoading, error, currentOptimization, loadOptimization } = useSeoOptimizer();

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp, Users, Wand2, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/theme";
+import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
 
 export default function LandingPage() {
   return (
@@ -81,7 +82,7 @@ export default function LandingPage() {
 
           <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {/* AI Content Optimizer */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/seo-optimizer" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-pink-500 text-white">
                   <Wand2 className="h-6 w-6" />
@@ -95,10 +96,10 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Sitemap Generator */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/sitemap" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-500 text-white">
                   <Globe className="h-6 w-6" />
@@ -112,10 +113,10 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Meta Tag Validator */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/meta-tags" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-green-500 text-white">
                   <CheckCircle className="h-6 w-6" />
@@ -129,10 +130,10 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Page Speed Auditor */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/page-speed" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yellow-500 text-white">
                   <Zap className="h-6 w-6" />
@@ -146,10 +147,10 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Keyword Tracker */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/keyword-tracker" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-purple-500 text-white">
                   <TrendingUp className="h-6 w-6" />
@@ -163,10 +164,10 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
 
             {/* Competitor Analysis */}
-            <div className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
+            <Link href="/dashboard/competitor-analysis" className="group rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary/50">
               <div className="flex items-start space-x-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-500 text-white">
                   <Users className="h-6 w-6" />
@@ -180,7 +181,7 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
       </section>
@@ -207,6 +208,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <FooterWrapper />
     </div>
   );
 }

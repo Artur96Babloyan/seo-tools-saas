@@ -1,6 +1,5 @@
-"use client";
-
-import { useState } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState } from 'react';
 import {
   Trophy,
   TrendingUp,
@@ -32,7 +31,7 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
 
   // Create default values for missing data to ensure compatibility with old reports
   const safeData = {
-    summary: differences?.summary || {
+    summary: (differences as any)?.summary || {
       mainDomain: 'Unknown',
       overallScore: 0,
       overallRank: 1,
@@ -41,26 +40,26 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
       weakestCategory: 'N/A',
       analysisDate: new Date().toISOString()
     },
-    seoScores: differences?.seoScores || {
+    seoScores: (differences as any)?.seoScores || {
       mainDomain: { domain: 'Unknown', scores: { performance: 0, seo: 0, accessibility: 0, bestPractices: 0, overall: 0 } },
       competitors: []
     },
-    rankings: differences?.rankings || {
+    rankings: (differences as any)?.rankings || {
       performance: [],
       seo: [],
       accessibility: [],
       bestPractices: [],
       overall: []
     },
-    metaTagComparison: differences?.metaTagComparison || {
+    metaTagComparison: (differences as any)?.metaTagComparison || {
       mainDomain: { domain: 'Unknown', metaTags: { title: { found: false, content: null }, metaDescription: { found: false, content: null }, ogTitle: { found: false, content: null }, ogDescription: { found: false, content: null }, ogImage: { found: false, content: null } } },
       competitors: []
     },
-    scoreDifferences: differences?.scoreDifferences || {
+    scoreDifferences: (differences as any)?.scoreDifferences || {
       mainDomain: 'Unknown',
       differences: []
     },
-    recommendations: differences?.recommendations || []
+    recommendations: (differences as any)?.recommendations || []
   };
 
   // Only show incomplete data warning if critical data is completely missing
@@ -284,22 +283,22 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
           {safeData.metaTagComparison.mainDomain.domain || 'Your Website'} (Your Website)
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(safeData.metaTagComparison.mainDomain.metaTags || {}).map(([tag, data]) => (
+          {Object.entries((safeData.metaTagComparison.mainDomain.metaTags || {})).map(([tag, data]) => (
             <div key={tag} className="bg-white dark:bg-gray-800 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
                   {tag.replace(/([A-Z])/g, ' $1').trim()}
                 </span>
-                <span className={`text-xs px-2 py-1 rounded-full ${(data.found || data.content)
+                <span className={`text-xs px-2 py-1 rounded-full ${((data as any).found || (data as any).content)
                   ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                   : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                   }`}>
-                  {(data.found || data.content) ? 'Found' : 'Missing'}
+                  {(data as any).found || (data as any).content ? 'Found' : 'Missing'}
                 </span>
               </div>
-              {data.content && (
+              {(data as any).content && (
                 <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                  {data.content}
+                  {(data as any).content}
                 </p>
               )}
             </div>
@@ -325,16 +324,16 @@ export default function CompetitorAnalysisResults({ results, onSaveReport }: Com
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300 capitalize">
                     {tag.replace(/([A-Z])/g, ' $1').trim()}
                   </span>
-                  <span className={`text-xs px-2 py-1 rounded-full ${(data.found || data.content)
+                  <span className={`text-xs px-2 py-1 rounded-full ${((data as any).found || (data as any).content)
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                     : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                     }`}>
-                    {(data.found || data.content) ? 'Found' : 'Missing'}
+                    {((data as any).found || (data as any).content) ? 'Found' : 'Missing'}
                   </span>
                 </div>
-                {data.content && (
+                {(data as any).content && (
                   <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                    {data.content}
+                    {(data as any).content}
                   </p>
                 )}
               </div>
