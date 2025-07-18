@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { generateMetadata } from '@/lib/seo';
+import { Header } from '@/components/Header';
 
 export const metadata: Metadata = generateMetadata({
   title: "Blog - SEO Insights, Tips & Updates | AuditCraft",
@@ -15,5 +16,10 @@ export default function BlogLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <>
+      <Header showAuthButtons={true} />
+      {children}
+    </>
+  );
 } 

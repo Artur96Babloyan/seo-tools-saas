@@ -1,12 +1,16 @@
+"use client";
+
 import Link from "next/link";
-import { Search, BookOpen, Settings, BarChart3, Globe, Zap, TrendingUp, Users, Wand2, MessageCircle, FileText, Video, ChevronRight, ArrowRight } from "lucide-react";
+import { Search, FileText, BarChart3, MessageCircle, Video, ChevronRight, ArrowRight, Sparkles, Globe, Zap, TrendingUp, Users } from "lucide-react";
+import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
+import { Header } from "@/components/Header";
 
 export default function HelpCenterPage() {
   const helpCategories = [
     {
       title: "Getting Started",
       description: "Learn the basics and set up your account",
-      icon: BookOpen,
+      icon: Sparkles,
       color: "bg-blue-500",
       articles: [
         { title: "How to create your first SEO audit", href: "/help/getting-started/first-audit" },
@@ -18,8 +22,8 @@ export default function HelpCenterPage() {
     {
       title: "AI Content Optimizer",
       description: "Master AI-powered content optimization",
-      icon: Wand2,
-      color: "bg-pink-500",
+      icon: FileText,
+      color: "bg-green-500",
       articles: [
         { title: "How to optimize content with AI", href: "/help/ai-optimizer/optimize-content" },
         { title: "Understanding optimization scores", href: "/help/ai-optimizer/optimization-scores" },
@@ -31,7 +35,7 @@ export default function HelpCenterPage() {
       title: "Sitemap Generator",
       description: "Create and manage your sitemaps",
       icon: Globe,
-      color: "bg-green-500",
+      color: "bg-purple-500",
       articles: [
         { title: "Generating your first sitemap", href: "/help/sitemap/generate-sitemap" },
         { title: "Customizing sitemap settings", href: "/help/sitemap/customize-settings" },
@@ -55,7 +59,7 @@ export default function HelpCenterPage() {
       title: "Page Speed Auditor",
       description: "Analyze and improve page speed",
       icon: Zap,
-      color: "bg-yellow-500",
+      color: "bg-orange-500",
       articles: [
         { title: "Running your first speed test", href: "/help/page-speed/first-test" },
         { title: "Understanding speed metrics", href: "/help/page-speed/understanding-metrics" },
@@ -67,7 +71,7 @@ export default function HelpCenterPage() {
       title: "Keyword Tracker",
       description: "Track and analyze keyword performance",
       icon: TrendingUp,
-      color: "bg-orange-500",
+      color: "bg-red-500",
       articles: [
         { title: "Setting up keyword tracking", href: "/help/keyword-tracker/setup-tracking" },
         { title: "Understanding ranking reports", href: "/help/keyword-tracker/ranking-reports" },
@@ -88,15 +92,15 @@ export default function HelpCenterPage() {
       ]
     },
     {
-      title: "Account & Billing",
-      description: "Manage your account and subscription",
-      icon: Settings,
-      color: "bg-gray-500",
+      title: "Reports & Analytics",
+      description: "Understand your data",
+      icon: BarChart3,
+      color: "bg-teal-500",
       articles: [
-        { title: "Upgrading your subscription", href: "/help/account/upgrade-subscription" },
-        { title: "Managing billing information", href: "/help/account/billing-management" },
-        { title: "Account security settings", href: "/help/account/security-settings" },
-        { title: "Canceling your subscription", href: "/help/account/cancel-subscription" }
+        { title: "Viewing your dashboard", href: "/help/reports/dashboard" },
+        { title: "Understanding key metrics", href: "/help/reports/metrics" },
+        { title: "Exporting data", href: "/help/reports/export" },
+        { title: "Data privacy and security", href: "/help/reports/privacy" }
       ]
     }
   ];
@@ -110,35 +114,20 @@ export default function HelpCenterPage() {
   ];
 
   const quickActions = [
-    { title: "Contact Support", description: "Get help from our team", icon: MessageCircle, href: "/contact", color: "bg-blue-500" },
-    { title: "Video Tutorials", description: "Watch step-by-step guides", icon: Video, href: "/help/tutorials", color: "bg-green-500" },
+    { title: "Getting Started", description: "Quick setup guide", icon: Sparkles, href: "/help/getting-started", color: "bg-blue-500" },
+    { title: "Content Optimization", description: "AI-powered SEO tips", icon: FileText, href: "/help/content-optimization", color: "bg-green-500" },
+    { title: "Technical SEO", description: "Meta tags & sitemaps", icon: Globe, href: "/help/technical-seo", color: "bg-purple-500" },
+    { title: "Performance", description: "Page speed optimization", icon: Zap, href: "/help/performance", color: "bg-orange-500" },
+    { title: "Keyword Research", description: "Track & analyze keywords", icon: TrendingUp, href: "/help/keyword-research", color: "bg-red-500" },
+    { title: "Competitor Analysis", description: "Monitor competitors", icon: Users, href: "/help/competitor-analysis", color: "bg-indigo-500" },
+    { title: "Reports & Analytics", description: "Understand your data", icon: BarChart3, href: "/help/reports", color: "bg-teal-500" },
     { title: "API Documentation", description: "Developer resources", icon: FileText, href: "/docs", color: "bg-purple-500" },
     { title: "System Status", description: "Check service health", icon: BarChart3, href: "/status", color: "bg-orange-500" }
   ];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AuditCraft</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/dashboard"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showAuthButtons={false} />
 
       {/* Hero Section */}
       <section className="py-16 sm:py-24">
@@ -310,6 +299,7 @@ export default function HelpCenterPage() {
           </div>
         </div>
       </section>
+      <FooterWrapper />
     </div>
   );
 } 

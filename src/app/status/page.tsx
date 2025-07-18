@@ -1,6 +1,8 @@
-import Link from "next/link";
-import { BarChart3, CheckCircle, AlertCircle, XCircle, Clock, Activity, Server, Database, Globe, Zap } from "lucide-react";
+"use client";
+
+import { CheckCircle, XCircle, AlertTriangle, Clock, BarChart3, TrendingUp, Users, Sparkles, FileText, Search } from "lucide-react";
 import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
+import { Header } from "@/components/Header";
 
 // Mock data - in a real implementation, this would come from your monitoring system
 const services = [
@@ -11,7 +13,7 @@ const services = [
     status: 'operational',
     uptime: '99.98%',
     responseTime: '120ms',
-    icon: Server
+    icon: BarChart3
   },
   {
     id: 'keyword-tracking',
@@ -20,7 +22,7 @@ const services = [
     status: 'operational',
     uptime: '99.95%',
     responseTime: '85ms',
-    icon: Activity
+    icon: TrendingUp
   },
   {
     id: 'competitor-analysis',
@@ -29,7 +31,7 @@ const services = [
     status: 'operational',
     uptime: '99.92%',
     responseTime: '200ms',
-    icon: BarChart3
+    icon: Users
   },
   {
     id: 'content-optimizer',
@@ -38,7 +40,7 @@ const services = [
     status: 'operational',
     uptime: '99.89%',
     responseTime: '150ms',
-    icon: Zap
+    icon: Sparkles
   },
   {
     id: 'page-speed',
@@ -47,7 +49,7 @@ const services = [
     status: 'operational',
     uptime: '99.85%',
     responseTime: '300ms',
-    icon: Globe
+    icon: FileText
   },
   {
     id: 'database',
@@ -56,7 +58,7 @@ const services = [
     status: 'operational',
     uptime: '99.99%',
     responseTime: '45ms',
-    icon: Database
+    icon: Search
   }
 ];
 
@@ -98,7 +100,7 @@ const getStatusIcon = (status: string) => {
     case 'operational':
       return <CheckCircle className="h-5 w-5 text-green-500" />;
     case 'degraded':
-      return <AlertCircle className="h-5 w-5 text-yellow-500" />;
+      return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
     case 'outage':
       return <XCircle className="h-5 w-5 text-red-500" />;
     case 'maintenance':
@@ -138,62 +140,21 @@ const getSeverityColor = (severity: string) => {
   }
 };
 
-export default function StatusPage() {
-  const overallStatus = services.every(service => service.status === 'operational') ? 'operational' : 'degraded';
-
+export default function SystemStatusPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AuditCraft</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showAuthButtons={false} />
 
       {/* Hero Section */}
       <section className="py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <div className="flex justify-center mb-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                <Activity className="h-8 w-8" />
-              </div>
-            </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
               System Status
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Real-time status of all AuditCraft services and systems
+              Monitor the health and performance of all AuditCraft services in real-time.
             </p>
-
-            {/* Overall Status */}
-            <div className="mt-8 flex items-center justify-center space-x-3">
-              {getStatusIcon(overallStatus)}
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(overallStatus)}`}>
-                {overallStatus === 'operational' ? 'All Systems Operational' : 'Some Issues Detected'}
-              </span>
-            </div>
           </div>
         </div>
       </section>
@@ -307,13 +268,13 @@ export default function StatusPage() {
             <div className="mt-8 text-center">
               <p className="text-muted-foreground">
                 For real-time updates, follow us on{' '}
-                <Link href="#" className="text-primary hover:underline">
+                <a href="#" className="text-primary hover:underline">
                   Twitter
-                </Link>{' '}
+                </a>{' '}
                 or subscribe to our{' '}
-                <Link href="#" className="text-primary hover:underline">
+                <a href="#" className="text-primary hover:underline">
                   status page notifications
-                </Link>
+                </a>
               </p>
             </div>
           </div>
@@ -329,18 +290,18 @@ export default function StatusPage() {
               If you&apos;re experiencing issues not reflected on this page, our support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
+              <a
                 href="/contact"
                 className="bg-primary text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors"
               >
                 Contact Support
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/help"
                 className="border border-border text-foreground px-6 py-3 rounded-lg font-semibold hover:bg-muted transition-colors"
               >
                 Help Center
-              </Link>
+              </a>
             </div>
           </div>
         </div>

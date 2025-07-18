@@ -22,7 +22,7 @@ class BlogService {
     endpoint: string, 
     options: RequestInit = {}
   ): Promise<T> {
-    const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}${endpoint}`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api${endpoint}`;
     
     const config: RequestInit = {
       headers: {

@@ -38,7 +38,7 @@ export default function DashboardLayoutClient({
           <header className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-border bg-card">
             <div className="flex items-center space-x-3">
               <MobileMenuButton onClick={() => setIsMobileMenuOpen(true)} />
-              <h1 className="text-lg font-semibold text-foreground">SEO Tools</h1>
+              <h1 className="text-lg font-semibold text-foreground">AuditCraft</h1>
             </div>
           </header>
 

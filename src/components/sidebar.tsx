@@ -49,7 +49,6 @@ const navigation = [
     href: "/dashboard/competitor-analysis",
     icon: Users,
   },
-
   {
     name: "Reports",
     href: "/dashboard/reports",
@@ -101,7 +100,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       <div className="flex items-center justify-between h-16 px-6 border-b border-border">
         <div className="flex items-center space-x-2">
           <BarChart3 className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold text-foreground">SEO Tools</span>
+          <span className="text-xl font-bold text-foreground">AuditCraft</span>
         </div>
         {/* Close button for mobile */}
         <button

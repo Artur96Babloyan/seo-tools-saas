@@ -158,7 +158,7 @@ export default function DashboardPage() {
 
       {/* Tools Grid */}
       <div className="mb-8">
-        <h2 className="mb-6 text-xl font-semibold text-foreground">SEO Tools</h2>
+        <h2 className="mb-6 text-xl font-semibold text-foreground">AuditCraft Tools</h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <Link

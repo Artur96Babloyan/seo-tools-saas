@@ -90,7 +90,7 @@ export default function LoginPage() {
             Welcome back
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Sign in to your SEO Tools account
+            Sign in to your AuditCraft account
           </p>
         </div>
 

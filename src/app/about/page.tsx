@@ -1,37 +1,12 @@
 import Link from "next/link";
 import { BarChart3, Users, Globe, Zap, Shield, Award } from "lucide-react";
 import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
+import { Header } from "@/components/Header";
 
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <BarChart3 className="h-5 w-5" />
-              </div>
-              <span className="text-xl font-bold text-foreground">AuditCraft</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link
-                href="/"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Home
-              </Link>
-              <Link
-                href="/dashboard"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Dashboard
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header showAuthButtons={true} />
 
       {/* Hero Section */}
       <section className="py-16 sm:py-24">

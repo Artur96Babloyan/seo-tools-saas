@@ -9,7 +9,7 @@ class AuthService {
   private baseURL: string;
 
   constructor() {
-    this.baseURL = API_BASE_URL;
+    this.baseURL = `${API_BASE_URL}/api`;
   }
 
   // Store token and user data in cookies
@@ -111,7 +111,7 @@ class AuthService {
 
   // Login user
   async login(credentials: LoginCredentials): Promise<User> {
-    const response = await this.makeRequest<AuthResponse>('/api/auth/login', {
+    const response = await this.makeRequest<AuthResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -128,7 +128,7 @@ class AuthService {
 
   // Register user
   async register(credentials: RegisterCredentials): Promise<User> {
-    const response = await this.makeRequest<AuthResponse>('/api/auth/register', {
+    const response = await this.makeRequest<AuthResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -163,7 +163,7 @@ class AuthService {
 
     try {
       // Try to make a request to verify token is still valid
-      await this.makeRequest('/api/auth/verify', {
+      await this.makeRequest('/auth/verify', {
         method: 'GET',
       });
 
