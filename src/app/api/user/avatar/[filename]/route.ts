@@ -17,29 +17,20 @@ export async function GET(
     ];
 
     let response: Response | null = null;
-    let lastError: Error | null = null;
 
     for (const endpoint of endpoints) {
       try {
-        console.log(`Trying to fetch avatar from: ${endpoint}`);
         response = await fetch(endpoint);
         
         if (response.ok) {
-          console.log(`Successfully fetched avatar from: ${endpoint}`);
           break;
         }
-      } catch (error) {
-        console.log(`Failed to fetch from ${endpoint}:`, error);
-        lastError = error as Error;
+      } catch {
         continue;
       }
     }
 
     if (!response || !response.ok) {
-      console.error('All avatar endpoints failed. Last error:', lastError);
-      console.error('Attempted filename:', filename);
-      console.error('API_BASE_URL:', API_BASE_URL);
-      
       // Return a default avatar or error image
       return NextResponse.json({ 
         error: 'Avatar not found',
@@ -60,10 +51,7 @@ export async function GET(
         'Cache-Control': 'public, max-age=31536000', // Cache for 1 year
       },
     });
-  } catch (error) {
-    console.error('Error fetching avatar:', error);
-    console.error('Attempted to fetch avatar with filename:', filename);
-    console.error('API_BASE_URL:', API_BASE_URL);
+  } catch {
     return NextResponse.json({ error: 'Failed to fetch avatar' }, { status: 500 });
   }
 } 

@@ -1,7 +1,7 @@
 import Cookies from 'js-cookie';
 import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '@/shared/types/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.auditcraft.io';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 const TOKEN_COOKIE_NAME = 'seo-tools-token';
 const USER_COOKIE_NAME = 'seo-tools-user';
 
@@ -47,15 +47,13 @@ class AuthService {
     }
   }
 
-  // Make authenticated API request with retry logic
+  // Make authenticated API request
   private async makeRequest<T>(
     endpoint: string,
-    options: RequestInit = {},
-    retryCount = 0
+    options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const token = this.getToken();
-    const maxRetries = 3;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -83,16 +81,7 @@ class AuthService {
           throw new Error('Authentication required. Please log in again.');
         }
 
-        // Handle 429 rate limiting with exponential backoff
-        if (response.status === 429 && retryCount < maxRetries) {
-          const delay = Math.min(1000 * Math.pow(2, retryCount), 10000);
-          await new Promise(resolve => setTimeout(resolve, delay));
-          retryCount++;
-          
-          return this.makeRequest<T>(endpoint, options, retryCount);
-        }
-
-        // Handle 429 without retries left
+        // Handle 429 rate limiting - don't retry to avoid making it worse
         if (response.status === 429) {
           throw new Error('Too many requests. Please wait a moment before trying again.');
         }
@@ -146,8 +135,11 @@ class AuthService {
   // Logout user
   logout(): void {
     this.clearAuthData();
-    // Redirect to login page
+    // Clear any cached data and redirect to login page
     if (typeof window !== 'undefined') {
+      // Clear any cached data
+      localStorage.removeItem('user-avatar-cache');
+      sessionStorage.clear();
       window.location.href = '/auth/login';
     }
   }
@@ -161,6 +153,12 @@ class AuthService {
       return null;
     }
 
+    // For development, if we have token and user data, consider it valid
+    // This prevents issues when backend is not running
+    if (process.env.NODE_ENV === 'development') {
+      return user;
+    }
+
     try {
       // Try to make a request to verify token is still valid
       await this.makeRequest('/auth/verify', {
@@ -168,10 +166,38 @@ class AuthService {
       });
 
       return user;
-    } catch {
-      // Token is invalid, clear auth data
-      this.clearAuthData();
-      return null;
+    } catch (error) {
+      // If the verify endpoint doesn't exist or fails, 
+      // we'll still consider the user authenticated if we have valid token and user data
+      
+      // Only clear auth data if it's a 401 error (token actually invalid)
+      if (error instanceof Error && error.message.includes('401')) {
+        this.clearAuthData();
+        return null;
+      }
+      
+      // For other errors (network, server issues), keep the user authenticated
+      return user;
+    }
+  }
+
+  // Forgot password
+  async forgotPassword(email: string): Promise<void> {
+    const response = await this.makeRequest<{ success: boolean; message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to send reset email');
+    }
+  }
+
+  // Update user data (for refreshing profile data)
+  updateUserData(user: User): void {
+    const token = this.getToken();
+    if (token) {
+      this.setAuthData(token, user);
     }
   }
 

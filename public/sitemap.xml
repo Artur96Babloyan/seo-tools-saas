@@ -3,146 +3,43 @@
   <!-- Homepage -->
   <url>
     <loc>https://auditcraft.io/</loc>
-    <lastmod>2024-12-19</lastmod>
+    <lastmod>2024-06-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- Dashboard -->
-  <url>
-    <loc>https://auditcraft.io/dashboard</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
+  <!-- Static Pages -->
+  <url><loc>https://auditcraft.io/about</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://auditcraft.io/contact</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/privacy</loc><lastmod>2024-06-13</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://auditcraft.io/terms</loc><lastmod>2024-06-13</lastmod><changefreq>yearly</changefreq><priority>0.4</priority></url>
+  <url><loc>https://auditcraft.io/help</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://auditcraft.io/feedback</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/status</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
-  <!-- SEO Tools -->
-  <url>
-    <loc>https://auditcraft.io/dashboard/seo-optimizer</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/serp-optimizer</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/sitemap</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/meta-tags</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/page-speed</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/keyword-tracker</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/competitor-analysis</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/internal-links</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/dashboard/reports</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <!-- SEO Optimizer History -->
-  <url>
-    <loc>https://auditcraft.io/dashboard/seo-optimizer/history</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
+  <!-- Blog -->
+  <url><loc>https://auditcraft.io/blog</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <!-- Dynamic blog posts: /blog/[slug] -->
+  <!-- Example: <url><loc>https://auditcraft.io/blog/sample-post</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url> -->
 
   <!-- Auth Pages -->
-  <url>
-    <loc>https://auditcraft.io/auth/login</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
+  <url><loc>https://auditcraft.io/auth/login</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/auth/register</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/auth/forgot-password</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
 
-  <url>
-    <loc>https://auditcraft.io/auth/register</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <!-- Public Marketing Pages (if they exist) -->
-  <url>
-    <loc>https://auditcraft.io/about</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/features</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/pricing</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/contact</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/privacy</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
-
-  <url>
-    <loc>https://auditcraft.io/terms</loc>
-    <lastmod>2024-12-19</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-  </url>
+  <!-- Dashboard & Tools -->
+  <url><loc>https://auditcraft.io/dashboard</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/settings</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/profile</loc><lastmod>2024-06-13</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/seo-optimizer</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/seo-optimizer/history</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>
+  <!-- Dynamic optimization details: /dashboard/seo-optimizer/[id] -->
+  <!-- Example: <url><loc>https://auditcraft.io/dashboard/seo-optimizer/123</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.5</priority></url> -->
+  <url><loc>https://auditcraft.io/dashboard/serp-optimizer</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/sitemap</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/meta-tags</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/page-speed</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/keyword-tracker</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/competitor-analysis</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://auditcraft.io/dashboard/reports</loc><lastmod>2024-06-13</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
 </urlset> 

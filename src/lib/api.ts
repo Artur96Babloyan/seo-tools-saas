@@ -55,8 +55,6 @@ async function apiRequest<T = unknown>(
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
   const url = `${baseUrl}/api${cleanEndpoint}`;
   
-  console.log('API Request URL:', url);
-  
   // Get authentication token
   const token = authService.getToken();
   

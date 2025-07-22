@@ -4,8 +4,8 @@ import Link from "next/link";
 import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
 import { ArrowLeft, User, Calendar, Clock, Tag, Eye, Heart, Share2, Twitter, Facebook, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useRef } from "react";
 import { blogService } from "@/lib/blogService";
 import { BlogPost } from "@/types/blog";
 
@@ -14,6 +14,7 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [isSharing, setIsSharing] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const shareMenuRef = useRef<HTMLDivElement>(null);
 
   // Track view on component mount
   useEffect(() => {
@@ -37,6 +38,28 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
     trackView();
   }, [post.slug]);
 
+  // Handle click outside to close share menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        setShowShareMenu(false);
+      }
+    };
+
+    if (showShareMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showShareMenu]);
+
+  // Debug effect to log menu state changes
+  useEffect(() => {
+    console.log('Share menu state changed to:', showShareMenu);
+  }, [showShareMenu]);
+
   const handleLike = async () => {
     try {
       const response = await blogService.likePost(post.slug);
@@ -49,12 +72,15 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
 
   const handleShare = async (platform: 'twitter' | 'facebook' | 'linkedin' | 'email') => {
     try {
+      console.log('Sharing to platform:', platform); // Debug log
       setIsSharing(true);
       setShowShareMenu(false);
 
       const url = window.location.href;
       const title = post.title;
       const text = post.excerpt;
+
+      console.log('Share data:', { url, title, text }); // Debug log
 
       let shareUrl = '';
 
@@ -73,22 +99,67 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
           break;
       }
 
+      console.log('Share URL:', shareUrl); // Debug log
+
       if (shareUrl) {
-        window.open(shareUrl, '_blank', 'width=600,height=400');
-        await blogService.sharePost(post.slug, { platform, url });
+        // For email, use window.location.href instead of window.open
+        if (platform === 'email') {
+          window.location.href = shareUrl;
+        } else {
+          // For social platforms, open in new window
+          const shareWindow = window.open(shareUrl, '_blank', 'width=600,height=400,scrollbars=yes,resizable=yes');
+
+          // Check if popup was blocked
+          if (!shareWindow) {
+            console.warn('Popup blocked, trying alternative method');
+            // Fallback: try to open in same window
+            window.open(shareUrl, '_blank');
+          }
+        }
+
+        // Track the share
+        try {
+          await blogService.sharePost(post.slug, { platform, url });
+          console.log('Share tracked successfully'); // Debug log
+        } catch (error) {
+          console.error('Failed to track share:', error);
+          // Don't throw error here, as the share still worked
+        }
       }
     } catch (error) {
       console.error('Failed to share post:', error);
+      alert('Failed to share. Please try again.');
     } finally {
       setIsSharing(false);
     }
   };
 
+  const handleShareButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Share button clicked, current state:', showShareMenu); // Debug log
+    console.log('Event target:', e.target); // Debug log
+    console.log('Event currentTarget:', e.currentTarget); // Debug log
+    const newState = !showShareMenu;
+    console.log('Setting share menu to:', newState); // Debug log
+    setShowShareMenu(newState);
+  };
+
+  const handleShareItemClick = (e: React.MouseEvent, platform: 'twitter' | 'facebook' | 'linkedin' | 'email') => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log(`${platform} share clicked`); // Debug log
+    console.log('Event target:', e.target); // Debug log
+    console.log('Event currentTarget:', e.currentTarget); // Debug log
+    console.log('Platform:', platform); // Debug log
+    handleShare(platform);
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 bg-card/50 backdrop-blur-sm border-b border-border">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background overflow-x-hidden blog-post-container">
+      {/* Navigation Bar - Not sticky, just for blog post actions */}
+      <nav className="bg-card/50 backdrop-blur-sm border-b border-border" style={{ zIndex: 9999, position: 'relative' }}>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full">
           <div className="flex items-center justify-between h-16">
             <Link
               href="/blog"
@@ -112,9 +183,9 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
                 <span>{likesCount}</span>
               </button>
 
-              <div className="relative">
+              <div className="relative" style={{ zIndex: 99999, position: 'relative' }}>
                 <button
-                  onClick={() => setShowShareMenu(!showShareMenu)}
+                  onClick={handleShareButtonClick}
                   disabled={isSharing}
                   className="flex items-center space-x-2 px-4 py-2 bg-card text-muted-foreground border border-border rounded-full text-sm font-medium hover:bg-accent hover:text-foreground transition-all duration-200"
                 >
@@ -122,43 +193,63 @@ export function BlogPostClient({ post, relatedPosts }: { post: BlogPost; related
                   <span className="hidden sm:inline">Share</span>
                 </button>
 
-                {showShareMenu && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-48 bg-card rounded-xl shadow-lg border border-border py-2 z-50"
-                  >
-                    <button
-                      onClick={() => handleShare('twitter')}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                <AnimatePresence>
+                  {showShareMenu && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 top-full mt-2 w-48 bg-card rounded-xl shadow-lg border border-border py-2 share-menu"
+                      ref={shareMenuRef}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        pointerEvents: 'auto',
+                        zIndex: 999999,
+                        position: 'absolute',
+                        top: '100%',
+                        right: 0,
+                        marginTop: '0.5rem',
+                        backgroundColor: 'var(--card)',
+                        border: '2px solid var(--primary)',
+                        maxWidth: 'calc(100vw - 2rem)',
+                        minWidth: '200px'
+                      }}
                     >
-                      <Twitter className="h-4 w-4 text-blue-500" />
-                      <span>Twitter</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare('facebook')}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                    >
-                      <Facebook className="h-4 w-4 text-blue-600" />
-                      <span>Facebook</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare('linkedin')}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                    >
-                      <Linkedin className="h-4 w-4 text-blue-700" />
-                      <span>LinkedIn</span>
-                    </button>
-                    <button
-                      onClick={() => handleShare('email')}
-                      className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                    >
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>Email</span>
-                    </button>
-                  </motion.div>
-                )}
+                      <button
+                        onClick={(e) => handleShareItemClick(e, 'twitter')}
+                        disabled={isSharing}
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Twitter className="h-4 w-4 text-blue-500" />
+                        <span>{isSharing ? 'Sharing...' : 'Twitter'}</span>
+                      </button>
+                      <button
+                        onClick={(e) => handleShareItemClick(e, 'facebook')}
+                        disabled={isSharing}
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Facebook className="h-4 w-4 text-blue-600" />
+                        <span>{isSharing ? 'Sharing...' : 'Facebook'}</span>
+                      </button>
+                      <button
+                        onClick={(e) => handleShareItemClick(e, 'linkedin')}
+                        disabled={isSharing}
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Linkedin className="h-4 w-4 text-blue-700" />
+                        <span>{isSharing ? 'Sharing...' : 'LinkedIn'}</span>
+                      </button>
+                      <button
+                        onClick={(e) => handleShareItemClick(e, 'email')}
+                        disabled={isSharing}
+                        className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <span>{isSharing ? 'Sharing...' : 'Email'}</span>
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>

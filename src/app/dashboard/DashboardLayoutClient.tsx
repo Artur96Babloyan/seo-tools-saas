@@ -4,6 +4,11 @@ import { useState, useEffect } from "react";
 import { Sidebar, MobileMenuButton } from "@/components/sidebar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Breadcrumb from "@/components/Breadcrumb";
+import { UserDropdown } from "@/components/UserDropdown";
+import { ThemeToggle } from "@/shared/ui/theme";
+import { useAuth } from "@/entities/user";
+import { BarChart3 } from "lucide-react";
+import Link from "next/link";
 
 export default function DashboardLayoutClient({
   children,
@@ -11,6 +16,7 @@ export default function DashboardLayoutClient({
   children: React.ReactNode;
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -34,11 +40,28 @@ export default function DashboardLayoutClient({
         />
 
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Mobile Header */}
-          <header className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-border bg-card">
-            <div className="flex items-center space-x-3">
+          {/* Dashboard Header */}
+          <header className="flex items-center justify-between h-16 px-4 sm:px-6 border-b border-border bg-card shadow-sm">
+            {/* Left side - Mobile menu and breadcrumb */}
+            <div className="flex items-center space-x-4">
               <MobileMenuButton onClick={() => setIsMobileMenuOpen(true)} />
-              <h1 className="text-lg font-semibold text-foreground">AuditCraft</h1>
+              <div className="hidden sm:flex items-center space-x-2">
+                <Link href="/dashboard" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+                    <BarChart3 className="h-5 w-5" />
+                  </div>
+                  <span className="text-lg font-bold text-foreground">AuditCraft</span>
+                </Link>
+              </div>
+              <div className="sm:hidden">
+                <span className="text-lg font-semibold text-foreground">Dashboard</span>
+              </div>
+            </div>
+
+            {/* Right side - User dropdown and theme toggle */}
+            <div className="flex items-center space-x-3">
+              <ThemeToggle />
+              {isAuthenticated && <UserDropdown />}
             </div>
           </header>
 

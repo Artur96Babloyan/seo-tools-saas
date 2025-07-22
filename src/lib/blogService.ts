@@ -16,6 +16,7 @@ import {
   BlogSearchResponse,
   BlogStatsResponse
 } from '@/types/blog';
+import { authService } from './auth';
 
 class BlogService {
   private async request<T>(
@@ -32,15 +33,13 @@ class BlogService {
       ...options,
     };
 
-    // Add auth token if available (only in browser)
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        config.headers = {
-          ...config.headers,
-          Authorization: `Bearer ${token}`,
-        };
-      }
+    // Add auth token if available using auth service
+    const token = authService.getToken();
+    if (token) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${token}`,
+      };
     }
 
     try {

@@ -329,6 +329,37 @@ body {
     word-break: break-word;
     overflow-wrap: break-word;
   }
+
+  /* Blog post specific mobile fixes */
+  .blog-post-container {
+    overflow-x: hidden;
+    width: 100vw;
+    max-width: 100vw;
+    position: relative;
+  }
+
+  /* Prevent drawer from affecting blog layout */
+  .blog-post-container .fixed {
+    position: fixed !important;
+  }
+
+  /* Ensure share menu is properly positioned on mobile */
+  .blog-post-container .share-menu {
+    right: 1rem !important;
+    left: auto !important;
+    max-width: calc(100vw - 2rem) !important;
+  }
+
+  /* Fix for Header mobile drawer affecting blog layout */
+  .blog-post-container ~ div[class*="fixed"] {
+    z-index: 1000 !important;
+  }
+
+  /* Ensure blog content doesn't shift when drawer opens */
+  .blog-post-container {
+    transform: translateZ(0);
+    will-change: auto;
+  }
 }
 
 /* Custom select dropdown styling */

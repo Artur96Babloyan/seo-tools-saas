@@ -1,12 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/entities/user';
 import type { RegisterCredentials } from '@/shared/types/auth';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Zap, AlertCircle, CheckCircle } from 'lucide-react';
-
 
 export default function RegisterPage() {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
@@ -20,8 +19,41 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { register } = useAuth();
+  const { register, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      // Check if user came from a protected page or dashboard
+      const referrer = document.referrer;
+      const currentHost = window.location.origin;
+
+      // If user came from our site and it's a protected page, redirect to dashboard
+      if (referrer.startsWith(currentHost)) {
+        const referrerPath = new URL(referrer).pathname;
+        if (referrerPath.startsWith('/dashboard') || referrerPath.startsWith('/auth/')) {
+          router.push('/dashboard');
+          return;
+        }
+      }
+
+      // If user came from external site or public page, don't redirect
+      // Let them navigate freely
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  // Don't render if still loading or already authenticated
+  if (isLoading || isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -96,6 +128,14 @@ export default function RegisterPage() {
           <p className="text-gray-600 dark:text-gray-400">
             Start your SEO optimization journey today
           </p>
+          <div className="mt-4">
+            <Link
+              href="/"
+              className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 hover:underline"
+            >
+              ← Back to Home
+            </Link>
+          </div>
         </div>
 
         {/* Registration Form */}

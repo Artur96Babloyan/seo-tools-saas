@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { BarChart3, CheckCircle, Globe, Zap, TrendingUp, Users, Sparkles, Menu, X, FileText, Search, HelpCircle, Activity, MessageSquare, Info, Shield, Phone, User, LogOut, Settings } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/theme";
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/entities/user";
+import { UserDropdown } from "./UserDropdown";
 
 const navigation = [
   {
@@ -92,18 +94,7 @@ const footerNavigation = [
   },
 ];
 
-const userNavigation = [
-  {
-    name: "Profile",
-    href: "/dashboard/profile",
-    icon: User,
-  },
-  {
-    name: "Settings",
-    href: "/dashboard/settings",
-    icon: Settings,
-  },
-];
+
 
 interface HeaderProps {
   showAuthButtons?: boolean;
@@ -215,21 +206,36 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
             <div className="px-3 mb-6">
               <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Account</h3>
               <ul className="space-y-1">
-                {userNavigation.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                      >
-                        <Icon className="h-5 w-5" />
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  );
-                })}
+                <li>
+                  <Link
+                    href="/dashboard"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Dashboard</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <User className="h-5 w-5" />
+                    <span>Profile</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/dashboard/settings"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span>Settings</span>
+                  </Link>
+                </li>
               </ul>
             </div>
           )}
@@ -247,23 +253,45 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
           <div className="space-y-2">
             {isAuthenticated ? (
               <>
+                {/* User Info */}
                 <div className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <User className="h-5 w-5" />
-                  <span className="truncate">{user?.name || user?.email}</span>
+                  {user?.avatar ? (
+                    <Image
+                      src={user.avatar.startsWith('http') ? user.avatar :
+                        user.avatar.startsWith('/uploads/avatars/') ?
+                          `/api/user/avatar/${user.avatar.split('/').pop()}` :
+                          `/api/user/avatar/${user.avatar}`}
+                      alt={user?.name || 'User'}
+                      width={32}
+                      height={32}
+                      className="h-8 w-8 rounded-full object-cover border-2 border-gray-200 dark:border-slate-600"
+                      onError={(e) => {
+                        console.error('Failed to load avatar in mobile menu:', user.avatar);
+                        // Hide the image and show the default user icon
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                      }}
+                    />
+                  ) : null}
+                  <div className={`h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium border-2 border-blue-500 ${user?.avatar ? 'hidden' : ''}`}>
+                    {user?.name ? user.name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2) : 'U'}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                      {user?.name || 'User'}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                      {user?.email}
+                    </div>
+                  </div>
                 </div>
-                <Link
-                  href="/dashboard"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                >
-                  Dashboard
-                </Link>
+
                 <button
                   onClick={() => {
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center w-full px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  className="flex items-center w-full px-3 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                 >
                   <LogOut className="h-5 w-5 mr-3" />
                   Sign Out
@@ -351,39 +379,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
             {showAuthButtons && (
               <div className="hidden lg:flex items-center space-x-3">
                 {isAuthenticated ? (
-                  <>
-                    <div className="flex items-center space-x-3">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
-                        <User className="h-4 w-4" />
-                        <span className="hidden sm:inline">{user?.name || user?.email}</span>
-                      </div>
-                      <Link
-                        href="/dashboard"
-                        className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      >
-                        Dashboard
-                      </Link>
-                      <Link
-                        href="/dashboard/profile"
-                        className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      >
-                        Profile
-                      </Link>
-                      <Link
-                        href="/dashboard/settings"
-                        className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      >
-                        Settings
-                      </Link>
-                      <button
-                        onClick={logout}
-                        className="flex items-center space-x-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                      >
-                        <LogOut className="h-4 w-4" />
-                        <span>Sign Out</span>
-                      </button>
-                    </div>
-                  </>
+                  <UserDropdown />
                 ) : (
                   <>
                     <Link

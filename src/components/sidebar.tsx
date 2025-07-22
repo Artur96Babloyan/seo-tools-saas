@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
-import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, LogOut, User, TrendingUp, Users, Menu, X, Sparkles, Search } from "lucide-react";
+import { BarChart3, CheckCircle, FileText, Globe, Home, Zap, TrendingUp, Users, Menu, X, Sparkles, Search } from "lucide-react";
 import { ThemeToggle } from "@/shared/ui/theme";
-import { useAuth } from '@/entities/user';
+
 import { cn } from "@/shared/lib/utils";
 
 const navigation = [
@@ -63,7 +63,6 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
   const [animationState, setAnimationState] = useState<'closed' | 'opening' | 'open' | 'closing'>('closed');
   const previousPathnameRef = useRef(pathname);
 
@@ -86,13 +85,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     previousPathnameRef.current = pathname;
   }, [pathname, onClose, isOpen]);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch {
-      // Silent error - user will see any relevant feedback through the auth context
-    }
-  };
+
 
   const sidebarContent = (
     <>
@@ -140,33 +133,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
 
       {/* Footer */}
-      <div className="border-t border-border p-4 space-y-4">
+      <div className="border-t border-border p-4">
         <div className="flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Theme</span>
           <ThemeToggle />
         </div>
-
-        {user && (
-          <div className="flex items-center space-x-3 p-2 rounded-lg bg-accent">
-            <User className="h-8 w-8 text-muted-foreground" />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground break-words">
-                {user.name}
-              </p>
-              <p className="text-xs text-muted-foreground break-words">
-                {user.email}
-              </p>
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={handleLogout}
-          className="flex items-center space-x-3 w-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
-        >
-          <LogOut className="h-5 w-5" />
-          <span>Sign out</span>
-        </button>
       </div>
     </>
   );

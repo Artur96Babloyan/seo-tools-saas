@@ -1,274 +1,155 @@
 "use client";
 
 import Link from "next/link";
-import { Search, FileText, BarChart3, MessageCircle, Video, ChevronRight, ArrowRight, Sparkles, Globe, Zap, TrendingUp, Users } from "lucide-react";
+import { useState } from "react";
+import {
+  Search, FileText, BarChart3, MessageCircle, Video,
+  Sparkles, Globe, Zap, TrendingUp, Users, User, CheckCircle,
+  HelpCircle
+} from "lucide-react";
 import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
 import { Header } from "@/components/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  GettingStartedDemo,
+  LoginSignupDemo,
+  DashboardDemo,
+  AIContentOptimizerDemo,
+  SERPOptimizerDemo,
+  SitemapGeneratorDemo,
+  MetaTagValidatorDemo,
+  PageSpeedAuditorDemo,
+  KeywordTrackerDemo,
+  CompetitorAnalysisDemo,
+  ReportsAnalyticsDemo,
+  TroubleshootingDemo
+} from "@/components/help-demos";
 
 export default function HelpCenterPage() {
-  const helpCategories = [
-    {
-      title: "Getting Started",
-      description: "Learn the basics and set up your account",
-      icon: Sparkles,
-      color: "bg-blue-500",
-      articles: [
-        { title: "How to create your first SEO audit", href: "/help/getting-started/first-audit" },
-        { title: "Setting up your website profile", href: "/help/getting-started/setup-profile" },
-        { title: "Understanding your dashboard", href: "/help/getting-started/dashboard-guide" },
-        { title: "Account settings and preferences", href: "/help/getting-started/account-settings" }
-      ]
-    },
-    {
-      title: "AI Content Optimizer",
-      description: "Master AI-powered content optimization",
-      icon: FileText,
-      color: "bg-green-500",
-      articles: [
-        { title: "How to optimize content with AI", href: "/help/ai-optimizer/optimize-content" },
-        { title: "Understanding optimization scores", href: "/help/ai-optimizer/optimization-scores" },
-        { title: "Best practices for content optimization", href: "/help/ai-optimizer/best-practices" },
-        { title: "Troubleshooting optimization issues", href: "/help/ai-optimizer/troubleshooting" }
-      ]
-    },
-    {
-      title: "Sitemap Generator",
-      description: "Create and manage your sitemaps",
-      icon: Globe,
-      color: "bg-purple-500",
-      articles: [
-        { title: "Generating your first sitemap", href: "/help/sitemap/generate-sitemap" },
-        { title: "Customizing sitemap settings", href: "/help/sitemap/customize-settings" },
-        { title: "Submitting sitemaps to search engines", href: "/help/sitemap/submit-sitemaps" },
-        { title: "Sitemap validation and errors", href: "/help/sitemap/validation-errors" }
-      ]
-    },
-    {
-      title: "Meta Tag Validator",
-      description: "Validate and optimize your meta tags",
-      icon: FileText,
-      color: "bg-purple-500",
-      articles: [
-        { title: "Understanding meta tags", href: "/help/meta-tags/understanding-meta-tags" },
-        { title: "How to validate meta tags", href: "/help/meta-tags/validate-tags" },
-        { title: "Fixing common meta tag issues", href: "/help/meta-tags/fix-issues" },
-        { title: "Meta tag best practices", href: "/help/meta-tags/best-practices" }
-      ]
-    },
-    {
-      title: "Page Speed Auditor",
-      description: "Analyze and improve page speed",
-      icon: Zap,
-      color: "bg-orange-500",
-      articles: [
-        { title: "Running your first speed test", href: "/help/page-speed/first-test" },
-        { title: "Understanding speed metrics", href: "/help/page-speed/understanding-metrics" },
-        { title: "Improving Core Web Vitals", href: "/help/page-speed/core-web-vitals" },
-        { title: "Speed optimization recommendations", href: "/help/page-speed/optimization-tips" }
-      ]
-    },
-    {
-      title: "Keyword Tracker",
-      description: "Track and analyze keyword performance",
-      icon: TrendingUp,
-      color: "bg-red-500",
-      articles: [
-        { title: "Setting up keyword tracking", href: "/help/keyword-tracker/setup-tracking" },
-        { title: "Understanding ranking reports", href: "/help/keyword-tracker/ranking-reports" },
-        { title: "Keyword research strategies", href: "/help/keyword-tracker/research-strategies" },
-        { title: "Competitive keyword analysis", href: "/help/keyword-tracker/competitive-analysis" }
-      ]
-    },
-    {
-      title: "Competitor Analysis",
-      description: "Analyze your competitors' SEO strategies",
-      icon: Users,
-      color: "bg-indigo-500",
-      articles: [
-        { title: "Adding competitors to track", href: "/help/competitor-analysis/add-competitors" },
-        { title: "Understanding competitor reports", href: "/help/competitor-analysis/understanding-reports" },
-        { title: "Backlink analysis strategies", href: "/help/competitor-analysis/backlink-analysis" },
-        { title: "Competitive content analysis", href: "/help/competitor-analysis/content-analysis" }
-      ]
-    },
-    {
-      title: "Reports & Analytics",
-      description: "Understand your data",
-      icon: BarChart3,
-      color: "bg-teal-500",
-      articles: [
-        { title: "Viewing your dashboard", href: "/help/reports/dashboard" },
-        { title: "Understanding key metrics", href: "/help/reports/metrics" },
-        { title: "Exporting data", href: "/help/reports/export" },
-        { title: "Data privacy and security", href: "/help/reports/privacy" }
-      ]
-    }
-  ];
+  const [activeSection, setActiveSection] = useState('getting-started');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const popularArticles = [
-    { title: "How to optimize content with AI", category: "AI Content Optimizer", href: "/help/ai-optimizer/optimize-content" },
-    { title: "Understanding Core Web Vitals", category: "Page Speed Auditor", href: "/help/page-speed/core-web-vitals" },
-    { title: "Setting up keyword tracking", category: "Keyword Tracker", href: "/help/keyword-tracker/setup-tracking" },
-    { title: "Generating your first sitemap", category: "Sitemap Generator", href: "/help/sitemap/generate-sitemap" },
-    { title: "Meta tag best practices", category: "Meta Tag Validator", href: "/help/meta-tags/best-practices" }
-  ];
 
-  const quickActions = [
-    { title: "Getting Started", description: "Quick setup guide", icon: Sparkles, href: "/help/getting-started", color: "bg-blue-500" },
-    { title: "Content Optimization", description: "AI-powered SEO tips", icon: FileText, href: "/help/content-optimization", color: "bg-green-500" },
-    { title: "Technical SEO", description: "Meta tags & sitemaps", icon: Globe, href: "/help/technical-seo", color: "bg-purple-500" },
-    { title: "Performance", description: "Page speed optimization", icon: Zap, href: "/help/performance", color: "bg-orange-500" },
-    { title: "Keyword Research", description: "Track & analyze keywords", icon: TrendingUp, href: "/help/keyword-research", color: "bg-red-500" },
-    { title: "Competitor Analysis", description: "Monitor competitors", icon: Users, href: "/help/competitor-analysis", color: "bg-indigo-500" },
-    { title: "Reports & Analytics", description: "Understand your data", icon: BarChart3, href: "/help/reports", color: "bg-teal-500" },
-    { title: "API Documentation", description: "Developer resources", icon: FileText, href: "/docs", color: "bg-purple-500" },
-    { title: "System Status", description: "Check service health", icon: BarChart3, href: "/status", color: "bg-orange-500" }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
       <Header showAuthButtons={false} />
 
       {/* Hero Section */}
-      <section className="py-16 sm:py-24">
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="py-16 sm:py-24"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              How can we help you?
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-              Find answers to common questions, learn how to use our tools effectively, and get the most out of AuditCraft.
-            </p>
+            <motion.h1
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl lg:text-6xl"
+            >
+              Interactive Help Center
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-muted-foreground"
+            >
+              Learn how to use AuditCraft with interactive demonstrations, step-by-step guides, and animated tutorials.
+            </motion.p>
 
             {/* Search Bar */}
-            <div className="mt-10 max-w-2xl mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="mt-10 max-w-2xl mx-auto"
+            >
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search for help articles, tutorials, or guides..."
                   className="w-full pl-12 pr-4 py-4 border border-border rounded-xl bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Quick Actions */}
-      <section className="py-12">
+      {/* Navigation Tabs */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.8 }}
+        className="py-8 border-b border-border"
+      >
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quickActions.map((action, index) => (
-              <Link
-                key={index}
-                href={action.href}
-                className="group p-6 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-lg transition-all"
+          <div className="flex flex-wrap gap-2 justify-center">
+            {[
+              { id: 'getting-started', label: 'Getting Started', icon: Sparkles },
+              { id: 'login-signup', label: 'Login & Signup', icon: User },
+              { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
+              { id: 'ai-optimizer', label: 'AI Content Optimizer', icon: FileText },
+              { id: 'serp-optimizer', label: 'SERP Optimizer', icon: Search },
+              { id: 'sitemap', label: 'Sitemap Generator', icon: Globe },
+              { id: 'meta-tags', label: 'Meta Tag Validator', icon: CheckCircle },
+              { id: 'page-speed', label: 'Page Speed Auditor', icon: Zap },
+              { id: 'keyword-tracker', label: 'Keyword Tracker', icon: TrendingUp },
+              { id: 'competitor', label: 'Competitor Analysis', icon: Users },
+              { id: 'reports', label: 'Reports & Analytics', icon: BarChart3 },
+              { id: 'troubleshooting', label: 'Troubleshooting', icon: HelpCircle }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSection(tab.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-all ${activeSection === tab.id
+                  ? 'bg-primary text-white border-primary'
+                  : 'bg-card text-muted-foreground border-border hover:border-primary/50 hover:text-foreground'
+                  }`}
               >
-                <div className="flex items-start space-x-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${action.color} text-white`}>
-                    <action.icon className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-card-foreground group-hover:text-primary">
-                      {action.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {action.description}
-                    </p>
-                  </div>
-                </div>
-              </Link>
+                <tab.icon className="h-4 w-4" />
+                <span className="text-sm font-medium">{tab.label}</span>
+              </button>
             ))}
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Popular Articles */}
-      <section className="py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground">Popular Articles</h2>
-            <p className="mt-2 text-muted-foreground">Most frequently viewed help articles</p>
-          </div>
+      {/* Content Sections */}
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <AnimatePresence mode="wait">
+          {activeSection === 'getting-started' && <GettingStartedDemo />}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {popularArticles.map((article, index) => (
-              <Link
-                key={index}
-                href={article.href}
-                className="group p-6 rounded-xl border border-border bg-card hover:border-primary/50 hover:shadow-lg transition-all"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-card-foreground group-hover:text-primary">
-                      {article.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {article.category}
-                    </p>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+          {activeSection === 'login-signup' && <LoginSignupDemo />}
 
-      {/* Help Categories */}
-      <section className="py-12">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-foreground">Browse by Category</h2>
-            <p className="mt-2 text-muted-foreground">Find help organized by topic and feature</p>
-          </div>
+          {activeSection === 'dashboard' && <DashboardDemo />}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {helpCategories.map((category, index) => (
-              <div key={index} className="rounded-xl border border-border bg-card p-6 hover:shadow-lg transition-all">
-                <div className="flex items-start space-x-4 mb-4">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-lg ${category.color} text-white`}>
-                    <category.icon className="h-6 w-6" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-card-foreground">
-                      {category.title}
-                    </h3>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {category.description}
-                    </p>
-                  </div>
-                </div>
+          {activeSection === 'ai-optimizer' && <AIContentOptimizerDemo />}
 
-                <ul className="space-y-2">
-                  {category.articles.map((article, articleIndex) => (
-                    <li key={articleIndex}>
-                      <Link
-                        href={article.href}
-                        className="flex items-center justify-between text-sm text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        <span>{article.title}</span>
-                        <ChevronRight className="h-4 w-4" />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+          {activeSection === 'serp-optimizer' && <SERPOptimizerDemo />}
 
-                <div className="mt-4 pt-4 border-t border-border">
-                  <Link
-                    href={`/help/category/${category.title.toLowerCase().replace(/\s+/g, '-')}`}
-                    className="flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors"
-                  >
-                    View all {category.title} articles
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          {activeSection === 'sitemap' && <SitemapGeneratorDemo />}
+
+          {activeSection === 'meta-tags' && <MetaTagValidatorDemo />}
+
+          {activeSection === 'page-speed' && <PageSpeedAuditorDemo />}
+
+          {activeSection === 'keyword-tracker' && <KeywordTrackerDemo />}
+
+          {activeSection === 'competitor' && <CompetitorAnalysisDemo />}
+
+          {activeSection === 'reports' && <ReportsAnalyticsDemo />}
+
+          {activeSection === 'troubleshooting' && <TroubleshootingDemo />}
+        </AnimatePresence>
+      </div>
 
       {/* Contact Support CTA */}
       <section className="py-16 bg-primary/5">

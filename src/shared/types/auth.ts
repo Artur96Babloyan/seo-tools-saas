@@ -2,6 +2,9 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  avatar?: string; // Optional avatar URL
+  firstName?: string; // Optional first name for better display
+  lastName?: string; // Optional last name for better display
   createdAt: string;
 }
 

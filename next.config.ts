@@ -27,6 +27,18 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/user/avatar/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'auditcraft.io',
+        port: '',
+        pathname: '/api/user/avatar/**',
+      },
     ],
   },
   /* config options here */

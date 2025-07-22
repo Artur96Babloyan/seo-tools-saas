@@ -17,12 +17,7 @@ function OAuthCallbackContent() {
         const code = searchParams.get('code');
         const state = searchParams.get('state');
 
-        console.log('URL search params:', Object.fromEntries(searchParams.entries()));
-        console.log('Full URL:', window.location.href);
-        console.log('Extracted code:', code);
-        console.log('Extracted state:', state);
-        console.log('Code length:', code?.length);
-        console.log('State length:', state?.length);
+
 
         if (!code || !state) {
           setStatus('error');
@@ -31,10 +26,7 @@ function OAuthCallbackContent() {
           return;
         }
 
-        console.log('Processing OAuth callback with:', {
-          code: code.substring(0, 20) + '...',
-          state: state.substring(0, 20) + '...'
-        });
+
 
         // Generic OAuth callback handling
         setStatus('success');

@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { API_BASE_URL, API_TIMEOUT } from '../lib/constants';
+import { authService } from '@/lib/auth';
 
 // API Error class
 export class ApiError extends Error {
@@ -27,8 +28,8 @@ const createApiInstance = (): AxiosInstance => {
   // Request interceptor
   instance.interceptors.request.use(
     (config) => {
-      // Add auth token if available
-      const token = getAuthToken();
+      // Add auth token if available using auth service
+      const token = authService.getToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -59,17 +60,6 @@ const createApiInstance = (): AxiosInstance => {
 
   return instance;
 };
-
-// Get auth token from storage
-const getAuthToken = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  
-  try {
-    return localStorage.getItem('auth-token');
-  } catch {
-    return null;
-  }
-}
 
 // Create API instance
 export const api = createApiInstance();
