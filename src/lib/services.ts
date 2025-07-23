@@ -280,7 +280,7 @@ export const seoService = {
       };
     }
 
-    const response = await apiRequest<BackendResponse>('/seo/analyze', {
+    const response = await apiRequest<BackendResponse>('/api/seo/analyze', {
       method: 'POST',
       body: JSON.stringify({ 
         url,
@@ -343,7 +343,7 @@ export const seoService = {
   },
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/seo/health');
+    return await apiRequest('/api/seo/health');
   },
 };
 
@@ -352,7 +352,7 @@ export const reportService = {
   async saveReport(url: string, analysisResult: SeoAnalysis): Promise<Report> {
     return await apiRequest<Report>('/report/save', {
       method: 'POST',
-      body: JSON.stringify({ url, analysisResult }),
+      body: JSON.stringify({ website_url: url, analysis_result: analysisResult }),
     });
   },
 
@@ -451,11 +451,11 @@ export const reportService = {
 // Health Check Services
 export const healthService = {
   async checkApiHealth(): Promise<{ status: string; uptime: number; timestamp: string }> {
-    return await apiRequest('/health');
+    return await apiRequest('/api/health');
   },
 
   async checkDatabaseHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/health/database');
+    return await apiRequest('/api/health/database');
   },
 };
 
@@ -471,7 +471,7 @@ export const sitemapService = {
       generatedAt: string;
     }
 
-    const response = await apiRequest<BackendResponse>('/sitemap/generate', {
+    const response = await apiRequest<BackendResponse>('/api/sitemap/generate', {
       method: 'POST',
       body: JSON.stringify({
         url,
@@ -493,14 +493,14 @@ export const sitemapService = {
   },
 
   async validateUrl(url: string): Promise<{ url: string; isValid: boolean; message: string }> {
-    return await apiRequest('/sitemap/validate-url', {
+    return await apiRequest('/api/sitemap/validate-url', {
       method: 'POST',
       body: JSON.stringify({ url }),
     });
   },
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/sitemap/health');
+    return await apiRequest('/api/sitemap/health');
   },
 };
 
@@ -528,7 +528,7 @@ export const metaTagService = {
           warnings: number;
           recommendations: number;
         };
-      }>('/meta/validate', {
+      }>('/api/meta/validate', {
         method: 'POST',
         body: JSON.stringify({ url }),
       });
@@ -649,11 +649,11 @@ export const metaTagService = {
   },
 
   async getTagInfo(): Promise<Record<string, MetaTagDetails>> {
-    return await apiRequest('/meta/info');
+    return await apiRequest('/api/meta/info');
   },
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/meta/health');
+    return await apiRequest('/api/meta/health');
   },
 };
 
@@ -731,7 +731,7 @@ export const keywordTrackingService = {
       }
 
       // Make the API request
-      const response = await apiRequest<KeywordTrackingResponse | { results: KeywordRankingResult[] }>('/keyword-tracker/track', {
+      const response = await apiRequest<KeywordTrackingResponse | { results: KeywordRankingResult[] }>('/api/keyword-tracker/track', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
@@ -839,14 +839,14 @@ export const keywordTrackingService = {
   async cleanupOldRankings(daysOld: number): Promise<void> {
     const request: CleanupRequest = { daysOld };
     
-    await apiRequest('/keyword-tracker/cleanup', {
+          await apiRequest('/api/keyword-tracker/cleanup', {
       method: 'POST',
       body: JSON.stringify(request),
     });
   },
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/keyword-tracker/health');
+    return await apiRequest('/api/keyword-tracker/health');
   },
 };
 
@@ -882,7 +882,7 @@ export const competitorService = {
     }
     
     // Make real API call to backend
-    return await apiRequest<CompetitorAnalysisResult>('/competitor/analyze', {
+    return await apiRequest<CompetitorAnalysisResult>('/api/competitor/analyze', {
       method: 'POST',
       body: JSON.stringify(request),
     });
@@ -915,7 +915,7 @@ export const competitorService = {
   },
 
   async checkHealth(): Promise<{ status: string; timestamp: string }> {
-    return await apiRequest('/competitor/health');
+    return await apiRequest('/api/competitor/health');
   },
 
   async getStatistics(): Promise<{

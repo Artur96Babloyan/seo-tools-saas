@@ -179,7 +179,7 @@ export default function SerpOptimizerForm() {
         url: formData.url.trim()
       };
 
-      const response = await fetch('http://localhost:5001/api/serp/analyze', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/serp/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

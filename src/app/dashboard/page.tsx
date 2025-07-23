@@ -60,8 +60,15 @@ export default function DashboardPage() {
       try {
         const statistics = await reportService.getStatistics();
         setStats(statistics);
-      } catch {
-        // Error fetching statistics - will use default values
+      } catch (error) {
+        console.log('Statistics not available, using default values:', error);
+        // Use default values when statistics endpoint is not available
+        setStats({
+          totalReports: 0,
+          totalWebsites: 0,
+          averagePerformanceScore: 0,
+          recentActivity: []
+        });
       } finally {
         setIsLoading(false);
       }
