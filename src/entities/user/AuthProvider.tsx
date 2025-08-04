@@ -93,6 +93,74 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const loginWithGoogle = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await authService.loginWithGoogle();
+      // Note: This will redirect the user, so the following code won't execute
+      // The actual login will happen after the OAuth callback
+    } catch (error) {
+      // Only throw if it's not a redirect error
+      if (!error.message.includes('Redirecting to Google OAuth')) {
+        throw error;
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (code: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const user = await authService.handleGoogleLogin(code);
+      setUser(user);
+      setToken(authService.getToken() || null);
+      await refreshAuth();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleRegister = async (code: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      const user = await authService.handleGoogleRegister(code);
+      setUser(user);
+      setToken(authService.getToken() || null);
+      await refreshAuth();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const linkGoogleAccount = async (code: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await authService.linkGoogleAccount(code);
+      await refreshAuth();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const unlinkGoogleAccount = async (): Promise<void> => {
+    try {
+      setIsLoading(true);
+      await authService.unlinkGoogleAccount();
+      await refreshAuth();
+    } catch (error) {
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const logout = (): void => {
     setUser(null);
     setToken(null);
@@ -154,6 +222,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isAuthenticated: !!user && !!token,
     login,
     register,
+    loginWithGoogle,
+    handleGoogleLogin,
+    handleGoogleRegister,
+    linkGoogleAccount,
+    unlinkGoogleAccount,
     logout,
     refreshAuth,
   };

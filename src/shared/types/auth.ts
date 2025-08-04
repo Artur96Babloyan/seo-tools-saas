@@ -6,6 +6,7 @@ export interface User {
   firstName?: string; // Optional first name for better display
   lastName?: string; // Optional last name for better display
   createdAt: string;
+  provider?: 'local' | 'google'; // Add provider field
 }
 
 export interface AuthResponse {
@@ -28,6 +29,15 @@ export interface RegisterCredentials {
   password: string;
 }
 
+export interface GoogleAuthResponse {
+  success: boolean;
+  data: {
+    user: User;
+    token: string;
+  };
+  message: string;
+}
+
 export interface AuthContextType {
   user: User | null;
   token: string | null;
@@ -35,6 +45,11 @@ export interface AuthContextType {
   isAuthenticated: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
+  loginWithGoogle: () => Promise<void>;
+  handleGoogleLogin: (code: string) => Promise<void>;
+  handleGoogleRegister: (code: string) => Promise<void>;
+  linkGoogleAccount: (code: string) => Promise<void>;
+  unlinkGoogleAccount: () => Promise<void>;
   logout: () => void;
   refreshAuth: () => Promise<void>;
 }

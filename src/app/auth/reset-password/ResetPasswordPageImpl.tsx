@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/entities/user';
@@ -27,19 +27,7 @@ export default function ResetPasswordPage() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Validate token on component mount
-  useEffect(() => {
-    if (!token) {
-      setError('Invalid reset link. Please request a new password reset.');
-      setTokenValid(false);
-      setIsValidatingToken(false);
-      return;
-    }
-
-    validateToken();
-  }, [token]);
-
-  const validateToken = async () => {
+  const validateToken = useCallback(async () => {
     try {
       console.log('Validating token:', token);
 
@@ -61,7 +49,6 @@ export default function ResetPasswordPage() {
         setTokenValid(false);
         setError(data.data?.error || data.error || 'Invalid or expired reset link. Please request a new password reset.');
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       console.error('Token validation error:', err);
       setTokenValid(false);
@@ -69,7 +56,19 @@ export default function ResetPasswordPage() {
     } finally {
       setIsValidatingToken(false);
     }
-  };
+  }, [token]);
+
+  // Validate token on component mount
+  useEffect(() => {
+    if (!token) {
+      setError('Invalid reset link. Please request a new password reset.');
+      setTokenValid(false);
+      setIsValidatingToken(false);
+      return;
+    }
+
+    validateToken();
+  }, [token, validateToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

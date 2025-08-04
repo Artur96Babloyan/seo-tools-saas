@@ -139,27 +139,27 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
   const mobileMenuContent = (
     <div className="flex flex-col h-full">
       {/* Mobile Header */}
-      <div className="flex-shrink-0 flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+      <div className="flex-shrink-0 flex items-center justify-between h-16 px-6 border-b border-border bg-background">
         <div className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white">
             <BarChart3 className="h-5 w-5" />
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">AuditCraft</span>
+          <span className="text-xl font-bold text-foreground">AuditCraft</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(false)}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+          className="p-2 text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
         >
           <X className="h-5 w-5" />
         </button>
       </div>
 
       {/* Mobile Navigation - Scrollable Content */}
-      <div className="flex-1 overflow-y-auto bg-white dark:bg-slate-900">
+      <div className="flex-1 overflow-y-auto bg-background">
         <div className="py-4">
           {/* SEO Tools Section */}
           <div className="px-3 mb-6">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">SEO Tools</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">SEO Tools</h3>
             <ul className="space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon;
@@ -168,7 +168,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                     <Link
                       href={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                      className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                     >
                       <Icon className="h-5 w-5" />
                       <span>{item.name}</span>
@@ -181,7 +181,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
 
           {/* Support & Info Section */}
           <div className="px-3 mb-6">
-            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Support & Info</h3>
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Support & Info</h3>
             <ul className="space-y-1">
               {footerNavigation.map((item) => {
                 const Icon = item.icon;
@@ -190,7 +190,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                     <Link
                       href={item.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                      className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                     >
                       <Icon className="h-5 w-5" />
                       <span>{item.name}</span>
@@ -204,13 +204,13 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
           {/* User Navigation Section - Only for authenticated users */}
           {isAuthenticated && (
             <div className="px-3 mb-6">
-              <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Account</h3>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Account</h3>
               <ul className="space-y-1">
                 <li>
                   <Link
                     href="/dashboard"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                   >
                     <User className="h-5 w-5" />
                     <span>Dashboard</span>
@@ -220,7 +220,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                   <Link
                     href="/dashboard/profile"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                   >
                     <User className="h-5 w-5" />
                     <span>Profile</span>
@@ -230,7 +230,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                   <Link
                     href="/dashboard/settings"
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                    className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                   >
                     <Settings className="h-5 w-5" />
                     <span>Settings</span>
@@ -243,9 +243,9 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
       </div>
 
       {/* Mobile Footer - Fixed at Bottom */}
-      <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-700 p-4 space-y-4 bg-white dark:bg-slate-900">
+      <div className="flex-shrink-0 border-t border-border p-4 space-y-4 bg-background">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-500 dark:text-gray-400">Theme</span>
+          <span className="text-sm text-muted-foreground">Theme</span>
           <ThemeToggle />
         </div>
 
@@ -254,7 +254,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
             {isAuthenticated ? (
               <>
                 {/* User Info */}
-                <div className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <div className="flex items-center space-x-3 px-3 py-3 text-sm font-medium text-muted-foreground">
                   {user?.avatar ? (
                     <Image
                       src={user.avatar.startsWith('http') ? user.avatar :
@@ -264,7 +264,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                       alt={user?.name || 'User'}
                       width={32}
                       height={32}
-                      className="h-8 w-8 rounded-full object-cover border-2 border-gray-200 dark:border-slate-600"
+                      className="h-8 w-8 rounded-full object-cover border-2 border-border"
                       onError={(e) => {
                         console.error('Failed to load avatar in mobile menu:', user.avatar);
                         // Hide the image and show the default user icon
@@ -273,14 +273,14 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                       }}
                     />
                   ) : null}
-                  <div className={`h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium border-2 border-blue-500 ${user?.avatar ? 'hidden' : ''}`}>
+                  <div className={`h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium border-2 border-primary ${user?.avatar ? 'hidden' : ''}`}>
                     {user?.name ? user.name.split(' ').map(word => word.charAt(0)).join('').toUpperCase().slice(0, 2) : 'U'}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                    <div className="text-sm font-medium text-foreground truncate">
                       {user?.name || 'User'}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    <div className="text-xs text-muted-foreground truncate">
                       {user?.email}
                     </div>
                   </div>
@@ -291,7 +291,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                     logout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center w-full px-3 py-3 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  className="flex items-center w-full px-3 py-3 text-sm font-medium text-destructive hover:text-destructive-foreground hover:bg-destructive/10 rounded-lg transition-colors"
                 >
                   <LogOut className="h-5 w-5 mr-3" />
                   Sign Out
@@ -302,14 +302,14 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                 <Link
                   href="/auth/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center px-3 py-3 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  className="flex items-center px-3 py-3 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/auth/register"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-center px-3 py-3 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center justify-center px-3 py-3 text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors"
                 >
                   Get Started
                 </Link>
@@ -322,15 +322,15 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
   );
 
   return (
-    <header className={`border-b border-border bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-50 shadow-sm ${className}`}>
+    <header className={`border-b border-border bg-background/95 backdrop-blur-md sticky top-0 z-50 shadow-sm ${className}`}>
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 lg:h-20 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <div className="flex h-8 w-8 lg:h-10 lg:w-10 items-center justify-center rounded-lg bg-primary text-white">
               <BarChart3 className="h-5 w-5 lg:h-6 lg:w-6" />
             </div>
-            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white">AuditCraft</span>
+            <span className="text-lg sm:text-xl lg:text-2xl font-bold text-foreground">AuditCraft</span>
           </Link>
 
           {/* Desktop Navigation - Main Tools */}
@@ -340,7 +340,7 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                  className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors"
                 >
                   <item.icon className="h-4 w-4" />
                   <span className="hidden xl:inline">{item.name}</span>
@@ -350,19 +350,19 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
 
             {/* Dropdown for additional tools */}
             <div className="relative group">
-              <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+              <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-colors">
                 <span>More Tools</span>
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="absolute top-full left-0 mt-1 w-64 bg-card border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                 <div className="py-2">
                   {navigation.slice(4).map((item) => (
                     <Link
                       key={item.name}
                       href={item.href}
-                      className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                      className="flex items-center space-x-3 px-4 py-2 text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
                     >
                       <item.icon className="h-4 w-4" />
                       <span>{item.name}</span>
@@ -384,13 +384,13 @@ export function Header({ showAuthButtons = true, className = "" }: HeaderProps) 
                   <>
                     <Link
                       href="/auth/login"
-                      className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                      className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
                     >
                       Sign In
                     </Link>
                     <Link
                       href="/auth/register"
-                      className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700"
+                      className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-primary-dark"
                     >
                       Get Started
                     </Link>

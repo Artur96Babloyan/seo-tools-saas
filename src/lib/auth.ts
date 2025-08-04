@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import type { AuthResponse, LoginCredentials, RegisterCredentials, User } from '@/shared/types/auth';
+import type { AuthResponse, LoginCredentials, RegisterCredentials, User, GoogleAuthResponse } from '@/shared/types/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 const TOKEN_COOKIE_NAME = 'seo-tools-token';
@@ -124,6 +124,98 @@ class AuthService {
 
     if (!response.success || !response.data) {
       throw new Error(response.message || 'Registration failed');
+    }
+
+    const { user, token } = response.data;
+    this.setAuthData(token, user);
+
+    return user;
+  }
+
+  // Google OAuth login
+  async loginWithGoogle(): Promise<User> {
+    // Get Google OAuth URL from backend
+    const response = await this.makeRequest<{ success: boolean; data: { authUrl: string } }>('/auth/google/url', {
+      method: 'GET',
+    });
+
+    if (!response.success || !response.data?.authUrl) {
+      throw new Error('Failed to get Google OAuth URL');
+    }
+
+    // Redirect to Google OAuth
+    window.location.href = response.data.authUrl;
+    
+    // This will redirect the user, so we won't reach the return statement
+    throw new Error('Redirecting to Google OAuth...');
+  }
+
+  // Handle Google OAuth login
+  async handleGoogleLogin(code: string): Promise<User> {
+    const response = await this.makeRequest<AuthResponse>('/auth/google/login', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Google login failed');
+    }
+
+    const { user, token } = response.data;
+    this.setAuthData(token, user);
+
+    return user;
+  }
+
+  // Handle Google OAuth registration
+  async handleGoogleRegister(code: string): Promise<User> {
+    const response = await this.makeRequest<AuthResponse>('/auth/google/register', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Google registration failed');
+    }
+
+    const { user, token } = response.data;
+    this.setAuthData(token, user);
+
+    return user;
+  }
+
+  // Link Google account to existing account
+  async linkGoogleAccount(code: string): Promise<void> {
+    const response = await this.makeRequest<{ success: boolean; message: string }>('/auth/google/link', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to link Google account');
+    }
+  }
+
+  // Unlink Google account
+  async unlinkGoogleAccount(): Promise<void> {
+    const response = await this.makeRequest<{ success: boolean; message: string }>('/auth/google/unlink', {
+      method: 'POST',
+    });
+
+    if (!response.success) {
+      throw new Error(response.message || 'Failed to unlink Google account');
+    }
+  }
+
+  // Handle Google OAuth callback (legacy support)
+  async handleGoogleCallback(code: string): Promise<User> {
+    const response = await this.makeRequest<GoogleAuthResponse>('/auth/google/callback', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || 'Google login failed');
     }
 
     const { user, token } = response.data;

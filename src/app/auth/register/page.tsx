@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/entities/user';
 import type { RegisterCredentials } from '@/shared/types/auth';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Zap, AlertCircle, CheckCircle } from 'lucide-react';
+import { GoogleAuthButton } from '@/components/GoogleAuthButton';
 
 export default function RegisterPage() {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
@@ -46,10 +47,10 @@ export default function RegisterPage() {
   // Don't render if still loading or already authenticated
   if (isLoading || isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-accent flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-          <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
@@ -115,23 +116,23 @@ export default function RegisterPage() {
   const passwordsMatch = credentials.password && confirmPassword && credentials.password === confirmPassword;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-accent flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary to-primary-dark rounded-2xl mb-6 shadow-lg">
             <Zap className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Create your account
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground">
             Start your SEO optimization journey today
           </p>
           <div className="mt-4">
             <Link
               href="/"
-              className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 hover:underline"
+              className="text-sm text-primary hover:text-primary-dark transition-colors duration-200 hover:underline"
             >
               ← Back to Home
             </Link>
@@ -139,11 +140,11 @@ export default function RegisterPage() {
         </div>
 
         {/* Registration Form */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-200 dark:border-slate-700 p-8">
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="flex items-center gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-400 animate-in slide-in-from-top-2 duration-300">
+              <div className="flex items-center gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-xl text-destructive animate-in slide-in-from-top-2 duration-300">
                 <AlertCircle className="w-5 h-5 flex-shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
               </div>
@@ -151,12 +152,12 @@ export default function RegisterPage() {
 
             {/* Name Field */}
             <div className="space-y-2">
-              <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label htmlFor="name" className="block text-sm font-semibold text-foreground">
                 Full name
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <User className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="name"
@@ -166,7 +167,7 @@ export default function RegisterPage() {
                   required
                   value={credentials.name}
                   onChange={handleInputChange('name')}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Enter your full name"
                 />
               </div>
@@ -174,12 +175,12 @@ export default function RegisterPage() {
 
             {/* Email Field */}
             <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label htmlFor="email" className="block text-sm font-semibold text-foreground">
                 Email address
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="email"
@@ -189,7 +190,7 @@ export default function RegisterPage() {
                   required
                   value={credentials.email}
                   onChange={handleInputChange('email')}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="block w-full pl-10 pr-3 py-3 border border-border rounded-xl bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Enter your email"
                 />
               </div>
@@ -197,12 +198,12 @@ export default function RegisterPage() {
 
             {/* Password Field */}
             <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label htmlFor="password" className="block text-sm font-semibold text-foreground">
                 Password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="password"
@@ -212,13 +213,13 @@ export default function RegisterPage() {
                   required
                   value={credentials.password}
                   onChange={handleInputChange('password')}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="block w-full pl-10 pr-12 py-3 border border-border rounded-xl bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Create a strong password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -228,37 +229,37 @@ export default function RegisterPage() {
               {credentials.password && (
                 <div className="mt-2">
                   <div className="flex items-center gap-2 mb-2">
-                    <div className="flex-1 bg-gray-200 dark:bg-slate-700 rounded-full h-2">
+                    <div className="flex-1 bg-muted rounded-full h-2">
                       <div
-                        className={`h-2 rounded-full transition-all duration-300 ${passwordStrength <= 2 ? 'bg-red-500 w-1/3' :
-                          passwordStrength <= 3 ? 'bg-yellow-500 w-2/3' :
-                            'bg-green-500 w-full'
+                        className={`h-2 rounded-full transition-all duration-300 ${passwordStrength <= 2 ? 'bg-destructive w-1/3' :
+                          passwordStrength <= 3 ? 'bg-warning w-2/3' :
+                            'bg-success w-full'
                           }`}
                       />
                     </div>
-                    <span className={`text-xs font-medium ${passwordStrength <= 2 ? 'text-red-600 dark:text-red-400' :
-                      passwordStrength <= 3 ? 'text-yellow-600 dark:text-yellow-400' :
-                        'text-green-600 dark:text-green-400'
+                    <span className={`text-xs font-medium ${passwordStrength <= 2 ? 'text-destructive' :
+                      passwordStrength <= 3 ? 'text-warning' :
+                        'text-success'
                       }`}>
                       {passwordStrength <= 2 ? 'Weak' : passwordStrength <= 3 ? 'Medium' : 'Strong'}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                  <div className="text-xs text-muted-foreground space-y-1">
                     <p>Password must contain:</p>
                     <ul className="list-disc list-inside ml-2 space-y-1">
-                      <li className={credentials.password.length >= 8 ? 'text-green-600 dark:text-green-400' : ''}>
+                      <li className={credentials.password.length >= 8 ? 'text-success' : ''}>
                         At least 8 characters
                       </li>
-                      <li className={/[A-Z]/.test(credentials.password) ? 'text-green-600 dark:text-green-400' : ''}>
+                      <li className={/[A-Z]/.test(credentials.password) ? 'text-success' : ''}>
                         One uppercase letter
                       </li>
-                      <li className={/[a-z]/.test(credentials.password) ? 'text-green-600 dark:text-green-400' : ''}>
+                      <li className={/[a-z]/.test(credentials.password) ? 'text-success' : ''}>
                         One lowercase letter
                       </li>
-                      <li className={/\d/.test(credentials.password) ? 'text-green-600 dark:text-green-400' : ''}>
+                      <li className={/\d/.test(credentials.password) ? 'text-success' : ''}>
                         One number
                       </li>
-                      <li className={/[@$!%*?&]/.test(credentials.password) ? 'text-green-600 dark:text-green-400' : ''}>
+                      <li className={/[@$!%*?&]/.test(credentials.password) ? 'text-success' : ''}>
                         One special character
                       </li>
                     </ul>
@@ -269,12 +270,12 @@ export default function RegisterPage() {
 
             {/* Confirm Password Field */}
             <div className="space-y-2">
-              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <label htmlFor="confirmPassword" className="block text-sm font-semibold text-foreground">
                 Confirm password
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="confirmPassword"
@@ -284,13 +285,13 @@ export default function RegisterPage() {
                   required
                   value={confirmPassword}
                   onChange={handleInputChange('confirmPassword')}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                  className="block w-full pl-10 pr-12 py-3 border border-border rounded-xl bg-input text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200 text-sm"
                   placeholder="Confirm your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground transition-colors duration-200"
                 >
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -301,13 +302,13 @@ export default function RegisterPage() {
                 <div className="flex items-center gap-2 mt-2">
                   {passwordsMatch ? (
                     <>
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                      <span className="text-sm text-green-600 dark:text-green-400">Passwords match</span>
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      <span className="text-sm text-success">Passwords match</span>
                     </>
                   ) : (
                     <>
-                      <AlertCircle className="w-4 h-4 text-red-500" />
-                      <span className="text-sm text-red-600 dark:text-red-400">Passwords don&apos;t match</span>
+                      <AlertCircle className="w-4 h-4 text-destructive" />
+                      <span className="text-sm text-destructive">Passwords don&apos;t match</span>
                     </>
                   )}
                 </div>
@@ -318,7 +319,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting || !passwordsMatch || passwordStrength < 4}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-md transform hover:scale-[1.02] disabled:scale-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-gradient-to-r from-primary to-primary-dark hover:from-primary-dark hover:to-primary disabled:from-muted disabled:to-muted text-white font-semibold rounded-xl shadow-lg hover:shadow-xl disabled:shadow-md transform hover:scale-[1.02] disabled:scale-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
             >
               {isSubmitting ? (
                 <>
@@ -332,15 +333,28 @@ export default function RegisterPage() {
                 </>
               )}
             </button>
+
+            {/* Divider */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
+            </div>
+
+            {/* Google OAuth Button */}
+            <GoogleAuthButton variant="register" />
           </form>
 
           {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-slate-700">
-            <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+          <div className="mt-8 pt-6 border-t border-border">
+            <p className="text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link
                 href="/auth/login"
-                className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200 hover:underline"
+                className="font-semibold text-primary hover:text-primary-dark transition-colors duration-200 hover:underline"
               >
                 Sign in here
               </Link>
