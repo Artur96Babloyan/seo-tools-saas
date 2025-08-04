@@ -1,10 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp, Users, Wand2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { reportService, type ReportStatistics } from "@/lib/services";
-
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuth } from '@/entities/user';
+import Link from "next/link";
+import { ArrowRight, BarChart3, CheckCircle, Globe, Zap, TrendingUp, Users, Wand2 } from "lucide-react";
 
 const tools = [
   {
@@ -54,15 +55,19 @@ const tools = [
 export default function DashboardPage() {
   const [stats, setStats] = useState<ReportStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessingToken, setIsProcessingToken] = useState(false);
+  const { isAuthenticated, isLoading: authLoading, refreshAuth } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const statistics = await reportService.getStatistics();
-        setStats(statistics);
+        const data = await reportService.getStatistics();
+        setStats(data);
       } catch (error) {
-        console.log('Statistics not available, using default values:', error);
-        // Use default values when statistics endpoint is not available
+        console.error('Failed to fetch stats:', error);
+        // Use default values if stats fail to load
         setStats({
           totalReports: 0,
           totalWebsites: 0,
@@ -76,6 +81,65 @@ export default function DashboardPage() {
 
     fetchStats();
   }, []);
+
+  // Handle OAuth token from URL
+  useEffect(() => {
+    const handleOAuthToken = async () => {
+      const oauthToken = searchParams.get('token');
+
+      if (oauthToken && !isAuthenticated) {
+        console.log('Processing OAuth token from URL');
+        setIsProcessingToken(true);
+
+        try {
+          // Store the token using the auth service
+          // The auth service will handle token storage internally
+          await refreshAuth();
+
+          // Remove token from URL
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.delete('token');
+          window.history.replaceState({}, '', newUrl.toString());
+
+          console.log('OAuth token processed successfully');
+        } catch (error) {
+          console.error('Error processing OAuth token:', error);
+        } finally {
+          setIsProcessingToken(false);
+        }
+      }
+    };
+
+    if (!authLoading) {
+      handleOAuthToken();
+    }
+  }, [searchParams, isAuthenticated, authLoading, refreshAuth]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/auth/login');
+    }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Show loading while processing token or loading auth
+  if (authLoading || isProcessingToken) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-secondary to-accent flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">
+            {isProcessingToken ? 'Processing authentication...' : 'Loading...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="p-4 sm:p-6">
