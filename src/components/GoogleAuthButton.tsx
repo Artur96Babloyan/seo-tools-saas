@@ -49,6 +49,8 @@ export function GoogleAuthButton({ variant = 'login', className = '' }: GoogleAu
       // Store state in sessionStorage for validation
       sessionStorage.setItem('oauth_state', state);
 
+      console.log('Google OAuth state generated:', { state, authUrl: url.toString() });
+
       authUrl = url.toString();
 
       // Redirect to Google OAuth
