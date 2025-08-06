@@ -215,6 +215,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const handleOAuthToken = async (oauthToken: string): Promise<void> => {
+    try {
+      setIsLoading(true);
+
+      // Use the auth service to validate and store the OAuth token
+      const user = await authService.handleOAuthToken(oauthToken);
+
+      setUser(user);
+      setToken(authService.getToken() || null);
+
+      console.log('OAuth token processed successfully');
+    } catch (error) {
+      console.error('Failed to process OAuth token:', error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const contextValue: AuthContextType = {
     user,
     token,
@@ -229,6 +248,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     unlinkGoogleAccount,
     logout,
     refreshAuth,
+    handleOAuthToken,
   };
 
   return (

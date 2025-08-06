@@ -98,6 +98,38 @@ class AuthService {
     }
   }
 
+  // Handle OAuth token from URL (for Google OAuth callback)
+  async handleOAuthToken(oauthToken: string): Promise<User> {
+    try {
+      // Validate the token by fetching user profile
+      const response = await fetch('/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${oauthToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid OAuth token');
+      }
+
+      const data = await response.json();
+      
+      if (!data.success || !data.data) {
+        throw new Error(data.message || 'Token validation failed');
+      }
+
+      const user = data.data;
+      
+      // Store the validated token and user data
+      this.setAuthData(oauthToken, user);
+      
+      return user;
+    } catch (error) {
+      console.error('OAuth token validation failed:', error);
+      throw new Error('Failed to validate OAuth token');
+    }
+  }
+
   // Login user
   async login(credentials: LoginCredentials): Promise<User> {
     const response = await this.makeRequest<AuthResponse>('/auth/login', {

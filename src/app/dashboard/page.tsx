@@ -56,7 +56,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<ReportStatistics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isProcessingToken, setIsProcessingToken] = useState(false);
-  const { isAuthenticated, isLoading: authLoading, refreshAuth } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, handleOAuthToken } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -84,17 +84,23 @@ export default function DashboardPage() {
 
   // Handle OAuth token from URL
   useEffect(() => {
-    const handleOAuthToken = async () => {
+    const handleOAuthTokenFromURL = async () => {
       const oauthToken = searchParams.get('token');
+
+      console.log('Dashboard OAuth check:', {
+        hasToken: !!oauthToken,
+        isAuthenticated,
+        authLoading,
+        tokenLength: oauthToken?.length
+      });
 
       if (oauthToken && !isAuthenticated) {
         console.log('Processing OAuth token from URL');
         setIsProcessingToken(true);
 
         try {
-          // Store the token using the auth service
-          // The auth service will handle token storage internally
-          await refreshAuth();
+          // Use the new handleOAuthToken method
+          await handleOAuthToken(oauthToken);
 
           // Remove token from URL
           const newUrl = new URL(window.location.href);
@@ -104,6 +110,8 @@ export default function DashboardPage() {
           console.log('OAuth token processed successfully');
         } catch (error) {
           console.error('Error processing OAuth token:', error);
+          // Redirect to login on error
+          router.push('/auth/login');
         } finally {
           setIsProcessingToken(false);
         }
@@ -111,9 +119,9 @@ export default function DashboardPage() {
     };
 
     if (!authLoading) {
-      handleOAuthToken();
+      handleOAuthTokenFromURL();
     }
-  }, [searchParams, isAuthenticated, authLoading, refreshAuth]);
+  }, [searchParams, isAuthenticated, authLoading, handleOAuthToken, router]);
 
   // Redirect if not authenticated
   useEffect(() => {

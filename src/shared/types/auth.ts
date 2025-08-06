@@ -52,6 +52,7 @@ export interface AuthContextType {
   unlinkGoogleAccount: () => Promise<void>;
   logout: () => void;
   refreshAuth: () => Promise<void>;
+  handleOAuthToken: (token: string) => Promise<void>;
 }
 
 export interface AuthError {
