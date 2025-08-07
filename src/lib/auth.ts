@@ -101,32 +101,48 @@ class AuthService {
   // Handle OAuth token from URL (for Google OAuth callback)
   async handleOAuthToken(oauthToken: string): Promise<User> {
     try {
-      // Validate the token by fetching user profile
-      const response = await fetch('/api/user/profile', {
-        headers: {
-          'Authorization': `Bearer ${oauthToken}`,
-        },
-      });
+      // Decode JWT payload on the client to extract minimal user info
+      const decodeJwtPayload = (token: string): Record<string, unknown> => {
+        const parts = token.split('.');
+        if (parts.length < 2) throw new Error('Invalid token format');
+        const base64Url = parts[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        // Pad base64 string
+        const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
+        const jsonPayload = typeof atob === 'function'
+          ? atob(padded)
+          : Buffer.from(padded, 'base64').toString('utf-8');
+        return JSON.parse(jsonPayload);
+      };
 
-      if (!response.ok) {
-        throw new Error('Invalid OAuth token');
+      const payload = decodeJwtPayload(oauthToken) as {
+        id?: string;
+        email?: string;
+        name?: string;
+        iat?: number;
+        exp?: number;
+        provider?: 'local' | 'google';
+      };
+
+      if (!payload || !payload.email || !payload.id) {
+        throw new Error('Invalid OAuth token payload');
       }
 
-      const data = await response.json();
-      
-      if (!data.success || !data.data) {
-        throw new Error(data.message || 'Token validation failed');
-      }
+      const user: User = {
+        id: payload.id,
+        email: payload.email,
+        name: payload.name || (payload.email ? payload.email.split('@')[0] : 'User'),
+        createdAt: payload.iat ? new Date(payload.iat * 1000).toISOString() : new Date().toISOString(),
+        provider: 'google',
+      };
 
-      const user = data.data;
-      
-      // Store the validated token and user data
+      // Store token and derived user
       this.setAuthData(oauthToken, user);
-      
+
       return user;
     } catch (error) {
-      console.error('OAuth token validation failed:', error);
-      throw new Error('Failed to validate OAuth token');
+      console.error('OAuth token processing failed:', error);
+      throw new Error('Failed to process OAuth token');
     }
   }
 

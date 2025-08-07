@@ -24,30 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (currentUser) {
           setUser(currentUser);
           setToken(authService.getToken() || null);
-
-          // Fetch the latest profile data to ensure we have avatar information
-          try {
-            const response = await fetch('/api/user/profile', {
-              headers: {
-                'Authorization': `Bearer ${authService.getToken()}`,
-              },
-            });
-
-            if (response.ok) {
-              const data = await response.json();
-              if (data.success && data.data) {
-                // Merge the profile data with the current user data
-                const updatedUser = {
-                  ...currentUser,
-                  ...data.data,
-                };
-                authService.updateUserData(updatedUser);
-                setUser(updatedUser);
-              }
-            }
-          } catch (error) {
-            console.warn('Failed to fetch profile during initialization:', error);
-          }
+          // Optional: we skip profile fetch here to avoid blocking auth on OAuth flows
         }
       } catch {
         // Auth initialization failed - user will need to login
@@ -177,36 +154,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         return;
       }
 
-      // Always try to fetch the latest user profile from the backend
-      // to ensure we have the most up-to-date data including avatar
-      try {
-        const response = await fetch('/api/user/profile', {
-          headers: {
-            'Authorization': `Bearer ${authService.getToken()}`,
-          },
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-
-          if (data.success && data.data) {
-            // Merge the profile data with the current user data to ensure we don't lose any fields
-            const updatedUser = {
-              ...currentUser,
-              ...data.data,
-            };
-            authService.updateUserData(updatedUser);
-            setUser(updatedUser);
-            setToken(authService.getToken() || null);
-            return;
-          }
-        }
-      } catch (error) {
-        console.warn('Failed to fetch updated profile, using cached data:', error);
-        // Silently fall back to cached data
-      }
-
-      // Fallback to current user data
+      // Keep the current cached user; avoid blocking on profile fetch
       setUser(currentUser);
       setToken(authService.getToken() || null);
     } catch {

@@ -84,51 +84,28 @@ export default function DashboardPage() {
 
   // Handle OAuth token from URL
   useEffect(() => {
-    const handleOAuthTokenFromURL = async () => {
-      const oauthToken = searchParams.get('token');
-
-      console.log('Dashboard OAuth check:', {
-        hasToken: !!oauthToken,
-        isAuthenticated,
-        authLoading,
-        tokenLength: oauthToken?.length
-      });
-
-      if (oauthToken && !isAuthenticated) {
-        console.log('Processing OAuth token from URL');
-        setIsProcessingToken(true);
-
-        try {
-          // Use the new handleOAuthToken method
-          await handleOAuthToken(oauthToken);
-
-          // Remove token from URL
+    const oauthToken = searchParams.get('token');
+    if (!authLoading && oauthToken && !isAuthenticated) {
+      setIsProcessingToken(true);
+      handleOAuthToken(oauthToken)
+        .then(() => {
           const newUrl = new URL(window.location.href);
           newUrl.searchParams.delete('token');
           window.history.replaceState({}, '', newUrl.toString());
-
-          console.log('OAuth token processed successfully');
-        } catch (error) {
-          console.error('Error processing OAuth token:', error);
-          // Redirect to login on error
+        })
+        .catch(() => {
           router.push('/auth/login');
-        } finally {
-          setIsProcessingToken(false);
-        }
-      }
-    };
-
-    if (!authLoading) {
-      handleOAuthTokenFromURL();
+        })
+        .finally(() => setIsProcessingToken(false));
     }
   }, [searchParams, isAuthenticated, authLoading, handleOAuthToken, router]);
 
-  // Redirect if not authenticated
+  // Redirect if not authenticated (skip while processing token)
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
+    if (!authLoading && !isProcessingToken && !isAuthenticated) {
       router.push('/auth/login');
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, isProcessingToken, router]);
 
   // Show loading while processing token or loading auth
   if (authLoading || isProcessingToken) {
