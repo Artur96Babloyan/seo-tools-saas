@@ -1,9 +1,70 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { Mail, Phone, MapPin, Clock, MessageSquare, Send } from "lucide-react";
 import { FooterWrapper } from "@/shared/ui/footer/FooterWrapper";
 import { Header } from "@/components/Header";
 
 export default function ContactPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMessage(null);
+    setIsSubmitting(true);
+    try {
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+      const payload = {
+        firstName: String(formData.get("firstName") || "").trim(),
+        lastName: String(formData.get("lastName") || "").trim(),
+        email: String(formData.get("email") || "").trim(),
+        company: String(formData.get("company") || "").trim() || undefined,
+        message: String(formData.get("message") || "").trim(),
+        subject: String(formData.get("subject") || "").trim() || undefined,
+      };
+
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json().catch(() => ({ success: false, error: "Invalid server response" }));
+
+      if (!res.ok || !data?.success) {
+        let message = data?.error || data?.message || `Request failed with status ${res.status}`;
+        if (res.status === 400 && data?.error === 'Validation error' && data?.details) {
+          try {
+            type ZodErrorDetails = { _errors?: string[] } & { [key: string]: ZodErrorDetails | unknown };
+            const details = data.details as ZodErrorDetails;
+            const messages: string[] = [];
+            const collect = (obj: ZodErrorDetails, path = '') => {
+              if (Array.isArray(obj?._errors)) messages.push(...obj._errors.map((m: string) => (path ? `${path}: ${m}` : m)));
+              for (const key of Object.keys(obj || {})) {
+                if (key === '_errors') continue;
+                const next = obj[key as keyof ZodErrorDetails];
+                if (next && typeof next === 'object') collect(next as ZodErrorDetails, path ? `${path}.${key}` : key);
+              }
+            };
+            collect(details);
+            if (messages.length) message = messages.join(', ');
+          } catch { }
+        }
+        throw new Error(message);
+      }
+
+      form.reset();
+      setIsSubmitted(true);
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <div className="min-h-screen bg-background">
       <Header showAuthButtons={true} />
@@ -32,7 +93,18 @@ export default function ContactPage() {
               <div className="bg-card p-8 rounded-lg border border-border">
                 <h2 className="text-2xl font-bold text-foreground mb-6">Send us a message</h2>
 
-                <form className="space-y-6">
+                {isSubmitted && (
+                  <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-green-800 dark:border-green-900/40 dark:bg-green-900/20 dark:text-green-300">
+                    Thanks! Your message has been sent. We usually reply within 24 hours.
+                  </div>
+                )}
+                {errorMessage && (
+                  <div className="mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-800 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                    {errorMessage}
+                  </div>
+                )}
+
+                <form className="space-y-6" onSubmit={handleSubmit} noValidate>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                       <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
@@ -43,6 +115,7 @@ export default function ContactPage() {
                         id="firstName"
                         name="firstName"
                         required
+                        minLength={1}
                         className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="Your first name"
                       />
@@ -56,6 +129,7 @@ export default function ContactPage() {
                         id="lastName"
                         name="lastName"
                         required
+                        minLength={1}
                         className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                         placeholder="Your last name"
                       />
@@ -118,6 +192,7 @@ export default function ContactPage() {
                       name="message"
                       rows={6}
                       required
+                      minLength={10}
                       className="w-full px-4 py-3 border border-border rounded-lg bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
                       placeholder="Tell us how we can help you..."
                     ></textarea>
@@ -125,10 +200,11 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    className="w-full flex items-center justify-center space-x-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors"
+                    disabled={isSubmitting}
+                    className="w-full flex items-center justify-center space-x-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    <Send className="h-5 w-5" />
-                    <span>Send Message</span>
+                    <Send className={`h-5 w-5 ${isSubmitting ? 'animate-pulse' : ''}`} />
+                    <span>{isSubmitting ? 'Sending…' : 'Send Message'}</span>
                   </button>
                 </form>
               </div>
